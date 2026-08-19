@@ -17,6 +17,7 @@ dependencies = [
 edge-download = "edge_lab.cli.download:download"
 edge-experiments = "edge_lab.cli.experiments:experiments"
 edge-figures = "edge_lab.cli.figures:figures"
+edge-covers = "edge_lab.cli.covers:covers"
 
 [build-system]
 requires = ["hatchling"]
