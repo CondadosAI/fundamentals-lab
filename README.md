@@ -1,20 +1,20 @@
-# edge-lab
+# fundamentals-lab
 
 Edge detection from first principles, measured rather than asserted: gradient
 operators, the Laplacian and its zero-crossings, Canny's non-maximum suppression
 and hysteresis taken apart, and the structure tensor that turns contours into
 points you can match.
 
-Companion code for the CondadosAI **Edge Detection** unit (one hub post and five
-lessons).
+Companion code for the CondadosAI **Fundamentals** track. One repo for the whole
+track; today it carries the **Edge Detection** unit (one hub post and five lessons).
 
 Run it in the browser, no install:
-[**Open in Colab**](https://colab.research.google.com/github/CondadosAI/edge-lab/blob/main/notebooks/edge_detection.ipynb)
+[**Open in Colab**](https://colab.research.google.com/github/CondadosAI/fundamentals-lab/blob/main/notebooks/edge_detection.ipynb)
 
 ## Layout
 
 ```
-edge-lab/
+fundamentals-lab/
 ├── pyproject.toml
 ├── src/edge_lab/
 │   ├── config.py              # paths, sweeps, and every threshold, documented
