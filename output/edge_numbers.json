@@ -1,0 +1,386 @@
+{
+  "environment": {
+    "python": "3.12.9",
+    "opencv": "5.0.0",
+    "numpy": "2.5.2",
+    "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.35",
+    "seed": 20260818
+  },
+  "image": {
+    "width": 360,
+    "height": 480
+  },
+  "corner_parity": {
+    "source_of_published": "sfm-from-scratch/output/sift_numbers.json",
+    "responses": {
+      "background": {
+        "l1": 0.001,
+        "l2": 0.0,
+        "harris_k0.04": -0.0,
+        "harris_k0.06": -0.0,
+        "shi_tomasi": 0.0,
+        "forstner_w": 0.0,
+        "forstner_q": 0.0
+      },
+      "column_edge": {
+        "l1": 0.411,
+        "l2": 0.019,
+        "harris_k0.04": 0.000413,
+        "harris_k0.06": -0.003285,
+        "shi_tomasi": 0.019,
+        "forstner_w": 0.01816,
+        "forstner_q": 0.1689
+      },
+      "base_corner": {
+        "l1": 0.442,
+        "l2": 0.318,
+        "harris_k0.04": 0.117452,
+        "harris_k0.06": 0.1059,
+        "shi_tomasi": 0.318,
+        "forstner_w": 0.18494,
+        "forstner_q": 0.9734
+      }
+    },
+    "responses_note": "on the edge patch Harris is POSITIVE at k=0.04 (+0.000413) and NEGATIVE at k=0.06 (-0.003285); k decides the sign, it is not a cosmetic constant",
+    "presets": {
+      "background": {
+        "measured": [
+          0.001,
+          0.0
+        ],
+        "published": [
+          0.001,
+          0.0
+        ],
+        "match": true
+      },
+      "column_edge": {
+        "measured": [
+          0.411,
+          0.019
+        ],
+        "published": [
+          0.411,
+          0.019
+        ],
+        "match": true
+      },
+      "base_corner": {
+        "measured": [
+          0.442,
+          0.318
+        ],
+        "published": [
+          0.442,
+          0.318
+        ],
+        "match": true
+      }
+    },
+    "all_match": true
+  },
+  "opencv_reference_check": {
+    "settings": {
+      "sigma": 1.4,
+      "low": 50,
+      "high": 150,
+      "L2gradient": true
+    },
+    "agrees": {
+      "gradient_magnitude_scale_ratio": 1.0001,
+      "nms_survivors_ours": 32593,
+      "nms_survivors_opencv": 32819,
+      "nms_relative_difference": 0.0069
+    },
+    "diverges": {
+      "weak_set_ours": 8403,
+      "weak_set_opencv": 9810,
+      "final_ours": 3810,
+      "final_opencv": 5564,
+      "iou": 0.573,
+      "status": "UNEXPLAINED \u2014 see the docstring for what was ruled out"
+    }
+  },
+  "noise_robustness": {
+    "metric": "fraction of the clean-image edge set recovered on the noisy image",
+    "edge_fraction": 0.05,
+    "noise_sigma_scale": "0..255 intensity units",
+    "by_operator": {
+      "central": {
+        "sigma_0": {
+          "agreement_mean": 1.0,
+          "agreement_std": 0.0,
+          "trials": 5
+        },
+        "sigma_2": {
+          "agreement_mean": 0.9662,
+          "agreement_std": 0.0007,
+          "trials": 5
+        },
+        "sigma_5": {
+          "agreement_mean": 0.9158,
+          "agreement_std": 0.0019,
+          "trials": 5
+        },
+        "sigma_10": {
+          "agreement_mean": 0.8265,
+          "agreement_std": 0.0013,
+          "trials": 5
+        },
+        "sigma_20": {
+          "agreement_mean": 0.6262,
+          "agreement_std": 0.0017,
+          "trials": 5
+        }
+      },
+      "prewitt": {
+        "sigma_0": {
+          "agreement_mean": 1.0,
+          "agreement_std": 0.0,
+          "trials": 5
+        },
+        "sigma_2": {
+          "agreement_mean": 0.9814,
+          "agreement_std": 0.0008,
+          "trials": 5
+        },
+        "sigma_5": {
+          "agreement_mean": 0.9509,
+          "agreement_std": 0.0014,
+          "trials": 5
+        },
+        "sigma_10": {
+          "agreement_mean": 0.8995,
+          "agreement_std": 0.0016,
+          "trials": 5
+        },
+        "sigma_20": {
+          "agreement_mean": 0.7968,
+          "agreement_std": 0.0033,
+          "trials": 5
+        }
+      },
+      "sobel": {
+        "sigma_0": {
+          "agreement_mean": 1.0,
+          "agreement_std": 0.0,
+          "trials": 5
+        },
+        "sigma_2": {
+          "agreement_mean": 0.9802,
+          "agreement_std": 0.0004,
+          "trials": 5
+        },
+        "sigma_5": {
+          "agreement_mean": 0.9472,
+          "agreement_std": 0.0018,
+          "trials": 5
+        },
+        "sigma_10": {
+          "agreement_mean": 0.8948,
+          "agreement_std": 0.0014,
+          "trials": 5
+        },
+        "sigma_20": {
+          "agreement_mean": 0.7814,
+          "agreement_std": 0.0045,
+          "trials": 5
+        }
+      }
+    }
+  },
+  "threshold_dilemma": {
+    "gaussian_sigma": 1.4,
+    "operator": "sobel",
+    "note": "fragment count FALLS as the threshold rises \u2014 the folk claim that a high threshold breaks edges up is not what the aggregate shows. The real cost is coverage.",
+    "by_threshold": [
+      {
+        "threshold_0_255": 10,
+        "magnitude_px": 76266,
+        "thinned_px": 14946,
+        "ridge_thickness_px": 5.1,
+        "coverage_vs_lowest": 1.0,
+        "fragments": 2269
+      },
+      {
+        "threshold_0_255": 20,
+        "magnitude_px": 60202,
+        "thinned_px": 12651,
+        "ridge_thickness_px": 4.76,
+        "coverage_vs_lowest": 0.846,
+        "fragments": 1738
+      },
+      {
+        "threshold_0_255": 40,
+        "magnitude_px": 40378,
+        "thinned_px": 9596,
+        "ridge_thickness_px": 4.21,
+        "coverage_vs_lowest": 0.642,
+        "fragments": 1165
+      },
+      {
+        "threshold_0_255": 80,
+        "magnitude_px": 20388,
+        "thinned_px": 5729,
+        "ridge_thickness_px": 3.56,
+        "coverage_vs_lowest": 0.383,
+        "fragments": 620
+      },
+      {
+        "threshold_0_255": 160,
+        "magnitude_px": 6623,
+        "thinned_px": 2295,
+        "ridge_thickness_px": 2.89,
+        "coverage_vs_lowest": 0.154,
+        "fragments": 213
+      }
+    ]
+  },
+  "hysteresis_vs_single_threshold": {
+    "gaussian_sigma": 1.4,
+    "note": "both columns are non-maximum-suppressed; only the keep rule differs",
+    "operating_points": [
+      {
+        "low": 50,
+        "high": 150,
+        "edge_pixels": 3810,
+        "hysteresis": {
+          "components": 204,
+          "mean_component_px": 18.68
+        },
+        "single_threshold": {
+          "cutoff_0_255": 113.94,
+          "edge_pixels": 3810,
+          "components": 393,
+          "mean_component_px": 9.69
+        }
+      },
+      {
+        "low": 75,
+        "high": 200,
+        "edge_pixels": 2426,
+        "hysteresis": {
+          "components": 109,
+          "mean_component_px": 22.26
+        },
+        "single_threshold": {
+          "cutoff_0_255": 154.36,
+          "edge_pixels": 2426,
+          "components": 220,
+          "mean_component_px": 11.03
+        }
+      },
+      {
+        "low": 100,
+        "high": 250,
+        "edge_pixels": 1509,
+        "hysteresis": {
+          "components": 67,
+          "mean_component_px": 22.52
+        },
+        "single_threshold": {
+          "cutoff_0_255": 204.64,
+          "edge_pixels": 1509,
+          "components": 134,
+          "mean_component_px": 11.26
+        }
+      }
+    ]
+  },
+  "zero_crossing_closure": {
+    "definition_closed": "a connected component with no pixel having exactly one neighbour",
+    "synthetic_control": {
+      "shape": "a filled disc of radius 70 on a 240x240 field",
+      "why": "validates the closure metric; a closed fraction of 1.0 here means a low fraction on the photograph is a property of the image, not the metric",
+      "by_sigma": {
+        "sigma_1": {
+          "n_components": 1,
+          "n_closed": 1,
+          "closed_fraction": 1.0
+        },
+        "sigma_1.4": {
+          "n_components": 1,
+          "n_closed": 1,
+          "closed_fraction": 1.0
+        },
+        "sigma_2": {
+          "n_components": 1,
+          "n_closed": 1,
+          "closed_fraction": 1.0
+        },
+        "sigma_3": {
+          "n_components": 1,
+          "n_closed": 1,
+          "closed_fraction": 1.0
+        }
+      }
+    },
+    "noise_metric": "crossing_px_ratio \u2014 the factor by which noise multiplies the number of zero-crossing pixels. Component count is NOT used as the noise metric: at small sigma the extra crossings connect existing components instead of adding new ones, so the count falls while the structure grows, which makes it non-monotone in sigma and unusable as evidence.",
+    "by_sigma": [
+      {
+        "sigma": 1.0,
+        "clean": {
+          "n_components": 1234,
+          "n_closed": 412,
+          "closed_fraction": 0.3339,
+          "crossing_px": 25625
+        },
+        "noisy_sigma255_10": {
+          "n_components": 820,
+          "n_closed": 354,
+          "closed_fraction": 0.4317,
+          "crossing_px": 70776
+        },
+        "crossing_px_ratio": 2.762
+      },
+      {
+        "sigma": 1.4,
+        "clean": {
+          "n_components": 934,
+          "n_closed": 259,
+          "closed_fraction": 0.2773,
+          "crossing_px": 19444
+        },
+        "noisy_sigma255_10": {
+          "n_components": 5024,
+          "n_closed": 1570,
+          "closed_fraction": 0.3125,
+          "crossing_px": 37347
+        },
+        "crossing_px_ratio": 1.921
+      },
+      {
+        "sigma": 2.0,
+        "clean": {
+          "n_components": 653,
+          "n_closed": 159,
+          "closed_fraction": 0.2435,
+          "crossing_px": 13621
+        },
+        "noisy_sigma255_10": {
+          "n_components": 1178,
+          "n_closed": 332,
+          "closed_fraction": 0.2818,
+          "crossing_px": 15525
+        },
+        "crossing_px_ratio": 1.14
+      },
+      {
+        "sigma": 3.0,
+        "clean": {
+          "n_components": 347,
+          "n_closed": 54,
+          "closed_fraction": 0.1556,
+          "crossing_px": 8161
+        },
+        "noisy_sigma255_10": {
+          "n_components": 365,
+          "n_closed": 54,
+          "closed_fraction": 0.1479,
+          "crossing_px": 8320
+        },
+        "crossing_px_ratio": 1.019
+      }
+    ]
+  }
+}

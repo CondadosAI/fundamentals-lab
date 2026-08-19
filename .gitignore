@@ -1,0 +1,16 @@
+__pycache__
+.venv
+*.egg-info
+.ruff_cache
+
+# uv.lock IS committed for reproducible installs (gold-pattern default).
+
+# Datasets are downloaded, never redistributed — see README "What the licence
+# does not cover".
+data
+
+# Outputs: keep the dir, ignore generated artifacts except the numbers the
+# articles cite, which are committed as evidence.
+output/*.png
+output/*.log
+!output/edge_numbers.json
