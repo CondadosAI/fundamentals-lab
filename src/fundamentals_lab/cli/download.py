@@ -6,7 +6,7 @@ import zipfile
 import click
 from loguru import logger
 
-from edge_lab.config import DATA_DIR, DATASET, DATASETS
+from fundamentals_lab.config import DATA_DIR, DATASET, DATASETS
 
 
 @click.command()

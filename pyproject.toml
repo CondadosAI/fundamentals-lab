@@ -1,7 +1,7 @@
 [project]
-name = "edge-lab"
+name = "fundamentals-lab"
 version = "0.1.0"
-description = "Edge detection from first principles: gradients, Laplacian/LoG zero-crossings, Canny's NMS + hysteresis, and the structure tensor — each measured rather than asserted."
+description = "Companion code for the CondadosAI Fundamentals track: one unit per module, every published number reproducible from here."
 requires-python = ">=3.10"
 dependencies = [
     # Same 5.x pin as sfm-from-scratch. Only main-module APIs are used here
@@ -13,18 +13,39 @@ dependencies = [
     "matplotlib>=3.8",
 ]
 
+[project.optional-dependencies]
+# Unit 1.2 only. RAW decoding drags in LibRaw, and a reader who came for the edge
+# material should not have to build it: `uv sync --extra sensing` opts in.
+sensing = [
+    "rawpy>=0.21",
+    "exifread>=3.0",
+    "xlrd>=2.0", # the survey's measurement tables are BIFF .xls
+    "openexr>=3.2",
+]
+
 [project.scripts]
-edge-download = "edge_lab.cli.download:download"
-edge-experiments = "edge_lab.cli.experiments:experiments"
-edge-figures = "edge_lab.cli.figures:figures"
-edge-covers = "edge_lab.cli.covers:covers"
+edge-download = "fundamentals_lab.cli.download:download"
+edge-experiments = "fundamentals_lab.cli.experiments:experiments"
+edge-figures = "fundamentals_lab.cli.figures:figures"
+edge-covers = "fundamentals_lab.cli.covers:covers"
+sensing-download = "fundamentals_lab.cli.sensing_download:sensing_download"
+formation-download = "fundamentals_lab.cli.formation_download:formation_download"
+formation-calibrate = "fundamentals_lab.cli.formation_calibrate:calibrate"
+formation-project = "fundamentals_lab.cli.formation_project:project"
+formation-distort = "fundamentals_lab.cli.formation_distort:distort"
+formation-dof = "fundamentals_lab.cli.formation_dof:dof"
+formation-fisheye = "fundamentals_lab.cli.formation_fisheye:fisheye"
+sensing-inspect = "fundamentals_lab.cli.sensing_inspect:sensing_inspect"
+sensing-experiments = "fundamentals_lab.cli.sensing_experiments:sensing_experiments"
+sensing-figures = "fundamentals_lab.cli.sensing_figures:sensing_figures"
+sensing-covers = "fundamentals_lab.cli.sensing_covers:sensing_covers"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/edge_lab"]
+packages = ["src/fundamentals_lab"]
 
 [tool.ruff]
 src = ["src"]
@@ -34,4 +55,4 @@ line-length = 100
 select = ["E", "F", "UP", "B", "SIM", "I"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["edge_lab"]
+known-first-party = ["fundamentals_lab"]

@@ -14,12 +14,21 @@ from loguru import logger
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
-from edge_lab.config import OUTPUT_DIR  # noqa: E402
-from edge_lab.core.canny import canny_from_scratch  # noqa: E402
-from edge_lab.core.corners import harris_response  # noqa: E402
-from edge_lab.core.dataset import canonical_gray  # noqa: E402
-from edge_lab.core.gradients import OPERATORS, gradients, magnitude, top_fraction_mask  # noqa: E402
-from edge_lab.core.laplacian import crossing_floor, log_response, zero_crossings  # noqa: E402
+from fundamentals_lab.config import OUTPUT_DIR  # noqa: E402
+from fundamentals_lab.core.canny import canny_from_scratch  # noqa: E402
+from fundamentals_lab.core.corners import harris_response  # noqa: E402
+from fundamentals_lab.core.dataset import canonical_gray  # noqa: E402
+from fundamentals_lab.core.gradients import (  # noqa: E402
+    OPERATORS,
+    gradients,
+    magnitude,
+    top_fraction_mask,
+)
+from fundamentals_lab.core.laplacian import (  # noqa: E402
+    crossing_floor,
+    log_response,
+    zero_crossings,
+)
 
 BG = "#0b0e18"
 COVER_DIR = OUTPUT_DIR / "covers"

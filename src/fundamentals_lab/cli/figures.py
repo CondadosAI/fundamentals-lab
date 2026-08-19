@@ -8,16 +8,16 @@ from loguru import logger
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
-from edge_lab.config import FIGURE_DIR, LOG_SIGMAS, PATCH_PRESETS  # noqa: E402
-from edge_lab.core.canny import canny_from_scratch  # noqa: E402
-from edge_lab.core.dataset import canonical_gray  # noqa: E402
-from edge_lab.core.gradients import (  # noqa: E402
+from fundamentals_lab.config import FIGURE_DIR, LOG_SIGMAS, PATCH_PRESETS  # noqa: E402
+from fundamentals_lab.core.canny import canny_from_scratch  # noqa: E402
+from fundamentals_lab.core.dataset import canonical_gray  # noqa: E402
+from fundamentals_lab.core.gradients import (  # noqa: E402
     OPERATORS,
     gradients,
     magnitude,
     top_fraction_mask,
 )
-from edge_lab.core.laplacian import log_response, zero_crossings  # noqa: E402
+from fundamentals_lab.core.laplacian import log_response, zero_crossings  # noqa: E402
 
 
 def _save(fig, name: str) -> None:

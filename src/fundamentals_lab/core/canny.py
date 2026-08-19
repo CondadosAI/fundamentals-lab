@@ -9,7 +9,7 @@ independently.
 import cv2
 import numpy as np
 
-from edge_lab.core.gradients import gradients, magnitude, orientation_deg
+from fundamentals_lab.core.gradients import gradients, magnitude, orientation_deg
 
 
 def non_max_suppression(mag: np.ndarray, ori: np.ndarray) -> np.ndarray:

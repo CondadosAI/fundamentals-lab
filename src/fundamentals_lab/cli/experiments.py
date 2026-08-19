@@ -14,7 +14,7 @@ import cv2
 import numpy as np
 from loguru import logger
 
-from edge_lab.config import (
+from fundamentals_lab.config import (
     CANNY_POINTS,
     DILEMMA_THRESHOLDS,
     EDGE_FRACTION,
@@ -25,17 +25,17 @@ from edge_lab.config import (
     PUBLISHED_EIGENVALUES,
     SEED,
 )
-from edge_lab.core import canny as canny_mod
-from edge_lab.core.corners import preset_eigenvalues
-from edge_lab.core.dataset import add_noise, canonical_gray
-from edge_lab.core.gradients import (
+from fundamentals_lab.core import canny as canny_mod
+from fundamentals_lab.core.corners import preset_eigenvalues
+from fundamentals_lab.core.dataset import add_noise, canonical_gray
+from fundamentals_lab.core.gradients import (
     OPERATORS,
     gradients,
     magnitude,
     orientation_deg,
     top_fraction_mask,
 )
-from edge_lab.core.laplacian import (
+from fundamentals_lab.core.laplacian import (
     contour_stats,
     crossing_floor,
     log_response,

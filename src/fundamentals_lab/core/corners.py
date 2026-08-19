@@ -9,7 +9,7 @@ makes that visible.
 import cv2
 import numpy as np
 
-from edge_lab.config import PATCH_HALF, PATCH_PRESETS
+from fundamentals_lab.config import PATCH_HALF, PATCH_PRESETS
 
 
 def eigenvalues_at(gray01: np.ndarray, x: int, y: int, half: int = PATCH_HALF) -> tuple:

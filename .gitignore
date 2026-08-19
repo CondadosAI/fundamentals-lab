@@ -9,8 +9,20 @@ __pycache__
 # does not cover".
 data
 
-# Outputs: keep the dir, ignore generated artifacts except the numbers the
-# articles cite, which are committed as evidence.
+# Outputs: keep the dir, ignore every generated image at any depth, and commit
+# only the numbers the articles cite as evidence.
+#
+# The old pattern was `output/*.png`, which matched neither `output/covers/*.png`
+# nor the `.webp` figures unit 1.2 added. That mattered: unit 1.2's figures are
+# derived from Mark Fairchild's HDR Photographic Survey, whose terms are research
+# and non-commercial publication with no redistribution. Committing a crop of one
+# here would be redistributing it.
+output/**/*.png
+output/**/*.jpg
+output/**/*.webp
+output/**/*.tif
 output/*.png
 output/*.log
 !output/edge_numbers.json
+!output/formation_numbers.json
+!output/sensing_numbers.json

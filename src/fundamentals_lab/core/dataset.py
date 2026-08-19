@@ -10,7 +10,7 @@ which is the parity check the corners experiment runs.
 import cv2
 import numpy as np
 
-from edge_lab.config import (
+from fundamentals_lab.config import (
     CANONICAL_SIZE,
     CLAHE_CLIP,
     CLAHE_TILE,
