@@ -167,3 +167,92 @@ D2X_LUMINANCE_ROW = (0.1904, 0.7646, 0.0450)
 # The patch the radiance merge is scaled on: the lit chart's white, metered at
 # 382 cd/m2. Every other point is then a prediction rather than a fit.
 CALIBRATION_ANCHOR = "bright:19"
+
+
+# =============================================================================
+# Unit 1.3 — The image as data
+# =============================================================================
+# Same scene as unit 1.2, same frame, same patch lattice: the point of reusing them
+# is that a reader who followed 1.2 is looking at pixels they already know. What is
+# new here is what we do to those pixels rather than where they came from.
+IMAGEDATA_NUMBERS_JSON = OUTPUT_DIR / "image_data_numbers.json"
+# Unit 1.3 spends unit 1.2's measurements rather than re-deriving them, so 1.2's
+# artifact is an input here. Named once so the dependency is visible.
+SENSING_NUMBERS_JSON = OUTPUT_DIR / "sensing_numbers.json"
+
+# The lit chart's reference exposure, 1/45 s -- unit 1.2's `bright` reference frame.
+IMAGEDATA_FRAME = "_MDF0005.NEF"
+
+# The survey publishes a rendered JPEG, and it is 600x337: a thumbnail. The EXR is a
+# Photoshop merge on a 3115x1752 grid, which is not this frame's grid either. So every
+# representation this unit compares is developed here, from the one NEF, with the call
+# unit 1.2 used -- which is what keeps all three on one 2868x4312 grid.
+DEVELOP_KWARGS = {"use_camera_wb": True, "no_auto_bright": True}
+
+# --- The camera, from Nikon's product page -----------------------------------
+# 23.7 x 15.7 mm, 4288 x 2848 effective pixels (12.4 MP; 12.84 MP total). LibRaw
+# exposes 4312 visible columns because it includes a masked border, so the pitch is
+# computed from Nikon's effective figures and never from the array we happen to read.
+D2X_SENSOR_MM = (23.7, 15.7)
+D2X_EFFECTIVE_PX = (4288, 2848)
+D2X_FOCAL_LENGTH_MM = 18.0  # the survey's recorded focal length for this scene
+
+# --- Fairchild's published D2x colour matrices -------------------------------
+# Verbatim from markfairchild.org/HDRPS/D2xCharacterization.pdf (updated 5/21/07).
+# Both are RGB -> CIE XYZ. The first is the raw fit on a ColorChecker with no
+# intercept; the second is that fit renormalised to D65, which the document calls
+# "the one to use for most, if not all, HDR images".
+#
+# The published Delta-E below is a residual on the patches the matrix was fitted to,
+# not a prediction. Quoting it against a number we measured on held-out patches would
+# compare a fit to a forecast, so unit 1.3 fits its own matrix and cross-validates it.
+D2X_XYZ_FROM_RGB_SCENE = (
+    (0.4803, 0.5502, 0.1040),
+    (0.1904, 0.7646, 0.0450),
+    (-0.0096, 0.0487, 0.3805),
+)
+D2X_XYZ_FROM_RGB_D65 = (
+    (0.4024, 0.4610, 0.0871),
+    (0.1904, 0.7646, 0.0450),
+    (-0.0249, 0.1264, 0.9873),
+)
+D2X_PUBLISHED_FIT = {"delta_e_mean": 2.5, "delta_e_std": 1.5, "delta_e_max": 5.5, "patches": 25}
+
+# --- L2: sampling ------------------------------------------------------------
+# The table under the lamp is a ribbed surface, and its ribbing is the only strongly
+# periodic thing in the frame -- which makes it the one place aliasing can be measured
+# rather than asserted. x0, y0, x1, y1 in full-frame pixels.
+GRAIN_CROP = (2200, 2100, 3200, 2868)
+# A bright column band inside that crop, where the ribbing has the best contrast.
+GRAIN_STRIP = (30, 130)
+# Rows of the crop the frequency measurement runs on, as (start, length).
+# The ribbing is a physical grating photographed at a shallow angle, so its period in
+# the image grows from about 6 px at the far edge to about 14 px at the near one. A
+# single transform over the whole crop smears those into one broad peak, so the
+# aliasing measurement runs on a window short enough for the period to be roughly
+# constant across it, and the drift is reported beside it rather than hidden.
+GRAIN_WINDOW = (96, 192)
+DECIMATION_FACTORS = (2, 4, 8)
+
+# --- L3: quantization --------------------------------------------------------
+# The NEF is 12-bit (white level 4095), so these are all reductions from 12.
+REQUANT_BITS = (10, 8, 6, 4)
+# No SMOOTH_CROP. A textbook banding figure needs a broad, slowly-varying ramp, and
+# this scene -- a dark room with one lamp -- has none: every wide tonal range in it is
+# an edge. L3 measures patch separability instead, which is what the scene supports.
+
+# The lamp shade's falloff: the only part of this scene with real gradation in it, and
+# therefore the only place posterisation can be shown rather than described.
+GLOW_CROP = (2090, 1290, 2410, 1610)
+
+# --- L5: file formats --------------------------------------------------------
+JPEG_QUALITIES = (95, 85, 75, 50, 25)
+# The frame is a dark room with one lamp in it, so nine tenths of it is near-black and
+# compresses to almost nothing. Ratios and PSNR measured over the whole frame are
+# therefore a statement about the darkness, not about the encoder. Everything is
+# measured twice: over the frame, and over the region that actually has content in it.
+CONTENT_CROP = (1200, 800, 3200, 2600)
+WEBP_QUALITY = 82  # the site's own encoding setting, so the number means something here
+# Unit 3.1's middle Canny operating point, reused unchanged so the edge column is
+# comparable with what the edge-detection unit published.
+IMAGEDATA_CANNY = (75, 200)

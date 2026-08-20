@@ -1,0 +1,2198 @@
+{
+  "unit": "1.3 \u2014 the image as data",
+  "scene": "Luxo Double Checker, Mark Fairchild's HDR Photographic Survey",
+  "terms": "research and non-commercial publication; images downloaded, never redistributed",
+  "frame": "_MDF0005.NEF",
+  "environment": {
+    "python": "3.12.9",
+    "platform": "Linux 6.8.0-136-generic",
+    "numpy": "2.5.2",
+    "opencv": "5.0.0",
+    "rawpy": "0.27.0",
+    "libraw": "0.22.1",
+    "pillow": "12.3.0"
+  },
+  "depends_on": "output/sensing_numbers.json (unit 1.2): gain, dark sigma, clip levels, metered points",
+  "l1_array": {
+    "representations": {
+      "probe_pixel_row_col": [
+        1910,
+        2474
+      ],
+      "probe_patch": "bright:19",
+      "rows": [
+        {
+          "name": "raw mosaic",
+          "source": "_MDF0005.NEF, LibRaw visible area",
+          "shape": [
+            2868,
+            4312
+          ],
+          "dtype": "uint16",
+          "channels": 1,
+          "bits_used": 12,
+          "bytes_in_memory": 24733632,
+          "value_at_probe": [
+            2257
+          ],
+          "note": "one number per photosite, still mosaiced; the only measurement of the three"
+        },
+        {
+          "name": "developed 16-bit",
+          "source": "rawpy postprocess, output_bps=16",
+          "shape": [
+            2868,
+            4312,
+            3
+          ],
+          "dtype": "uint16",
+          "channels": 3,
+          "bits_used": 16,
+          "bytes_in_memory": 74200896,
+          "value_at_probe": [
+            49528,
+            48403,
+            41118
+          ],
+          "note": "RGB order; two of every three numbers are interpolated"
+        },
+        {
+          "name": "developed 8-bit",
+          "source": "rawpy postprocess, output_bps=8",
+          "shape": [
+            2868,
+            4312,
+            3
+          ],
+          "dtype": "uint8",
+          "channels": 3,
+          "bits_used": 8,
+          "bytes_in_memory": 37100448,
+          "value_at_probe": [
+            193,
+            189,
+            160
+          ],
+          "note": "what imread would hand you; the tone curve is already baked in"
+        }
+      ],
+      "exr": {
+        "file": "LuxoDoubleChecker.exr",
+        "channels": "RGB",
+        "shape": [
+          1752,
+          3115,
+          3
+        ],
+        "dtype": "float16",
+        "compression": "Compression.PIZ_COMPRESSION",
+        "min": -0.002513885498046875,
+        "max": 1847.0,
+        "negative_pixels": 165125,
+        "file_bytes": 16941426,
+        "note": "a merge on its own grid, not a rendering of this exposure; reference for nothing in this unit"
+      },
+      "file_bytes_nef": 19523444,
+      "megapixels": 12.37
+    },
+    "channel_order": {
+      "probe_rgb": [
+        193,
+        189,
+        160
+      ],
+      "probe_bgr": [
+        160,
+        189,
+        193
+      ],
+      "pixels_where_r_differs_from_b": 7960554,
+      "fraction_of_frame": 0.6437
+    },
+    "integer_arithmetic": {
+      "patch": "bright:19",
+      "pixels": 8748,
+      "added": 60,
+      "input_mean": 180.9,
+      "input_max": 207,
+      "numpy_wrap_mean": 194.6,
+      "opencv_saturate_mean": 240.1,
+      "float_then_clip_mean": 240.1,
+      "values_that_wrapped": 1579,
+      "of_values": 8748,
+      "brightest_value": {
+        "before": 207,
+        "numpy_wrap": 11,
+        "opencv_saturate": 255,
+        "float_then_clip": 255
+      }
+    },
+    "views_and_copies": {
+      "sampled_at_row_col": [
+        1883,
+        2448
+      ],
+      "channel_order": "BGR, as imread returns it",
+      "slice": {
+        "shares_memory": true,
+        "before": [
+          167,
+          194,
+          199
+        ],
+        "after_writing_zero_to_the_view": [
+          0,
+          0,
+          0
+        ]
+      },
+      "fancy_index": {
+        "shares_memory": false,
+        "before": [
+          167,
+          194,
+          199
+        ],
+        "after_writing_zero_to_the_copy": [
+          167,
+          194,
+          199
+        ]
+      }
+    },
+    "mosaic_sampling": {
+      "R": {
+        "shape": [
+          1434,
+          2156
+        ],
+        "photosites": 3091704,
+        "share": 0.25
+      },
+      "G1": {
+        "shape": [
+          1434,
+          2156
+        ],
+        "photosites": 3091704,
+        "share": 0.25
+      },
+      "G2": {
+        "shape": [
+          1434,
+          2156
+        ],
+        "photosites": 3091704,
+        "share": 0.25
+      },
+      "B": {
+        "shape": [
+          1434,
+          2156
+        ],
+        "photosites": 3091704,
+        "share": 0.25
+      },
+      "green_share": 0.5,
+      "interpolated_fraction_of_developed_image": 0.667
+    }
+  },
+  "l2_sampling": {
+    "geometry": {
+      "sensor_mm": [
+        23.7,
+        15.7
+      ],
+      "effective_px": [
+        4288,
+        2848
+      ],
+      "focal_length_mm": 18.0,
+      "pitch_um": 5.527,
+      "pitch_vertical_um": 5.513,
+      "pitch_agrees_within_um": 0.0144,
+      "angular_footprint_rad": 0.00030706,
+      "angular_footprint_arcmin": 1.056
+    },
+    "patch_footprint": {
+      "patch": "bright:19",
+      "sampling_box_px": [
+        54,
+        54
+      ],
+      "samples_in_box": 2916,
+      "note": "the box is the middle 40% of the patch; the patch itself is wider"
+    },
+    "aliasing": {
+      "crop_xyxy": [
+        2200,
+        2100,
+        3200,
+        2868
+      ],
+      "strip_columns": [
+        30,
+        130
+      ],
+      "highpass_sigma_px": 6.0,
+      "search_band_period_px": [
+        3.0,
+        40.0
+      ],
+      "drift": [
+        {
+          "frame_row": 2100,
+          "rows": [
+            0,
+            192
+          ],
+          "period_px": 6.19
+        },
+        {
+          "frame_row": 2196,
+          "rows": [
+            96,
+            288
+          ],
+          "period_px": 7.38
+        },
+        {
+          "frame_row": 2292,
+          "rows": [
+            192,
+            384
+          ],
+          "period_px": 8.0
+        },
+        {
+          "frame_row": 2388,
+          "rows": [
+            288,
+            480
+          ],
+          "period_px": 9.6
+        },
+        {
+          "frame_row": 2484,
+          "rows": [
+            384,
+            576
+          ],
+          "period_px": 10.67
+        },
+        {
+          "frame_row": 2580,
+          "rows": [
+            480,
+            672
+          ],
+          "period_px": 12.0
+        },
+        {
+          "frame_row": 2676,
+          "rows": [
+            576,
+            768
+          ],
+          "period_px": 13.71
+        }
+      ],
+      "window_rows_in_crop": [
+        96,
+        288
+      ],
+      "window_rows_in_frame": [
+        2196,
+        2388
+      ],
+      "window_samples": 192,
+      "fft_bin_cycles_per_px": 0.00521,
+      "base_frequency_cycles_per_px": 0.13542,
+      "base_period_px": 7.385,
+      "nyquist_needs_samples_per_cycle": 2.0,
+      "factors": [
+        {
+          "factor": 2,
+          "samples_per_original_cycle": 3.692,
+          "above_nyquist": true,
+          "predicted_frequency_cycles_per_new_px": 0.27083,
+          "measured_frequency_cycles_per_new_px": 0.27083,
+          "fft_bin_cycles_per_new_px": 0.01042,
+          "difference_in_fft_bins": 0.0,
+          "measured_period_new_px": 3.692,
+          "apparent_period_in_original_px": 7.38
+        },
+        {
+          "factor": 4,
+          "samples_per_original_cycle": 1.846,
+          "above_nyquist": false,
+          "predicted_frequency_cycles_per_new_px": 0.45833,
+          "measured_frequency_cycles_per_new_px": 0.45833,
+          "fft_bin_cycles_per_new_px": 0.02083,
+          "difference_in_fft_bins": 0.0,
+          "measured_period_new_px": 2.182,
+          "apparent_period_in_original_px": 8.73
+        },
+        {
+          "factor": 8,
+          "samples_per_original_cycle": 0.923,
+          "above_nyquist": false,
+          "predicted_frequency_cycles_per_new_px": 0.08333,
+          "measured_frequency_cycles_per_new_px": 0.08333,
+          "fft_bin_cycles_per_new_px": 0.04167,
+          "difference_in_fft_bins": 0.0,
+          "measured_period_new_px": 12.0,
+          "apparent_period_in_original_px": 96.0
+        }
+      ]
+    },
+    "decimation_error": {
+      "reference": "cv2.INTER_AREA \u2014 a box average over the footprint",
+      "ribbed_crop": [
+        {
+          "factor": 2,
+          "output_px": [
+            500,
+            384
+          ],
+          "nearest": {
+            "rms_vs_area": 1.741,
+            "max_abs_vs_area": 31
+          },
+          "bilinear (cv2 default)": {
+            "rms_vs_area": 0.0,
+            "max_abs_vs_area": 0
+          }
+        },
+        {
+          "factor": 4,
+          "output_px": [
+            250,
+            192
+          ],
+          "nearest": {
+            "rms_vs_area": 3.358,
+            "max_abs_vs_area": 41
+          },
+          "bilinear (cv2 default)": {
+            "rms_vs_area": 1.307,
+            "max_abs_vs_area": 17
+          }
+        },
+        {
+          "factor": 8,
+          "output_px": [
+            125,
+            96
+          ],
+          "nearest": {
+            "rms_vs_area": 4.428,
+            "max_abs_vs_area": 59
+          },
+          "bilinear (cv2 default)": {
+            "rms_vs_area": 2.704,
+            "max_abs_vs_area": 33
+          }
+        }
+      ],
+      "flat_patch_x4_rms_vs_area": {
+        "nearest": 1.874,
+        "bilinear (cv2 default)": 0.963
+      },
+      "flat_patch": "bright:19"
+    }
+  },
+  "l3_quantization": {
+    "error_vs_prediction": {
+      "source_bits": 12,
+      "white_level": 4095,
+      "plane": "G1",
+      "plane_pixels": 3091704,
+      "chart_pixels": 17606,
+      "prediction": "step / sqrt(12), the RMS error of a uniform quantizer",
+      "rows": [
+        {
+          "bits": 10,
+          "levels": 1024,
+          "step_dn": 4,
+          "predicted_rms_dn": 1.155,
+          "measured_rms_whole_plane_dn": 1.103,
+          "measured_rms_chart_patches_dn": 1.223,
+          "ratio_chart_to_predicted": 1.059
+        },
+        {
+          "bits": 8,
+          "levels": 256,
+          "step_dn": 16,
+          "predicted_rms_dn": 4.619,
+          "measured_rms_whole_plane_dn": 3.699,
+          "measured_rms_chart_patches_dn": 4.63,
+          "ratio_chart_to_predicted": 1.002
+        },
+        {
+          "bits": 6,
+          "levels": 64,
+          "step_dn": 64,
+          "predicted_rms_dn": 18.475,
+          "measured_rms_whole_plane_dn": 7.921,
+          "measured_rms_chart_patches_dn": 18.412,
+          "ratio_chart_to_predicted": 0.997
+        },
+        {
+          "bits": 4,
+          "levels": 16,
+          "step_dn": 256,
+          "predicted_rms_dn": 73.901,
+          "measured_rms_whole_plane_dn": 23.125,
+          "measured_rms_chart_patches_dn": 75.392,
+          "ratio_chart_to_predicted": 1.02
+        }
+      ]
+    },
+    "noise_floor_crossing": {
+      "full_scale_dn": 4096,
+      "source": "unit 1.2, output/sensing_numbers.json (dark_corner_sigma_dn)",
+      "rows": [
+        {
+          "channel": "R",
+          "dark_sigma_dn": 1.9,
+          "step_matching_noise_dn": 6.582,
+          "bits_at_crossing": 9.28,
+          "clip_level_dn": 4095.0
+        },
+        {
+          "channel": "G1",
+          "dark_sigma_dn": 1.642,
+          "step_matching_noise_dn": 5.688,
+          "bits_at_crossing": 9.49,
+          "clip_level_dn": 3880.0
+        },
+        {
+          "channel": "G2",
+          "dark_sigma_dn": 1.755,
+          "step_matching_noise_dn": 6.079,
+          "bits_at_crossing": 9.4,
+          "clip_level_dn": 3876.0
+        },
+        {
+          "channel": "B",
+          "dark_sigma_dn": 1.743,
+          "step_matching_noise_dn": 6.038,
+          "bits_at_crossing": 9.41,
+          "clip_level_dn": 4095.0
+        }
+      ],
+      "range_bits": [
+        9.28,
+        9.49
+      ],
+      "spare_bits_in_a_12_bit_file": 2.51
+    },
+    "separability": {
+      "chart": "bright",
+      "plane": "G1 photosites inside each patch box",
+      "neutral_row": [
+        19,
+        20,
+        21,
+        22,
+        23,
+        24
+      ],
+      "patch_means_dn": {
+        "1": 922.5,
+        "2": 1636.8,
+        "3": 692.9,
+        "4": 349.5,
+        "5": 348.6,
+        "6": 451.4,
+        "7": 1741.3,
+        "8": 645.0,
+        "9": 458.9,
+        "10": 143.2,
+        "11": 620.9,
+        "12": 442.8,
+        "13": 255.9,
+        "14": 811.2,
+        "15": 226.9,
+        "16": 895.0,
+        "17": 220.8,
+        "18": 236.9,
+        "19": 1899.6,
+        "20": 1097.9,
+        "21": 560.7,
+        "22": 255.8,
+        "23": 100.4,
+        "24": 50.3
+      },
+      "rows": [
+        {
+          "bits": 12,
+          "step_dn": 1,
+          "distinct_codes_all_24": 22,
+          "distinct_codes_neutral_row": 6,
+          "collapsed_neutral_pairs": [],
+          "darkest_patch_code": 50,
+          "darkest_patch_dn": 50.3
+        },
+        {
+          "bits": 10,
+          "step_dn": 4,
+          "distinct_codes_all_24": 22,
+          "distinct_codes_neutral_row": 6,
+          "collapsed_neutral_pairs": [],
+          "darkest_patch_code": 13,
+          "darkest_patch_dn": 50.3
+        },
+        {
+          "bits": 8,
+          "step_dn": 16,
+          "distinct_codes_all_24": 20,
+          "distinct_codes_neutral_row": 6,
+          "collapsed_neutral_pairs": [],
+          "darkest_patch_code": 3,
+          "darkest_patch_dn": 50.3
+        },
+        {
+          "bits": 6,
+          "step_dn": 64,
+          "distinct_codes_all_24": 15,
+          "distinct_codes_neutral_row": 6,
+          "collapsed_neutral_pairs": [],
+          "darkest_patch_code": 1,
+          "darkest_patch_dn": 50.3
+        },
+        {
+          "bits": 4,
+          "step_dn": 256,
+          "distinct_codes_all_24": 7,
+          "distinct_codes_neutral_row": 5,
+          "collapsed_neutral_pairs": [
+            "23+24"
+          ],
+          "darkest_patch_code": 0,
+          "darkest_patch_dn": 50.3
+        }
+      ]
+    },
+    "clipping": {
+      "frame": "_MDF0005.NEF",
+      "rows": [
+        {
+          "channel": "R",
+          "clip_level_dn": 4095.0,
+          "counted_at_or_above_dn": 4094.0,
+          "photosites": 3091704,
+          "at_ceiling": 16218,
+          "fraction": 0.00525,
+          "max_dn": 4095
+        },
+        {
+          "channel": "G1",
+          "clip_level_dn": 3880.0,
+          "counted_at_or_above_dn": 3879.0,
+          "photosites": 3091704,
+          "at_ceiling": 1,
+          "fraction": 0.0,
+          "max_dn": 3879
+        },
+        {
+          "channel": "G2",
+          "clip_level_dn": 3876.0,
+          "counted_at_or_above_dn": 3875.0,
+          "photosites": 3091704,
+          "at_ceiling": 29,
+          "fraction": 1e-05,
+          "max_dn": 3875
+        },
+        {
+          "channel": "B",
+          "clip_level_dn": 4095.0,
+          "counted_at_or_above_dn": 4094.0,
+          "photosites": 3091704,
+          "at_ceiling": 5029,
+          "fraction": 0.00163,
+          "max_dn": 4095
+        }
+      ]
+    }
+  },
+  "cfa": {
+    "sampling_shares": {
+      "cfa_pattern": [
+        [
+          0,
+          1
+        ],
+        [
+          3,
+          2
+        ]
+      ],
+      "colour_desc": "RGBG",
+      "red_share": 0.25,
+      "green_share": 0.5,
+      "blue_share": 0.25,
+      "values_measured": 12366816,
+      "values_in_developed_image": 37100448,
+      "interpolated_fraction": 0.667
+    },
+    "demosaic_error": {
+      "reference": "2x2 binning of the mosaic \u2014 every value a measured photosite",
+      "method": "OpenCV bilinear demosaic, binned the same way, differenced on the half-res grid",
+      "grid": [
+        1434,
+        2156
+      ],
+      "full_scale_dn": 4095.0,
+      "rms_whole_frame_dn": 12.668,
+      "rms_chart_patches_dn": 4.686,
+      "rms_top_1pct_gradient_dn": 129.928,
+      "max_abs_dn": 1437.0,
+      "patches_measured": 24,
+      "edge_pixels": 24630
+    }
+  },
+  "l4_colour": {
+    "accuracy": {
+      "chart": "bright",
+      "reference": "Konica Minolta CS-100 readings published with the survey: luminance and CIE 1931 x, y",
+      "adapting_white": {
+        "patch": 19,
+        "metered_xy": [
+          0.464,
+          0.405
+        ],
+        "metered_luminance_cd_m2": 382.0,
+        "d65_xy_for_comparison": [
+          0.3127,
+          0.329
+        ]
+      },
+      "usable_patches": [
+        1,
+        3,
+        4,
+        5,
+        6,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24
+      ],
+      "excluded_because_clipped": [
+        2,
+        7
+      ],
+      "paths": {
+        "naive_srgb": {
+          "what_it_knows": "nothing about the camera; assumes the developed file is sRGB",
+          "free_parameters": 0,
+          "all": {
+            "patches": 22,
+            "mean": 9.54,
+            "median": 8.72,
+            "max": 29.68,
+            "worst_patch": 13
+          },
+          "per_patch": {
+            "1": 3.89,
+            "3": 9.16,
+            "4": 7.98,
+            "5": 9.53,
+            "6": 7.43,
+            "8": 21.84,
+            "9": 4.91,
+            "10": 9.35,
+            "11": 9.77,
+            "12": 9.05,
+            "13": 29.68,
+            "14": 8.22,
+            "15": 6.73,
+            "16": 9.23,
+            "17": 8.39,
+            "18": 14.71,
+            "19": 0.0,
+            "20": 1.18,
+            "21": 4.45,
+            "22": 8.27,
+            "23": 13.2,
+            "24": 12.96
+          }
+        },
+        "published_matrix": {
+          "what_it_knows": "Fairchild's D2x RGB->XYZ characterisation, applied to the linear mosaic",
+          "free_parameters": 1,
+          "free_parameter": "absolute scale",
+          "published_fit_residual_on_its_own_patches": {
+            "delta_e_mean": 2.5,
+            "delta_e_std": 1.5,
+            "delta_e_max": 5.5,
+            "patches": 25
+          },
+          "variants": {
+            "scene_raw": {
+              "fitted_scale": 0.20333,
+              "patches": 22,
+              "mean": 10.28,
+              "median": 9.15,
+              "max": 26.16,
+              "worst_patch": 16
+            },
+            "scene_white_balanced": {
+              "fitted_scale": 0.203432,
+              "patches": 22,
+              "mean": 9.14,
+              "median": 9.96,
+              "max": 18.26,
+              "worst_patch": 16
+            },
+            "d65_raw": {
+              "fitted_scale": 0.20333,
+              "patches": 22,
+              "mean": 10.29,
+              "median": 9.15,
+              "max": 26.16,
+              "worst_patch": 16
+            },
+            "d65_white_balanced": {
+              "fitted_scale": 0.203432,
+              "patches": 22,
+              "mean": 9.15,
+              "median": 9.96,
+              "max": 18.26,
+              "worst_patch": 16
+            }
+          },
+          "per_patch_scene_raw": {
+            "1": 4.93,
+            "3": 7.27,
+            "4": 7.64,
+            "5": 7.85,
+            "6": 9.04,
+            "8": 18.98,
+            "9": 12.24,
+            "10": 10.59,
+            "11": 19.47,
+            "12": 14.16,
+            "13": 20.05,
+            "14": 20.41,
+            "15": 12.29,
+            "16": 26.16,
+            "17": 13.4,
+            "18": 9.27,
+            "19": 0.0,
+            "20": 1.66,
+            "21": 1.06,
+            "22": 1.14,
+            "23": 4.15,
+            "24": 4.49
+          }
+        },
+        "fitted_held_out": {
+          "what_it_knows": "a 3x3 fitted here, on patches it is then not scored on",
+          "free_parameters": 9,
+          "train_patches": [
+            1,
+            3,
+            5,
+            9,
+            11,
+            13,
+            15,
+            17,
+            19,
+            21,
+            23
+          ],
+          "test_patches": [
+            4,
+            6,
+            8,
+            10,
+            12,
+            14,
+            16,
+            18,
+            20,
+            22,
+            24
+          ],
+          "train": {
+            "patches": 11,
+            "mean": 1.49,
+            "median": 1.69,
+            "max": 4.19,
+            "worst_patch": 23
+          },
+          "test": {
+            "patches": 11,
+            "mean": 2.41,
+            "median": 2.01,
+            "max": 6.05,
+            "worst_patch": 24
+          },
+          "per_patch": {
+            "1": 1.92,
+            "3": 0.76,
+            "4": 1.36,
+            "5": 1.39,
+            "6": 2.01,
+            "8": 0.39,
+            "9": 1.72,
+            "10": 2.8,
+            "11": 1.69,
+            "12": 4.0,
+            "13": 1.69,
+            "14": 1.63,
+            "15": 0.38,
+            "16": 2.59,
+            "17": 1.76,
+            "18": 3.01,
+            "19": 0.0,
+            "20": 1.6,
+            "21": 0.95,
+            "22": 1.09,
+            "23": 4.19,
+            "24": 6.05
+          }
+        }
+      },
+      "neutral_row_naive_delta_e": {
+        "19": 0.0,
+        "20": 1.18,
+        "21": 4.45,
+        "22": 8.27,
+        "23": 13.2,
+        "24": 12.96
+      }
+    },
+    "worked_patch": {
+      "patch": "bright:15",
+      "rgb": [
+        149.8,
+        58.3,
+        34.0
+      ],
+      "bgr_as_opencv_sees_it": [
+        34.0,
+        58.3,
+        149.8
+      ],
+      "luma_rec601": 82.8,
+      "plain_average_for_comparison": 80.7,
+      "opencv_gray": 82,
+      "hsv_opencv_8bit": [
+        6,
+        199,
+        149
+      ],
+      "hue_degrees": 12.0,
+      "saturation_fraction": 0.773,
+      "value_fraction": 0.587,
+      "lab_opencv_8bit": [
+        94,
+        165,
+        162
+      ],
+      "note": "OpenCV stores 8-bit hue halved, in [0,179]; degrees are twice the stored value"
+    }
+  },
+  "l5_formats": {
+    "sweep": {
+      "source": "our own 8-bit development of _MDF0005.NEF",
+      "canny_thresholds": [
+        75,
+        200
+      ],
+      "edge_tolerance_px": 1,
+      "delta_e_patches": 24,
+      "whole_frame": {
+        "shape": [
+          2868,
+          4312,
+          3
+        ],
+        "uncompressed_bytes": 37100448,
+        "rows": [
+          {
+            "label": "PNG",
+            "lossy": false,
+            "bytes": 10072194,
+            "compression_ratio": 3.7,
+            "psnr_db": null,
+            "byte_identical_to_source": true,
+            "edges": {
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "reference_edge_pixels": 14201,
+              "candidate_edge_pixels": 14201
+            },
+            "patch_delta_e_mean": 0.0,
+            "patch_delta_e_max": 0.0
+          },
+          {
+            "label": "WebP lossless",
+            "lossy": false,
+            "bytes": 7964614,
+            "compression_ratio": 4.7,
+            "psnr_db": null,
+            "byte_identical_to_source": true,
+            "edges": {
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "reference_edge_pixels": 14201,
+              "candidate_edge_pixels": 14201
+            },
+            "patch_delta_e_mean": 0.0,
+            "patch_delta_e_max": 0.0
+          },
+          {
+            "label": "WebP q82",
+            "lossy": true,
+            "bytes": 79282,
+            "compression_ratio": 468.0,
+            "psnr_db": 45.22,
+            "byte_identical_to_source": false,
+            "edges": {
+              "precision": 0.985,
+              "recall": 0.9104,
+              "f1": 0.9462,
+              "reference_edge_pixels": 14201,
+              "candidate_edge_pixels": 13096
+            },
+            "patch_delta_e_mean": 0.347,
+            "patch_delta_e_max": 0.8
+          },
+          {
+            "label": "AVIF q82",
+            "lossy": true,
+            "bytes": 185542,
+            "compression_ratio": 200.0,
+            "psnr_db": 45.81,
+            "byte_identical_to_source": false,
+            "edges": {
+              "precision": 0.9892,
+              "recall": 0.9581,
+              "f1": 0.9734,
+              "reference_edge_pixels": 14201,
+              "candidate_edge_pixels": 13752
+            },
+            "patch_delta_e_mean": 0.689,
+            "patch_delta_e_max": 1.178
+          },
+          {
+            "label": "JPEG q95",
+            "lossy": true,
+            "bytes": 1165636,
+            "compression_ratio": 31.8,
+            "psnr_db": 46.52,
+            "byte_identical_to_source": false,
+            "edges": {
+              "precision": 0.9462,
+              "recall": 0.9527,
+              "f1": 0.9494,
+              "reference_edge_pixels": 14201,
+              "candidate_edge_pixels": 14301
+            },
+            "patch_delta_e_mean": 0.175,
+            "patch_delta_e_max": 0.301
+          },
+          {
+            "label": "JPEG q85",
+            "lossy": true,
+            "bytes": 349108,
+            "compression_ratio": 106.3,
+            "psnr_db": 45.16,
+            "byte_identical_to_source": false,
+            "edges": {
+              "precision": 0.9368,
+              "recall": 0.9285,
+              "f1": 0.9326,
+              "reference_edge_pixels": 14201,
+              "candidate_edge_pixels": 14067
+            },
+            "patch_delta_e_mean": 0.256,
+            "patch_delta_e_max": 0.491
+          },
+          {
+            "label": "JPEG q75",
+            "lossy": true,
+            "bytes": 268262,
+            "compression_ratio": 138.3,
+            "psnr_db": 45.02,
+            "byte_identical_to_source": false,
+            "edges": {
+              "precision": 0.9733,
+              "recall": 0.8872,
+              "f1": 0.9283,
+              "reference_edge_pixels": 14201,
+              "candidate_edge_pixels": 12971
+            },
+            "patch_delta_e_mean": 0.363,
+            "patch_delta_e_max": 0.702
+          },
+          {
+            "label": "JPEG q50",
+            "lossy": true,
+            "bytes": 234343,
+            "compression_ratio": 158.3,
+            "psnr_db": 43.98,
+            "byte_identical_to_source": false,
+            "edges": {
+              "precision": 0.9745,
+              "recall": 0.8815,
+              "f1": 0.9257,
+              "reference_edge_pixels": 14201,
+              "candidate_edge_pixels": 12876
+            },
+            "patch_delta_e_mean": 0.529,
+            "patch_delta_e_max": 1.101
+          },
+          {
+            "label": "JPEG q25",
+            "lossy": true,
+            "bytes": 214922,
+            "compression_ratio": 172.6,
+            "psnr_db": 42.6,
+            "byte_identical_to_source": false,
+            "edges": {
+              "precision": 0.9254,
+              "recall": 0.8663,
+              "f1": 0.8949,
+              "reference_edge_pixels": 14201,
+              "candidate_edge_pixels": 13373
+            },
+            "patch_delta_e_mean": 1.114,
+            "patch_delta_e_max": 2.393
+          }
+        ]
+      },
+      "content_crop": {
+        "crop_xyxy": [
+          1200,
+          800,
+          3200,
+          2600
+        ],
+        "why": "the lamp, the chart and the lit table; the rest of the frame is near-black",
+        "shape": [
+          1800,
+          2000,
+          3
+        ],
+        "uncompressed_bytes": 10800000,
+        "rows": [
+          {
+            "label": "PNG",
+            "lossy": false,
+            "bytes": 3539354,
+            "compression_ratio": 3.1,
+            "psnr_db": null,
+            "byte_identical_to_source": true,
+            "edges": {
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "reference_edge_pixels": 14201,
+              "candidate_edge_pixels": 14201
+            },
+            "patch_delta_e_mean": 0.0,
+            "patch_delta_e_max": 0.0
+          },
+          {
+            "label": "WebP lossless",
+            "lossy": false,
+            "bytes": 2879056,
+            "compression_ratio": 3.8,
+            "psnr_db": null,
+            "byte_identical_to_source": true,
+            "edges": {
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "reference_edge_pixels": 14201,
+              "candidate_edge_pixels": 14201
+            },
+            "patch_delta_e_mean": 0.0,
+            "patch_delta_e_max": 0.0
+          },
+          {
+            "label": "WebP q82",
+            "lossy": true,
+            "bytes": 52342,
+            "compression_ratio": 206.3,
+            "psnr_db": 42.74,
+            "byte_identical_to_source": false,
+            "edges": {
+              "precision": 0.9848,
+              "recall": 0.9108,
+              "f1": 0.9464,
+              "reference_edge_pixels": 14201,
+              "candidate_edge_pixels": 13106
+            },
+            "patch_delta_e_mean": 0.38,
+            "patch_delta_e_max": 0.841
+          },
+          {
+            "label": "AVIF q82",
+            "lossy": true,
+            "bytes": 119819,
+            "compression_ratio": 90.1,
+            "psnr_db": 43.77,
+            "byte_identical_to_source": false,
+            "edges": {
+              "precision": 0.9893,
+              "recall": 0.9466,
+              "f1": 0.9675,
+              "reference_edge_pixels": 14201,
+              "candidate_edge_pixels": 13583
+            },
+            "patch_delta_e_mean": 0.704,
+            "patch_delta_e_max": 1.252
+          },
+          {
+            "label": "JPEG q95",
+            "lossy": true,
+            "bytes": 460602,
+            "compression_ratio": 23.4,
+            "psnr_db": 44.46,
+            "byte_identical_to_source": false,
+            "edges": {
+              "precision": 0.9462,
+              "recall": 0.9527,
+              "f1": 0.9494,
+              "reference_edge_pixels": 14201,
+              "candidate_edge_pixels": 14301
+            },
+            "patch_delta_e_mean": 0.175,
+            "patch_delta_e_max": 0.301
+          },
+          {
+            "label": "JPEG q85",
+            "lossy": true,
+            "bytes": 163288,
+            "compression_ratio": 66.1,
+            "psnr_db": 42.92,
+            "byte_identical_to_source": false,
+            "edges": {
+              "precision": 0.9477,
+              "recall": 0.9285,
+              "f1": 0.938,
+              "reference_edge_pixels": 14201,
+              "candidate_edge_pixels": 13905
+            },
+            "patch_delta_e_mean": 0.256,
+            "patch_delta_e_max": 0.491
+          },
+          {
+            "label": "JPEG q75",
+            "lossy": true,
+            "bytes": 117305,
+            "compression_ratio": 92.1,
+            "psnr_db": 42.34,
+            "byte_identical_to_source": false,
+            "edges": {
+              "precision": 0.9733,
+              "recall": 0.8872,
+              "f1": 0.9283,
+              "reference_edge_pixels": 14201,
+              "candidate_edge_pixels": 12971
+            },
+            "patch_delta_e_mean": 0.363,
+            "patch_delta_e_max": 0.702
+          },
+          {
+            "label": "JPEG q50",
+            "lossy": true,
+            "bytes": 89612,
+            "compression_ratio": 120.5,
+            "psnr_db": 41.15,
+            "byte_identical_to_source": false,
+            "edges": {
+              "precision": 0.9745,
+              "recall": 0.8815,
+              "f1": 0.9257,
+              "reference_edge_pixels": 14201,
+              "candidate_edge_pixels": 12876
+            },
+            "patch_delta_e_mean": 0.529,
+            "patch_delta_e_max": 1.101
+          },
+          {
+            "label": "JPEG q25",
+            "lossy": true,
+            "bytes": 74483,
+            "compression_ratio": 145.0,
+            "psnr_db": 39.33,
+            "byte_identical_to_source": false,
+            "edges": {
+              "precision": 0.9254,
+              "recall": 0.8663,
+              "f1": 0.8949,
+              "reference_edge_pixels": 14201,
+              "candidate_edge_pixels": 13373
+            },
+            "patch_delta_e_mean": 1.114,
+            "patch_delta_e_max": 2.393
+          }
+        ]
+      }
+    },
+    "chroma_subsampling": {
+      "quality": 85,
+      "rows": [
+        {
+          "sampling": "4:2:0",
+          "bytes": 349108,
+          "psnr_db": 45.16,
+          "patch_delta_e_mean": 0.256,
+          "patch_delta_e_max": 0.491
+        },
+        {
+          "sampling": "4:4:4",
+          "bytes": 577659,
+          "psnr_db": 46.08,
+          "patch_delta_e_mean": 0.167,
+          "patch_delta_e_max": 0.339
+        }
+      ]
+    },
+    "decoders": {
+      "opencv_version": "5.0.0",
+      "pillow_version": "12.3.0",
+      "pillow_libjpeg_turbo": true,
+      "pillow_jpeg_version": "6.2",
+      "rows": [
+        {
+          "case": "JPEG q95 (4:2:0)",
+          "opencv_dtype": "uint8",
+          "opencv_range": [
+            0,
+            255
+          ],
+          "pillow_mode": "RGB",
+          "pillow_dtype": "uint8",
+          "pillow_range": [
+            0,
+            255
+          ],
+          "same_dtype": true,
+          "identical": true,
+          "differing_values": 0,
+          "max_difference": 0
+        },
+        {
+          "case": "JPEG q85 (4:2:0)",
+          "opencv_dtype": "uint8",
+          "opencv_range": [
+            0,
+            255
+          ],
+          "pillow_mode": "RGB",
+          "pillow_dtype": "uint8",
+          "pillow_range": [
+            0,
+            255
+          ],
+          "same_dtype": true,
+          "identical": true,
+          "differing_values": 0,
+          "max_difference": 0
+        },
+        {
+          "case": "JPEG q50 (4:2:0)",
+          "opencv_dtype": "uint8",
+          "opencv_range": [
+            0,
+            255
+          ],
+          "pillow_mode": "RGB",
+          "pillow_dtype": "uint8",
+          "pillow_range": [
+            0,
+            255
+          ],
+          "same_dtype": true,
+          "identical": true,
+          "differing_values": 0,
+          "max_difference": 0
+        },
+        {
+          "case": "JPEG q25 (4:2:0)",
+          "opencv_dtype": "uint8",
+          "opencv_range": [
+            0,
+            255
+          ],
+          "pillow_mode": "RGB",
+          "pillow_dtype": "uint8",
+          "pillow_range": [
+            0,
+            255
+          ],
+          "same_dtype": true,
+          "identical": true,
+          "differing_values": 0,
+          "max_difference": 0
+        },
+        {
+          "case": "JPEG q85 (4:4:4)",
+          "opencv_dtype": "uint8",
+          "opencv_range": [
+            0,
+            255
+          ],
+          "pillow_mode": "RGB",
+          "pillow_dtype": "uint8",
+          "pillow_range": [
+            0,
+            255
+          ],
+          "same_dtype": true,
+          "identical": true,
+          "differing_values": 0,
+          "max_difference": 0
+        },
+        {
+          "case": "PNG 8-bit",
+          "opencv_dtype": "uint8",
+          "opencv_range": [
+            0,
+            208
+          ],
+          "pillow_mode": "RGB",
+          "pillow_dtype": "uint8",
+          "pillow_range": [
+            0,
+            208
+          ],
+          "same_dtype": true,
+          "identical": true,
+          "differing_values": 0,
+          "max_difference": 0
+        },
+        {
+          "case": "WebP q82",
+          "opencv_dtype": "uint8",
+          "opencv_range": [
+            0,
+            207
+          ],
+          "pillow_mode": "RGB",
+          "pillow_dtype": "uint8",
+          "pillow_range": [
+            0,
+            207
+          ],
+          "same_dtype": true,
+          "identical": true,
+          "differing_values": 0,
+          "max_difference": 0
+        },
+        {
+          "case": "PNG 16-bit",
+          "opencv_dtype": "uint16",
+          "opencv_range": [
+            625,
+            53427
+          ],
+          "pillow_mode": "RGB",
+          "pillow_dtype": "uint8",
+          "pillow_range": [
+            2,
+            208
+          ],
+          "same_dtype": false,
+          "identical": false,
+          "note": "not comparable value by value: the two libraries returned different types",
+          "bits_pillow_kept": 8,
+          "bits_in_the_file": 16
+        }
+      ],
+      "agree_on": [
+        "JPEG q95 (4:2:0)",
+        "JPEG q85 (4:2:0)",
+        "JPEG q50 (4:2:0)",
+        "JPEG q25 (4:2:0)",
+        "JPEG q85 (4:4:4)",
+        "PNG 8-bit",
+        "WebP q82"
+      ],
+      "disagree_on": [
+        "PNG 16-bit"
+      ]
+    },
+    "exif": {
+      "Image Orientation": "Horizontal (normal)",
+      "Image Make": "NIKON CORPORATION",
+      "Image Model": "NIKON D2X",
+      "EXIF ExposureTime": "1/45",
+      "EXIF ISOSpeedRatings": "100"
+    }
+  },
+  "in_the_wild": {
+    "l1_channel_swap": {
+      "asset": "telephone-box.jpg",
+      "shape": [
+        5509,
+        3608,
+        3
+      ],
+      "file_bytes": 14632560,
+      "array_bytes": 59629416,
+      "megapixels": 19.9,
+      "pixels_where_red_differs_from_blue": 19825324,
+      "fraction_of_frame": 0.9974,
+      "red_mask_pixels": 7791865,
+      "red_mask_mean_bgr": [
+        45.5,
+        40.1,
+        214.8
+      ],
+      "same_pixels_read_as_rgb": [
+        214.8,
+        40.1,
+        45.5
+      ],
+      "mean_hue_before_deg": 350.0,
+      "mean_hue_after_deg": 242.0
+    },
+    "l2_brick_aliasing": {
+      "asset": "brick-wall.jpg",
+      "shape": [
+        1944,
+        2592
+      ],
+      "course_period_px": 54.0,
+      "profile_samples": 1944,
+      "factors": [
+        {
+          "factor": 4,
+          "samples_per_original_cycle": 13.5,
+          "above_nyquist": true,
+          "predicted_frequency": 0.07407,
+          "measured_frequency": 0.07407,
+          "apparent_period_in_original_px": 54.0
+        },
+        {
+          "factor": 8,
+          "samples_per_original_cycle": 6.75,
+          "above_nyquist": true,
+          "predicted_frequency": 0.14815,
+          "measured_frequency": 0.14815,
+          "apparent_period_in_original_px": 54.0
+        },
+        {
+          "factor": 16,
+          "samples_per_original_cycle": 3.375,
+          "above_nyquist": true,
+          "predicted_frequency": 0.2963,
+          "measured_frequency": 0.30328,
+          "apparent_period_in_original_px": 52.8
+        },
+        {
+          "factor": 32,
+          "samples_per_original_cycle": 1.687,
+          "above_nyquist": false,
+          "predicted_frequency": 0.40741,
+          "measured_frequency": 0.39344,
+          "apparent_period_in_original_px": 81.3
+        },
+        {
+          "factor": 64,
+          "samples_per_original_cycle": 0.844,
+          "above_nyquist": false,
+          "predicted_frequency": 0.18519,
+          "measured_frequency": 0.19355,
+          "apparent_period_in_original_px": 330.7
+        }
+      ]
+    },
+    "l2_wagon_wheel": [
+      {
+        "asset": "wagon-wheel.ogv",
+        "start_s": 20.0,
+        "frames_analysed": 120,
+        "frame_rate": 24,
+        "disc_centre_px": [
+          345.5,
+          120.4
+        ],
+        "disc_radius_px": 110.0,
+        "ring_radius_px": 68.2,
+        "spokes_detected": 8,
+        "angle_between_spokes_deg": 45.0,
+        "median_apparent_deg_per_frame": -13.5,
+        "apparent_rev_per_s": -0.9,
+        "frames_apparently_backward": 92,
+        "frames_apparently_forward": 27,
+        "note": "apparent rotation is only ever known modulo the angle between spokes; a negative median means the wheel appears to turn against its true direction"
+      },
+      {
+        "asset": "wagon-wheel.ogv",
+        "start_s": 45.0,
+        "frames_analysed": 120,
+        "frame_rate": 24,
+        "disc_centre_px": [
+          325.2,
+          124.0
+        ],
+        "disc_radius_px": 114.8,
+        "ring_radius_px": 71.2,
+        "spokes_detected": 8,
+        "angle_between_spokes_deg": 45.0,
+        "median_apparent_deg_per_frame": -1.0,
+        "apparent_rev_per_s": -0.067,
+        "frames_apparently_backward": 82,
+        "frames_apparently_forward": 23,
+        "note": "apparent rotation is only ever known modulo the angle between spokes; a negative median means the wheel appears to turn against its true direction"
+      }
+    ],
+    "l3_sky_banding": {
+      "asset": "twilight-sky.jpg",
+      "shape": [
+        4347,
+        7728
+      ],
+      "sky_region": [
+        0,
+        0,
+        7728,
+        1449
+      ],
+      "sky_pixels": 11197872,
+      "gradient_top_to_bottom_code_values": -51.0,
+      "distinct_values_in_source": 99,
+      "std_code_values": 17.6,
+      "rows": [
+        {
+          "bits": 8,
+          "step_code_values": 1.0,
+          "distinct_values": 99,
+          "bands_down_the_sky": 51,
+          "mean_band_height_px": 28.4,
+          "note": "bands counted on the width-averaged, smoothed profile, so grain is not counted as banding"
+        },
+        {
+          "bits": 7,
+          "step_code_values": 2.0,
+          "distinct_values": 52,
+          "bands_down_the_sky": 26,
+          "mean_band_height_px": 55.7,
+          "note": "bands counted on the width-averaged, smoothed profile, so grain is not counted as banding"
+        },
+        {
+          "bits": 6,
+          "step_code_values": 4.0,
+          "distinct_values": 28,
+          "bands_down_the_sky": 12,
+          "mean_band_height_px": 120.8,
+          "note": "bands counted on the width-averaged, smoothed profile, so grain is not counted as banding"
+        },
+        {
+          "bits": 5,
+          "step_code_values": 8.0,
+          "distinct_values": 16,
+          "bands_down_the_sky": 6,
+          "mean_band_height_px": 241.5,
+          "note": "bands counted on the width-averaged, smoothed profile, so grain is not counted as banding"
+        },
+        {
+          "bits": 4,
+          "step_code_values": 16.0,
+          "distinct_values": 9,
+          "bands_down_the_sky": 3,
+          "mean_band_height_px": 483.0,
+          "note": "bands counted on the width-averaged, smoothed profile, so grain is not counted as banding"
+        }
+      ]
+    },
+    "l4_hue_threshold": {
+      "asset": "souk-fruit.jpg",
+      "shape": [
+        3915,
+        5865
+      ],
+      "saturated_pixels": 12028746,
+      "windows": [
+        {
+          "hue_window_8bit": [
+            10,
+            20
+          ],
+          "hue_window_deg": [
+            20,
+            40
+          ],
+          "selected_pixels": 5832515,
+          "fraction_of_frame": 0.254
+        },
+        {
+          "hue_window_8bit": [
+            8,
+            25
+          ],
+          "hue_window_deg": [
+            16,
+            50
+          ],
+          "selected_pixels": 8149511,
+          "fraction_of_frame": 0.3549
+        },
+        {
+          "hue_window_8bit": [
+            5,
+            30
+          ],
+          "hue_window_deg": [
+            10,
+            60
+          ],
+          "selected_pixels": 9597775,
+          "fraction_of_frame": 0.418
+        },
+        {
+          "hue_window_8bit": [
+            0,
+            40
+          ],
+          "hue_window_deg": [
+            0,
+            80
+          ],
+          "selected_pixels": 11324142,
+          "fraction_of_frame": 0.4932
+        }
+      ],
+      "top_hues_8bit": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21
+      ],
+      "top_hues_deg": [
+        32,
+        34,
+        36,
+        38,
+        40,
+        42
+      ],
+      "histogram_peak_counts": {
+        "16": 638871,
+        "17": 641062,
+        "18": 571878,
+        "19": 667422,
+        "20": 685181,
+        "21": 578318
+      }
+    },
+    "l5_chart_neutrality": {
+      "asset": "colorchecker-photo.jpg",
+      "shape": [
+        841,
+        1156
+      ],
+      "reference": "the chart's bottom row is neutral by manufacture: a* = b* = 0",
+      "rows": [
+        {
+          "patch": 19,
+          "L": 88.0,
+          "a": 0.85,
+          "b": -2.93,
+          "chroma_from_neutral": 3.05
+        },
+        {
+          "patch": 20,
+          "L": 81.3,
+          "a": 0.68,
+          "b": -3.3,
+          "chroma_from_neutral": 3.37
+        },
+        {
+          "patch": 21,
+          "L": 69.3,
+          "a": 0.04,
+          "b": -1.67,
+          "chroma_from_neutral": 1.67
+        },
+        {
+          "patch": 22,
+          "L": 50.7,
+          "a": 0.0,
+          "b": -0.19,
+          "chroma_from_neutral": 0.19
+        },
+        {
+          "patch": 23,
+          "L": 29.0,
+          "a": -0.81,
+          "b": 0.02,
+          "chroma_from_neutral": 0.81
+        },
+        {
+          "patch": 24,
+          "L": 4.4,
+          "a": -0.31,
+          "b": 0.66,
+          "chroma_from_neutral": 0.73
+        }
+      ],
+      "mean_chroma": 1.64,
+      "max_chroma": 3.37,
+      "note": "chroma here is the distance from neutral in the a*b* plane, which is the Delta-E this photograph can be held to without an external reference table"
+    },
+    "l6_text_compression": {
+      "asset": "newspaper-1814.jpg",
+      "shape": [
+        7064,
+        4176
+      ],
+      "crop": [
+        1044,
+        2354,
+        900,
+        900
+      ],
+      "uncompressed_bytes": 2430000,
+      "canny_thresholds": [
+        75,
+        200
+      ],
+      "paper_pixels": 486000,
+      "paper_pixels_beside_letters": 132996,
+      "rows": [
+        {
+          "quality": 95,
+          "bytes": 261467,
+          "compression_ratio": 9.3,
+          "psnr_db": 45.09,
+          "edges": {
+            "precision": 0.9978,
+            "recall": 0.9976,
+            "f1": 0.9977,
+            "reference_edge_pixels": 39344,
+            "candidate_edge_pixels": 39380
+          },
+          "paper_rms_error": 0.922,
+          "ringing_rms_beside_letters": 1.538
+        },
+        {
+          "quality": 85,
+          "bytes": 141881,
+          "compression_ratio": 17.1,
+          "psnr_db": 41.08,
+          "edges": {
+            "precision": 0.9955,
+            "recall": 0.9971,
+            "f1": 0.9963,
+            "reference_edge_pixels": 39344,
+            "candidate_edge_pixels": 39423
+          },
+          "paper_rms_error": 1.355,
+          "ringing_rms_beside_letters": 2.799
+        },
+        {
+          "quality": 75,
+          "bytes": 104685,
+          "compression_ratio": 23.2,
+          "psnr_db": 39.16,
+          "edges": {
+            "precision": 0.9951,
+            "recall": 0.9944,
+            "f1": 0.9948,
+            "reference_edge_pixels": 39344,
+            "candidate_edge_pixels": 39321
+          },
+          "paper_rms_error": 1.651,
+          "ringing_rms_beside_letters": 3.502
+        },
+        {
+          "quality": 50,
+          "bytes": 68533,
+          "compression_ratio": 35.5,
+          "psnr_db": 36.85,
+          "edges": {
+            "precision": 0.992,
+            "recall": 0.9935,
+            "f1": 0.9928,
+            "reference_edge_pixels": 39344,
+            "candidate_edge_pixels": 39477
+          },
+          "paper_rms_error": 2.181,
+          "ringing_rms_beside_letters": 4.666
+        },
+        {
+          "quality": 25,
+          "bytes": 43314,
+          "compression_ratio": 56.1,
+          "psnr_db": 34.15,
+          "edges": {
+            "precision": 0.9863,
+            "recall": 0.9898,
+            "f1": 0.988,
+            "reference_edge_pixels": 39344,
+            "candidate_edge_pixels": 39589
+          },
+          "paper_rms_error": 2.853,
+          "ringing_rms_beside_letters": 6.434
+        }
+      ]
+    }
+  },
+  "in_the_wild_other_units": {
+    "unit_1_1": {
+      "l1_vanishing_point": {
+        "asset": "cloister.jpg",
+        "shape": [
+          2206,
+          1707
+        ],
+        "exif": {
+          "camera": "SM-M305F",
+          "f_number": 1.9,
+          "focal_length_mm": 3.58,
+          "iso": 200,
+          "exposure_s": "1/191",
+          "subject_distance_m": null
+        },
+        "segments_found": 631,
+        "shortest_line_used_px": 304.9,
+        "longest_line_used_px": 523.3,
+        "receding_lines_found": 60,
+        "receding_lines_after_outlier_pass": 53,
+        "vanishing_point_px": [
+          871.7,
+          1075.9
+        ],
+        "inside_the_frame": true,
+        "median_distance_px": 45.1,
+        "mean_distance_px": 53.45,
+        "worst_distance_px": 232.1,
+        "frame_diagonal_px": 2789.3
+      },
+      "l2_depth_of_field": {
+        "asset": "souk-fruit.jpg",
+        "shape": [
+          3915,
+          5865
+        ],
+        "exif": {
+          "camera": "NIKON D750",
+          "f_number": 4.0,
+          "focal_length_mm": 300.0,
+          "iso": 140,
+          "exposure_s": "1/640",
+          "subject_distance_m": 14.96
+        },
+        "circle_of_confusion_mm": 0.03,
+        "hyperfocal_m": 750.3,
+        "near_limit_m": 14.67,
+        "far_limit_m": 15.26,
+        "depth_of_field_m": 0.59,
+        "sharpness_by_band_top_to_bottom": [
+          19.4,
+          16.3,
+          16.1,
+          47.3,
+          123.9,
+          356.4,
+          425.1,
+          255.6,
+          168.1,
+          121.9
+        ],
+        "sharpest_band": 6,
+        "sharpness_ratio_best_to_worst": 26.4
+      },
+      "l3_vignetting": {
+        "asset": "brick-wall.jpg",
+        "shape": [
+          1944,
+          2592
+        ],
+        "exif": {
+          "camera": "DSC-W530",
+          "f_number": 2.7,
+          "focal_length_mm": 4.7,
+          "iso": 200,
+          "exposure_s": "1/160",
+          "subject_distance_m": null
+        },
+        "centre_code_value": 133.4,
+        "corners": {
+          "top_left": 122.8,
+          "top_right": 114.7,
+          "bottom_left": 128.7,
+          "bottom_right": 114.7
+        },
+        "worst_corner_fraction_of_centre": 0.859,
+        "falloff_stops": 0.22
+      },
+      "l4_fisheye_image_circle": {
+        "asset": "fisheye-kashan.jpg",
+        "shape": [
+          3648,
+          3648
+        ],
+        "exif": {
+          "camera": "Canon EOS 6D",
+          "f_number": 4.0,
+          "focal_length_mm": 8.0,
+          "iso": 500,
+          "exposure_s": "1/20",
+          "subject_distance_m": null
+        },
+        "model": "equidistant, r = f x theta",
+        "sensor_short_side_mm": 24.0,
+        "pixel_pitch_um": 6.579,
+        "predicted_radius_mm": 12.57,
+        "predicted_radius_px": 1910.1,
+        "measured_radius_px_from_bbox": 1752.5,
+        "measured_radius_px_from_area": 1567.1,
+        "disc_centre_px": [
+          1630.7,
+          1791.9
+        ],
+        "agreement_percent": 91.7,
+        "implied_degrees_per_100px": 4.71
+      }
+    },
+    "unit_1_2": {
+      "l1_l2_astro_noise": {
+        "asset": "orion-astro.jpg",
+        "shape": [
+          3128,
+          4026
+        ],
+        "background_tile_px": [
+          3072,
+          896,
+          128,
+          128
+        ],
+        "background_mean": 3.35,
+        "background_sigma": 3.35,
+        "brightest_percentile_99_99": 255.0,
+        "snr_of_the_subject": 75.2,
+        "clipped_at_255": 1421,
+        "clipped_at_0": 12641,
+        "fraction_clipped_high": 0.000113,
+        "usable_stops_in_the_file": 6.25
+      },
+      "l3_response_curve": {
+        "asset": "colorchecker-photo.jpg",
+        "rows": [
+          {
+            "patch": 19,
+            "code_value": 223.1,
+            "as_if_linear": 0.875,
+            "srgb_linearised": 0.73888
+          },
+          {
+            "patch": 20,
+            "code_value": 203.5,
+            "as_if_linear": 0.7981,
+            "srgb_linearised": 0.60068
+          },
+          {
+            "patch": 21,
+            "code_value": 170.4,
+            "as_if_linear": 0.6683,
+            "srgb_linearised": 0.40423
+          },
+          {
+            "patch": 22,
+            "code_value": 121.2,
+            "as_if_linear": 0.4753,
+            "srgb_linearised": 0.19192
+          },
+          {
+            "patch": 23,
+            "code_value": 68.1,
+            "as_if_linear": 0.2672,
+            "srgb_linearised": 0.05805
+          },
+          {
+            "patch": 24,
+            "code_value": 14.6,
+            "as_if_linear": 0.0572,
+            "srgb_linearised": 0.00461
+          }
+        ],
+        "white_over_black_if_linear": 15.3,
+        "white_over_black_through_srgb": 160.3,
+        "factor_between_the_two_readings": 10.5,
+        "note": "the file is not proportional to light; reading it as if it were understates the range between the lightest and darkest patch"
+      },
+      "l4_single_exposure_range": {
+        "asset": "twilight-sky.jpg",
+        "shape": [
+          4347,
+          7728
+        ],
+        "pixels": 33593616,
+        "clipped_white": 31,
+        "clipped_black": 0,
+        "fraction_clipped_white": 1e-06,
+        "fraction_clipped_black": 0.0,
+        "code_values_occupied": 196,
+        "code_values_unused": 60,
+        "stops_the_file_can_hold": 8.0
+      },
+      "l5_colour_fringing": {
+        "asset": "telephone-box.jpg",
+        "shape": [
+          5509,
+          3608
+        ],
+        "exif": {
+          "camera": "Canon EOS 5D Mark II",
+          "f_number": 10.0,
+          "focal_length_mm": 85.0,
+          "iso": 100,
+          "exposure_s": "1/125",
+          "subject_distance_m": null
+        },
+        "edge_pixels": 198695,
+        "flat_pixels": 9908724,
+        "chromatic_difference_on_edges": 13.248,
+        "chromatic_difference_on_flat": 2.443,
+        "ratio_edge_to_flat": 5.4,
+        "worst_pixel": 150.5
+      }
+    },
+    "unit_3_1": {
+      "l1_edge_profile": {
+        "asset": "cloister.jpg",
+        "shape": [
+          2206,
+          1707
+        ],
+        "edges_measured": 400,
+        "estimator": "equivalent width: (rise) / (steepest slope), about 2.5 sigma for a blurred step",
+        "median_width_px": 2.3,
+        "p10_width_px": 2.11,
+        "p90_width_px": 2.8,
+        "fraction_wider_than_2px": 0.988,
+        "implied_median_sigma_px": 0.92
+      },
+      "l2_gradient_orientations": {
+        "asset": "cloister.jpg",
+        "strong_gradient_pixels": 188200,
+        "peak_orientation_deg": 0,
+        "share_within_10deg_of_peak": 0.533,
+        "share_within_10deg_of_perpendicular": 0.122,
+        "share_in_those_two_bands": 0.655,
+        "uniform_expectation_for_two_bands": 0.233
+      },
+      "l3_zero_crossings": {
+        "asset": "newspaper-1814.jpg",
+        "crop_px": [
+          700,
+          700
+        ],
+        "rows": [
+          {
+            "sigma": 0.0,
+            "zero_crossings": 283843,
+            "on_strong_gradient": 10414,
+            "fraction_on_strong_gradient": 0.037
+          },
+          {
+            "sigma": 1.0,
+            "zero_crossings": 209992,
+            "on_strong_gradient": 6035,
+            "fraction_on_strong_gradient": 0.029
+          },
+          {
+            "sigma": 2.0,
+            "zero_crossings": 126588,
+            "on_strong_gradient": 4542,
+            "fraction_on_strong_gradient": 0.036
+          },
+          {
+            "sigma": 4.0,
+            "zero_crossings": 65311,
+            "on_strong_gradient": 3910,
+            "fraction_on_strong_gradient": 0.06
+          }
+        ]
+      },
+      "l4_canny_hysteresis": {
+        "asset": "cloister.jpg",
+        "single_threshold_60": {
+          "edge_pixels": 427799,
+          "contours": 73025,
+          "longest_contour_px": 3363,
+          "median_contour_px": 2,
+          "contours_over_100px": 700
+        },
+        "single_threshold_180": {
+          "edge_pixels": 77780,
+          "contours": 7258,
+          "longest_contour_px": 2173,
+          "median_contour_px": 4,
+          "contours_over_100px": 173
+        },
+        "hysteresis_60_180": {
+          "edge_pixels": 170420,
+          "contours": 4340,
+          "longest_contour_px": 3363,
+          "median_contour_px": 29,
+          "contours_over_100px": 654
+        }
+      },
+      "l5_corner_repeatability": {
+        "asset": "souk-fruit.jpg",
+        "analysed_at_px": [
+          1305,
+          1955
+        ],
+        "corners_detected": 600,
+        "rows": [
+          {
+            "rotation_deg": 5,
+            "corners_in_original_interior": 374,
+            "corners_after_rotation": 600,
+            "repeated_within_3px": 319,
+            "repeatability": 0.853
+          },
+          {
+            "rotation_deg": 15,
+            "corners_in_original_interior": 374,
+            "corners_after_rotation": 600,
+            "repeated_within_3px": 331,
+            "repeatability": 0.885
+          },
+          {
+            "rotation_deg": 45,
+            "corners_in_original_interior": 374,
+            "corners_after_rotation": 600,
+            "repeated_within_3px": 318,
+            "repeatability": 0.85
+          }
+        ]
+      }
+    }
+  },
+  "in_the_wild_assets": "registered in CondadosAI/cv-assets with verified licences and sha256"
+}

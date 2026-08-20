@@ -80,6 +80,13 @@ uv run sensing-inspect      # what the files declare → output/sensing_frames.j
 uv run sensing-experiments  # noise, response and the HDR merge → output/sensing_numbers.json
 uv run sensing-figures      # the unit's photographs → output/figures/
 uv run sensing-covers       # cover backgrounds → output/covers/
+
+uv run data-experiments     # unit 1.3, and every "in the wild" run for the whole
+                            # track → output/image_data_numbers.json. Reuses unit 1.2's
+                            # scene, so `sensing-download` has to have run first; the
+                            # photographs it fetches from Wikimedia Commons add ~75 MB
+uv run data-figures         # the unit's figures, plus the in-the-wild panels
+uv run data-covers          # cover backgrounds → output/covers/
 ```
 
 `edge-experiments` **fails loudly** if the corner eigenvalues stop matching the
@@ -168,6 +175,53 @@ scene ships with 54 points metered by a colorimeter. Keys are in
 | A bracket merged from raw, scaled by one factor fitted on one patch, lands a median 0.198 stops from the colorimeter over 48 patches — 0.109 over the twelve neutral ones | `hdr` |
 | Every large error is at the dark end, where flare from the bulb and the noise floor both live | `hdr.predictions` |
 
+## Unit 1.3 — The image as data
+
+The unit that had to take a live article apart to be written, and the one that finally
+measures the whole track on photographs as well as on charts.
+
+It runs on unit 1.2's scene, one frame of it, developed here rather than taken from the
+survey's own renderings — **the published "Rendered" JPEG is 600 × 337**, a thumbnail,
+and the OpenEXR is a Photoshop merge on a 3115 × 1752 grid, so neither can be compared
+pixel-for-pixel with the raw. Everything comes out of `_MDF0005.NEF` through the same
+`rawpy.postprocess` call unit 1.2 used, which puts the 12-bit mosaic and both
+developments on one grid.
+
+**A bug worth not rediscovering.** `rawpy`'s `postprocess()` mutates LibRaw's internal
+state, so reading `raw_pattern` *after* developing reports the processed layout rather
+than the file's: RGGB's `[[0,1],[3,2]]` comes back as `[[0,1],[1,2]]`. It resolves to
+the same four channel offsets, so nothing downstream moves and the only casualty is a
+wrong CFA pattern printed somewhere. `scene.load()` reads metadata first.
+
+Keys are in `output/image_data_numbers.json`.
+
+| Claim | Where |
+|---|---|
+| Two thirds of every developed colour image is interpolated; demosaicing costs 4.7 DN on flat patches and 129.9 DN at the strongest edges | `cfa.demosaic_error` |
+| Quantization error meets this sensor's measured noise floor at 9.28–9.49 bits, so a 12-bit file carries about 2.5 spare | `l3_quantization.noise_floor_crossing` |
+| Δ/√12 predicts the measured error to within 2% on mid-tones and runs 3× optimistic over the whole dark frame | `l3_quantization.error_vs_prediction` |
+| A 7.385 px ribbing decimated by 8 returns at 96 px, and the fold predicts the bin it lands in | `l2_sampling.aliasing` |
+| Treating a developed file as sRGB lands 9.54 ΔE\*ab from the colorimeter; a 3×3 fitted here and scored on held-out patches reaches 2.41 | `l4_colour.accuracy` |
+| **Fairchild's own published D2x matrix does not beat the naive route on this scene** — 9.14–10.29 across four configurations | `l4_colour.accuracy.paths.published_matrix.variants` |
+| OpenCV 5.0.0 and Pillow 12.3.0 decode every JPEG here identically; the disagreement is a 16-bit PNG, which Pillow silently returns as 8-bit | `l5_formats.decoders` |
+
+### In the wild
+
+Every lesson on the written track — twenty of them, across units 1.1, 1.2, 1.3 and 3.1 —
+repeats its measurement on a photograph, because a calibration target is not a picture
+anybody takes. Those runs live under `in_the_wild` and `in_the_wild_other_units` in the
+same artifact, and the assets are listed under Licence below.
+
+| Claim | Where |
+|---|---|
+| 53 detected lines in a temple cloister agree on one vanishing point to 1.6% of the frame diagonal | `in_the_wild_other_units.unit_1_1.l1_vanishing_point` |
+| A photograph's own EXIF predicts 0.59 m of depth of field, and its sharpest band is 26× the softest | `…unit_1_1.l2_depth_of_field` |
+| Reading a JPEG as if it were linear understates a chart's white-to-black range by 10.5× | `…unit_1_2.l3_response_curve` |
+| Not one of 400 edges measured in a real photograph is a step: median equivalent width 2.30 px | `…unit_3_1.l1_edge_profile` |
+| 96.3% of an unsmoothed Laplacian's zero-crossings on printed text sit where nothing is changing | `…unit_3_1.l3_zero_crossings` |
+| Canny's hysteresis returns 654 contours over 100 px out of 4,340; the low threshold alone needs 73,025 fragments to find 700 | `…unit_3_1.l4_canny_hysteresis` |
+| A wheel filmed at 24 fps reports −0.90 apparent revolutions per second — backwards | `in_the_wild.l2_wagon_wheel` |
+
 ## Licence
 
 The code in this repository is Apache-2.0 (see `LICENSE`).
@@ -191,6 +245,17 @@ does not redistribute it, and Apache-2.0 says nothing about it:
 - **DPDD** (Abuolaim & Brown, ECCV 2020). No dataset file is downloaded at all.
   Unit 1.1 uses only the capture settings printed on `figures/data_example.png`
   in that repository, which is MIT.
+
+- **Wikimedia Commons photographs and one video**, fetched by `data-experiments` for the
+  "in the wild" measurements: a temple cloister, a market stall, a brick wall, a
+  circular fisheye frame, a twilight landscape, a long-exposure astrophotograph, a
+  photographed ColorChecker, a red telephone box, an 1814 newspaper scan, and a clip of
+  the wagon-wheel effect. All are **CC0, public domain or CC BY 4.0 — none is
+  share-alike**, so figures derived from them carry no copyleft obligation. Each is
+  recorded with its author, licence, source page and a sha256 of the exact bytes
+  measured; the fetcher re-checks that hash and refuses a file that changed at the
+  source. Downloaded, never committed here. Attribution for each appears in the caption
+  of every figure that shows it, on condados.ai.
 
 - **HDR Photographic Survey — "Luxo Double Checker"** (Fairchild, CIC 15, 2007),
   fetched from <http://markfairchild.org/HDR.html>: eighteen NEF exposures out of the
