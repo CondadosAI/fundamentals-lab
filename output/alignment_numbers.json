@@ -3,17 +3,17 @@
     "worked_join_left_raw": [
       87.3,
       688.2,
-      -402624.41
+      -402625.0
     ],
     "worked_join_right_raw": [
       296.69,
       567.99,
-      -838127.04
+      -838126.48
     ],
     "worked_vp_raw": [
-      -348108159.5,
-      -46284667.1,
-      -154594.5
+      -348111671.0,
+      -46286369.8,
+      -154596.5
     ],
     "vp_direction_disagreement_deg": 0.36,
     "lines_img_normalised": {

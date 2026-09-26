@@ -76,7 +76,9 @@ def homogeneous(s: Scene) -> dict:
         court.homogeneous_line(*court.LINES["side_right"]),
     )
     nbl = s.fit.landmarks_img["NBL"]
-    lm = s.fit.landmarks_img
+    # The worked example uses the corners as the post prints them, to 2 decimals, so
+    # every product in it can be redone by hand from the page.
+    lm = {k: np.round(v, 2) for k, v in s.fit.landmarks_img.items()}
     # The worked example: the same lines as joins of two corners, unnormalised.
     join_left = np.cross([*lm["NBL"], 1.0], [*lm["NKL"], 1.0])
     join_right = np.cross([*lm["NBR"], 1.0], [*lm["NKR"], 1.0])
