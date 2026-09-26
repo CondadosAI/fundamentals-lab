@@ -15,7 +15,16 @@ from loguru import logger
 from fundamentals_lab.alignment import experiments
 from fundamentals_lab.config import ALIGNMENT_NUMBERS_JSON, OUTPUT_DIR
 
-SECTIONS = ("scene", "homogeneous", "linear", "affine_vs_projective", "dlt", "lens", "warping", "stability")
+SECTIONS = (
+    "scene",
+    "homogeneous",
+    "linear",
+    "affine_vs_projective",
+    "dlt",
+    "lens",
+    "warping",
+    "stability",
+)
 
 
 @click.command()

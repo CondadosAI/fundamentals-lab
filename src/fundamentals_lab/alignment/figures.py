@@ -197,7 +197,7 @@ def lens_profile(s: Scene) -> dict:
 
 
 def cover_panel(img: np.ndarray, right_fraction: float = 0.62, size=(1600, 900)) -> np.ndarray:
-    """A cover background: dark canvas, the image filling the right `right_fraction`, cropped to fit."""
+    """A cover background: dark canvas, the image cropped into the right `right_fraction`."""
     W, H = size
     canvas = np.full((H, W, 3), BG, np.uint8)
     pw = round(W * right_fraction)
