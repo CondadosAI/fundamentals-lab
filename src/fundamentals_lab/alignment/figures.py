@@ -6,13 +6,11 @@ the court drawn is the model pushed through the named transform.
 
 from __future__ import annotations
 
-import json
-
 import cv2
 import numpy as np
 from loguru import logger
 
-from fundamentals_lab.alignment import court, distortion, transforms, warp
+from fundamentals_lab.alignment import court, transforms, warp
 from fundamentals_lab.alignment.experiments import Scene
 from fundamentals_lab.config import ALIGN_PLATE_FRAMES, OUTPUT_DIR
 
@@ -166,36 +164,6 @@ def topviews(s: Scene) -> dict[str, np.ndarray]:
     return out
 
 
-def lens_profile(s: Scene) -> dict:
-    """The near baseline's bow before and after the plumb-line k, for a hand-drawn chart."""
-    k = json.loads((OUTPUT_DIR / "alignment_numbers.json").read_text())["lens"]["k_division_model"]
-    bands = distortion.line_bands(s.pixels, s.H_court2img, ["near_base", "side_right"])
-    out = {"k": k}
-    for name, pts in bands.items():
-        prof = {}
-        for tag, kk in (("before", 0.0), ("after", k)):
-            u = distortion.undistort(pts, kk)
-            from fundamentals_lab.alignment import lines
-
-            fit = lines.fit_line(u)
-            d = np.array([-fit.line[1], fit.line[0]])
-            t = u @ d
-            r = u @ fit.line[:2] + fit.line[2]
-            bins = np.linspace(t.min(), t.max(), 13)
-            mids, med = [], []
-            for i in range(12):
-                m = (t >= bins[i]) & (t < bins[i + 1])
-                if m.sum() > 30:
-                    mids.append(float((bins[i] + bins[i + 1]) / 2 - t.min()))
-                    med.append(float(np.median(r[m])))
-            prof[tag] = {
-                "t_px": [round(v, 1) for v in mids],
-                "offset_px": [round(v, 2) for v in med],
-            }
-        out[name] = prof
-    return out
-
-
 def cover_panel(img: np.ndarray, right_fraction: float = 0.62, size=(1600, 900)) -> np.ndarray:
     """A cover background: dark canvas, the image cropped into the right `right_fraction`."""
     W, H = size
@@ -272,7 +240,6 @@ def render_all() -> None:
             oimg, tuple(np.rint(ofit.landmarks_img[n]).astype(int)), 12, WHITE, 3, cv2.LINE_AA
         )
     _save(oimg, "outdoor_fit")
-    (FIG_DIR / "lens_profile.json").write_text(json.dumps(lens_profile(s), indent=1))
     covers = {
         "homogeneous-coordinates": ext[:, 200:],
         "image-alignment-and-stitching": pair,
