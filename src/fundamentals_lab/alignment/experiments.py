@@ -459,3 +459,13 @@ def _colour_mask_pixels(image):
     cv2.fillPoly(mask, [np.array(NET_POLYGON, np.int32)], 0)
     ys, xs = np.nonzero(mask)
     return np.stack([xs, ys], axis=1).astype(np.float64)
+
+
+# --- In the wild -----------------------------------------------------------------
+
+
+def wild_runs(s: Scene) -> dict:
+    from fundamentals_lab.alignment import wild
+    from fundamentals_lab.alignment.figures import FIG_DIR
+
+    return {"outdoor_court": wild.outdoor(), "panorama": wild.panorama(FIG_DIR)}

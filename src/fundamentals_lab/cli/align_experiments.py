@@ -24,6 +24,7 @@ SECTIONS = (
     "lens",
     "warping",
     "stability",
+    "wild_runs",
 )
 
 

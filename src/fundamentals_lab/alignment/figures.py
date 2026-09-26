@@ -257,6 +257,21 @@ def render_all() -> None:
     ]
     for i, img in zip(ALIGN_PLATE_FRAMES, small, strict=True):
         _save(img, f"frame960_{i:06d}", FIG_DIR / "frames960")
+    from fundamentals_lab.alignment import lines as lines_mod
+    from fundamentals_lab.alignment import wild
+
+    op = wild.outdoor_plate()
+    ofit = lines_mod.fit_court(
+        lines_mod.paint_pixels(op, exclude_net=False),
+        seed_corners=wild.OUTDOOR_SEED,
+    )
+    oimg = op.copy()
+    _draw_court(oimg, ofit.H_court2img, GREEN, 3)
+    for n in ("NBC", "NKC"):
+        cv2.circle(
+            oimg, tuple(np.rint(ofit.landmarks_img[n]).astype(int)), 12, WHITE, 3, cv2.LINE_AA
+        )
+    _save(oimg, "outdoor_fit")
     (FIG_DIR / "lens_profile.json").write_text(json.dumps(lens_profile(s), indent=1))
     covers = {
         "homogeneous-coordinates": ext[:, 200:],
