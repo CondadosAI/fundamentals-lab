@@ -40,8 +40,10 @@ def fetch_from_site() -> list[Path]:
     """Frame 45000 and the plate, lossless WebP from condados.ai, decoded to PNG."""
     ALIGN_DIR.mkdir(parents=True, exist_ok=True)
     out = []
-    for name, dst in ((f"frame_{ALIGN_FRAME:06d}.webp", frame_path(ALIGN_FRAME)),
-                      ("plate_median31.webp", plate_path())):
+    for name, dst in (
+        (f"frame_{ALIGN_FRAME:06d}.webp", frame_path(ALIGN_FRAME)),
+        ("plate_median31.webp", plate_path()),
+    ):
         if dst.exists():
             out.append(dst)
             continue
@@ -66,9 +68,17 @@ def fetch_from_youtube() -> list[Path]:
     clip = ALIGN_DIR / f"{ALIGN_VIDEO_ID}_section.mp4"
     if not clip.exists():
         subprocess.run(
-            ["yt-dlp", "-f", "137", "--download-sections", f"*{t0:.2f}-{t1:.2f}",
-             "--force-keyframes-at-cuts", "-o", str(clip),
-             f"https://www.youtube.com/watch?v={ALIGN_VIDEO_ID}"],
+            [
+                "yt-dlp",
+                "-f",
+                "137",
+                "--download-sections",
+                f"*{t0:.2f}-{t1:.2f}",
+                "--force-keyframes-at-cuts",
+                "-o",
+                str(clip),
+                f"https://www.youtube.com/watch?v={ALIGN_VIDEO_ID}",
+            ],
             check=True,
         )
     return extract_frames(clip, offset_s=t0)

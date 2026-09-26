@@ -39,8 +39,12 @@ class Scene:
         self.fit_court = court.court_points(court.FIT_LANDMARKS)
 
     def held_out(self, H_img2court):
-        return {k: (_r(v, 2) if not isinstance(v, dict) else v)
-                for k, v in evaluate.held_out(H_img2court, self.fit.landmarks_img, self.evidence).items()}
+        return {
+            k: (_r(v, 2) if not isinstance(v, dict) else v)
+            for k, v in evaluate.held_out(
+                H_img2court, self.fit.landmarks_img, self.evidence
+            ).items()
+        }
 
 
 # --- 4.1 L1: homogeneous coordinates --------------------------------------------
@@ -54,17 +58,21 @@ def homogeneous(s: Scene) -> dict:
     horizon = np.cross(vp_sides, vp_across)
     horizon = horizon / np.linalg.norm(horizon[:2])
     # On the ground the two sidelines are parallel: their meet has w = 0.
-    ground = court.meet(court.homogeneous_line(*court.LINES["side_left"]),
-                        court.homogeneous_line(*court.LINES["side_right"]))
+    ground = court.meet(
+        court.homogeneous_line(*court.LINES["side_left"]),
+        court.homogeneous_line(*court.LINES["side_right"]),
+    )
     nbl = s.fit.landmarks_img["NBL"]
     return {
-        "lines_img_normalised": {n: [_r(v, 5) for v in l] for n, l in L.items()},
+        "lines_img_normalised": {n: [_r(v, 5) for v in vec] for n, vec in L.items()},
         "NBL_img": [_r(v, 2) for v in nbl],
         "NBL_off_frame_px": _r(-nbl[0], 2),
         "sidelines_meet_on_ground": [_r(v, 4) for v in ground / np.abs(ground).max()],
         "vp_along_court_img": [_r(v, 1) for v in court.dehomogenise(vp_sides)],
         "vp_along_court_via_centre_line_img": [_r(v, 1) for v in court.dehomogenise(vp_centre)],
-        "vp_agreement_px": _r(np.linalg.norm(court.dehomogenise(vp_sides) - court.dehomogenise(vp_centre)), 1),
+        "vp_agreement_px": _r(
+            np.linalg.norm(court.dehomogenise(vp_sides) - court.dehomogenise(vp_centre)), 1
+        ),
         "vp_across_court_img": [_r(v, 1) for v in court.dehomogenise(vp_across)],
         "horizon_line": [_r(v, 5) for v in horizon],
         "horizon_row_at_centre_x": _r(-(horizon[0] * 960 + horizon[2]) / horizon[1], 1),
@@ -79,8 +87,8 @@ def homogeneous(s: Scene) -> dict:
 def linear(s: Scene) -> dict:
     L = {n: f.line for n, f in s.fit.lines.items()}
 
-    def direction_deg(l):
-        return float(np.degrees(np.arctan2(-l[0], l[1])))
+    def direction_deg(line):
+        return float(np.degrees(np.arctan2(-line[0], line[1])))
 
     angle = abs(direction_deg(L["side_left"]) - direction_deg(L["side_right"]))
     angle = min(angle, 180 - angle)
@@ -99,9 +107,13 @@ def linear(s: Scene) -> dict:
         "sideline_angle_img_deg": _r(angle, 2),
         "sideline_angle_ground_deg": 0.0,
         "best_2x2_court2img": [[_r(v, 2) for v in row] for row in M],
-        "best_2x2_decomposition": {k: (_r(v, 3) if isinstance(v, float) else v)
-                                   for k, v in transforms.decompose_2x2(M).items()},
-        "best_2x2_residual_px": dict(zip(court.FIT_LANDMARKS, [_r(v, 1) for v in resid], strict=True)),
+        "best_2x2_decomposition": {
+            k: (_r(v, 3) if isinstance(v, float) else v)
+            for k, v in transforms.decompose_2x2(M).items()
+        },
+        "best_2x2_residual_px": dict(
+            zip(court.FIT_LANDMARKS, [_r(v, 1) for v in resid], strict=True)
+        ),
         "px2_per_m2_at_NBR": _r(J["NBR"], 0),
         "px2_per_m2_at_NKR": _r(J["NKR"], 0),
     }
@@ -122,7 +134,9 @@ def affine_vs_projective(s: Scene) -> dict:
         "affine_3pt": s.held_out(A3),
         "affine_lsq_4pt": s.held_out(A4),
         "affine_lsq_4pt_fit_residual_cm": [
-            _r(v, 1) for v in np.linalg.norm(transforms.apply(A4, s.fit_img) - s.fit_court, axis=1) * 100],
+            _r(v, 1)
+            for v in np.linalg.norm(transforms.apply(A4, s.fit_img) - s.fit_court, axis=1) * 100
+        ],
         "homography_4pt": s.held_out(H),
         "homography_img2court": [[_r(v, 8) for v in r] for r in H / H[2, 2]],
     }
@@ -162,11 +176,19 @@ def dlt(s: Scene) -> dict:
             noisy = s_img + rng.normal(0, DLT_NOISE_PX, s_img.shape)
             for norm in (True, False):
                 H = transforms.dlt(noisy, s_court, normalise=norm)
-                far[norm].append(evaluate.held_out(H, s.fit.landmarks_img, s.evidence)["far_baseline"])
-        spread[label] = {("normalised" if k else "raw"): {"median": _r(np.median(v), 2),
-                                                         "p95": _r(np.percentile(v, 95), 2)}
-                         for k, v in far.items()}
-        spread[label]["max_abs_difference_cm"] = _r(np.max(np.abs(np.array(far[True]) - np.array(far[False]))), 4)
+                far[norm].append(
+                    evaluate.held_out(H, s.fit.landmarks_img, s.evidence)["far_baseline"]
+                )
+        spread[label] = {
+            ("normalised" if k else "raw"): {
+                "median": _r(np.median(v), 2),
+                "p95": _r(np.percentile(v, 95), 2),
+            }
+            for k, v in far.items()
+        }
+        spread[label]["max_abs_difference_cm"] = _r(
+            np.max(np.abs(np.array(far[True]) - np.array(far[False]))), 4
+        )
     # H&Z 4.4: the unnormalised DLT depends on where the pixel origin is; the
     # normalised one does not. Same noisy six points, origin moved, pixel-to-pixel
     # (image -> top view), mapped back so every H takes the original pixels.
@@ -179,15 +201,27 @@ def dlt(s: Scene) -> dict:
         shift = np.array([[1, 0, off], [0, 1, off], [0, 0, 1.0]])
         row = {}
         for norm in (True, False):
-            H = H_t2c @ transforms.dlt(transforms.apply(shift, noisy6), dst6, normalise=norm) @ shift
+            H = (
+                H_t2c
+                @ transforms.dlt(transforms.apply(shift, noisy6), dst6, normalise=norm)
+                @ shift
+            )
             row["normalised" if norm else "raw"] = _r(
-                evaluate.held_out(H, s.fit.landmarks_img, s.evidence)["far_baseline"], 3)
+                evaluate.held_out(H, s.fit.landmarks_img, s.evidence)["far_baseline"], 3
+            )
         invariance[str(off)] = row
-    pix_cond = {"raw": _r(transforms.condition_number(src6, dst6, False), 0),
-                "normalised": _r(transforms.condition_number(src6, dst6, True), 2)}
+    pix_cond = {
+        "raw": _r(transforms.condition_number(src6, dst6, False), 0),
+        "normalised": _r(transforms.condition_number(src6, dst6, True), 2),
+    }
 
-    scale = {n: {k: _r(v, 2) for k, v in evaluate.scale_cm_per_px(s.H_img2court, s.fit.landmarks_img[n]).items()}
-             for n in ("NBR", "NBC", "NKC")}
+    scale = {
+        n: {
+            k: _r(v, 2)
+            for k, v in evaluate.scale_cm_per_px(s.H_img2court, s.fit.landmarks_img[n]).items()
+        }
+        for n in ("NBR", "NBC", "NKC")
+    }
     far_px = transforms.apply(s.H_court2img, court.court_points(["FBR"]))[0]
     scale["FBR"] = {k: _r(v, 2) for k, v in evaluate.scale_cm_per_px(s.H_img2court, far_px).items()}
     return {
@@ -198,8 +232,12 @@ def dlt(s: Scene) -> dict:
         "parity_vs_getPerspectiveTransform_mm": _r(parity, 6),
         "six_point_fit": held6,
         "noise_far_baseline_cm": spread,
-        "condition_raw_six": _r(transforms.condition_number(src6, court.court_points(six), False), 1),
-        "condition_normalised_six": _r(transforms.condition_number(src6, court.court_points(six), True), 2),
+        "condition_raw_six": _r(
+            transforms.condition_number(src6, court.court_points(six), False), 1
+        ),
+        "condition_normalised_six": _r(
+            transforms.condition_number(src6, court.court_points(six), True), 2
+        ),
         "noise_sigma_px": DLT_NOISE_PX,
         "noise_trials": DLT_NOISE_TRIALS,
         "scale_cm_per_px": scale,
@@ -230,10 +268,14 @@ def lens(s: Scene) -> dict:
         "distortion_centre": "frame centre (assumed)",
         "sagitta_px_before": {n: _r(v, 2) for n, v in before.items()},
         "sagitta_px_after": {n: _r(v, 2) for n, v in after.items()},
-        "held_out_line_sagitta_px": {"before": _r(fb["far_right_sideline"], 2),
-                                     "after": _r(fa["far_right_sideline"], 2)},
+        "held_out_line_sagitta_px": {
+            "before": _r(fb["far_right_sideline"], 2),
+            "after": _r(fa["far_right_sideline"], 2),
+        },
         "held_out_raw": s.held_out(s.H_img2court),
-        "held_out_undistorted": {k2: (_r(v, 2) if not isinstance(v, dict) else v) for k2, v in uheld.items()},
+        "held_out_undistorted": {
+            k2: (_r(v, 2) if not isinstance(v, dict) else v) for k2, v in uheld.items()
+        },
     }
 
 
@@ -251,8 +293,9 @@ def warping(s: Scene) -> dict:
     visible = court_top & ok
     # Forward mapping of the court's image pixels: count holes and double writes.
     region = np.zeros(s.frame.shape[:2], np.uint8)
-    court_img = transforms.apply(s.H_court2img, np.array(
-        [[0, 0], [13.41, 0], [13.41, 6.10], [0, 6.10]]))
+    court_img = transforms.apply(
+        s.H_court2img, np.array([[0, 0], [13.41, 0], [13.41, 6.10], [0, 6.10]])
+    )
     cv2.fillPoly(region, [np.rint(court_img).astype(np.int32)], 1)
     _, hit = warp.forward(s.frame, H_i2t, size, region.astype(bool))
     holes = (hit == 0) & visible
@@ -260,11 +303,16 @@ def warping(s: Scene) -> dict:
     # Near and far halves separately: the far half is stretched, the near squeezed.
     top_h = size[1]
     near_rows = np.zeros_like(visible)
-    near_rows[top_h // 2:, :] = True
+    near_rows[top_h // 2 :, :] = True
     # Blending: median of the 31 warped frames vs the warp of the median plate.
     from fundamentals_lab.config import ALIGN_PLATE_FRAMES
-    warped = np.stack([cv2.warpPerspective(plate.load_frame(i), H_i2t, size, flags=cv2.INTER_LINEAR)
-                       for i in ALIGN_PLATE_FRAMES])
+
+    warped = np.stack(
+        [
+            cv2.warpPerspective(plate.load_frame(i), H_i2t, size, flags=cv2.INTER_LINEAR)
+            for i in ALIGN_PLATE_FRAMES
+        ]
+    )
     med_of_warps = np.median(warped, axis=0).astype(np.uint8)
     warp_of_med = cv2.warpPerspective(s.plate, H_i2t, size, flags=cv2.INTER_LINEAR)
     d = np.abs(med_of_warps.astype(int) - warp_of_med.astype(int)).max(axis=2)[visible]
@@ -278,9 +326,15 @@ def warping(s: Scene) -> dict:
         "backward_vs_cv2_mean_abs_diff": _r(diff.mean(), 4),
         "court_top_px_visible": int(visible.sum()),
         "forward_holes_frac": _r(holes.sum() / visible.sum(), 4),
-        "forward_holes_frac_far_half": _r((holes & ~near_rows).sum() / (visible & ~near_rows).sum(), 4),
-        "forward_holes_frac_near_half": _r((holes & near_rows).sum() / (visible & near_rows).sum(), 4),
-        "forward_double_writes_frac_near_half": _r((doubles & near_rows).sum() / (visible & near_rows).sum(), 4),
+        "forward_holes_frac_far_half": _r(
+            (holes & ~near_rows).sum() / (visible & ~near_rows).sum(), 4
+        ),
+        "forward_holes_frac_near_half": _r(
+            (holes & near_rows).sum() / (visible & near_rows).sum(), 4
+        ),
+        "forward_double_writes_frac_near_half": _r(
+            (doubles & near_rows).sum() / (visible & near_rows).sum(), 4
+        ),
         "median_order_max_diff_p99": _r(np.percentile(d, 99), 1),
         "median_order_mean_diff": _r(d.mean(), 3),
         "frame_pixels_differing_from_plate_frac": _r((moved & visible).sum() / visible.sum(), 4),
@@ -295,7 +349,9 @@ def stability(s: Scene) -> dict:
     base = s.fit.landmarks_img
     worst = dict.fromkeys(base, 0.0)
     for _ in range(SEED_PERTURB_TRIALS):
-        seeds = np.array(ALIGN_SEED_CORNERS) + rng.uniform(-SEED_PERTURB_PX, SEED_PERTURB_PX, (4, 2))
+        seeds = np.array(ALIGN_SEED_CORNERS) + rng.uniform(
+            -SEED_PERTURB_PX, SEED_PERTURB_PX, (4, 2)
+        )
         m = lines.fit_court(s.pixels, seed_corners=seeds).landmarks_img
         for n in base:
             worst[n] = max(worst[n], float(np.linalg.norm(m[n] - base[n])))
@@ -306,16 +362,30 @@ def stability(s: Scene) -> dict:
         "seed_trials": SEED_PERTURB_TRIALS,
         "max_landmark_shift_px": {n: _r(v, 3) for n, v in worst.items()},
         "frame45000_vs_plate_px": {n: _r(np.linalg.norm(frame_fit[n] - base[n]), 2) for n in base},
-        "line_fit": {n: {"n_pixels": f.n_pixels, "rms_px": _r(f.rms_px, 2)} for n, f in s.fit.lines.items()},
+        "line_fit": {
+            n: {"n_pixels": f.n_pixels, "rms_px": _r(f.rms_px, 2)} for n, f in s.fit.lines.items()
+        },
         "crossing_angle_deg": {
-            n: _r(np.degrees(np.arcsin(np.sqrt(max(0.0, 1 - (s.fit.lines[a].line[:2] @ s.fit.lines[b].line[:2]) ** 2)))), 1)
-            for n, (a, b) in court.LANDMARKS.items() if a in s.fit.lines and b in s.fit.lines},
+            n: _r(
+                np.degrees(
+                    np.arcsin(
+                        np.sqrt(
+                            max(0.0, 1 - (s.fit.lines[a].line[:2] @ s.fit.lines[b].line[:2]) ** 2)
+                        )
+                    )
+                ),
+                1,
+            )
+            for n, (a, b) in court.LANDMARKS.items()
+            if a in s.fit.lines and b in s.fit.lines
+        },
         "colour_threshold_mask_held_out": s.held_out(np.linalg.inv(colour_only.H_court2img)),
     }
 
 
 def _colour_mask_pixels(image):
     from fundamentals_lab.config import NET_POLYGON, WHITE_MAX_SAT, WHITE_MIN_VALUE
+
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, (0, 0, WHITE_MIN_VALUE), (179, WHITE_MAX_SAT, 255))
     cv2.fillPoly(mask, [np.array(NET_POLYGON, np.int32)], 0)

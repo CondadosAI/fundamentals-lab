@@ -43,7 +43,10 @@ def total_sagitta(bands: dict[str, np.ndarray], k: float) -> dict[str, float]:
     return out
 
 
-def plumb_line_k(bands: dict[str, np.ndarray], grid=np.linspace(-0.30, 0.30, 241)) -> float:
+K_GRID = np.linspace(-0.30, 0.30, 241)
+
+
+def plumb_line_k(bands: dict[str, np.ndarray], grid=K_GRID) -> float:
     """The k that minimises the pixel-weighted bow of the given lines."""
     weights = {n: len(p) for n, p in bands.items()}
 

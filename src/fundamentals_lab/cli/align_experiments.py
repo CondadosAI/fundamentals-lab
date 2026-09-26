@@ -23,7 +23,9 @@ SECTIONS = ("homogeneous", "linear", "affine_vs_projective", "dlt", "lens", "war
 def align_experiments(only: tuple[str, ...]) -> None:
     """Measure the court: transforms, the DLT, the lens, the warp, and their stability."""
     scene = experiments.Scene()
-    numbers = json.loads(ALIGNMENT_NUMBERS_JSON.read_text()) if ALIGNMENT_NUMBERS_JSON.exists() else {}
+    numbers = (
+        json.loads(ALIGNMENT_NUMBERS_JSON.read_text()) if ALIGNMENT_NUMBERS_JSON.exists() else {}
+    )
     for name in only or SECTIONS:
         logger.info(f"section {name}")
         numbers[name] = getattr(experiments, name)(scene)

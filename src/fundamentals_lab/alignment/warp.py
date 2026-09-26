@@ -86,8 +86,12 @@ def forward(image: np.ndarray, H_src2dst: np.ndarray, size, region: np.ndarray |
 def court_mask_top(size) -> np.ndarray:
     """Top-view pixels that lie on the court itself (inside the outer lines)."""
     H_c2t, _ = court2top()
-    corners = transforms.apply(H_c2t, np.array([[0, 0], [COURT_LENGTH_M, 0],
-                                                [COURT_LENGTH_M, COURT_WIDTH_M], [0, COURT_WIDTH_M]]))
+    corners = transforms.apply(
+        H_c2t,
+        np.array(
+            [[0, 0], [COURT_LENGTH_M, 0], [COURT_LENGTH_M, COURT_WIDTH_M], [0, COURT_WIDTH_M]]
+        ),
+    )
     mask = np.zeros((size[1], size[0]), np.uint8)
     cv2.fillPoly(mask, [np.rint(corners).astype(np.int32)], 1)
     return mask.astype(bool)

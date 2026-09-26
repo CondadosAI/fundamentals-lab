@@ -82,7 +82,9 @@ def fit_line(points: np.ndarray, passes: int = 4) -> LineFit:
     _, _, vt = np.linalg.svd(P - c, full_matrices=False)
     normal = vt[1]
     r = (P - c) @ normal
-    return LineFit(np.array([normal[0], normal[1], -normal @ c]), len(P), float(np.sqrt(np.mean(r**2))))
+    return LineFit(
+        np.array([normal[0], normal[1], -normal @ c]), len(P), float(np.sqrt(np.mean(r**2)))
+    )
 
 
 def seed_homography(seed_corners=ALIGN_SEED_CORNERS) -> np.ndarray:
@@ -97,8 +99,12 @@ class CourtFit:
     landmarks_img: dict[str, np.ndarray]
 
 
-def fit_court(pixels: np.ndarray, names=court.NEAR_LINES, seed_corners=ALIGN_SEED_CORNERS,
-              passes: int = LINE_REFINE_PASSES) -> CourtFit:
+def fit_court(
+    pixels: np.ndarray,
+    names=court.NEAR_LINES,
+    seed_corners=ALIGN_SEED_CORNERS,
+    passes: int = LINE_REFINE_PASSES,
+) -> CourtFit:
     """Fit the named lines, intersect them, refit H, look again. `passes` rounds."""
     H = seed_homography(seed_corners)
     for _ in range(passes + 1):
