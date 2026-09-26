@@ -1,11 +1,15 @@
+# ruff: noqa: E501  (cell sources mirror the posts verbatim, line lengths included)
 """Build notebooks/image_alignment.ipynb from the code blocks the posts print.
 
-Run from the repo root: `uv run python notebooks/_build_image_alignment.py`. The cells
-that mirror a post are copied verbatim from it; keep them in step when a post changes.
+`uv run align-notebook`. The cells that mirror a post are copied verbatim from it; keep
+them in step when a post changes. The notebook is written with its outputs cleared.
 """
 
 import json
-from pathlib import Path
+
+import click
+
+from fundamentals_lab.config import PROJECT_ROOT
 
 CELLS: list[tuple[str, str]] = []
 
@@ -268,19 +272,31 @@ print('share of the 960 px frame differing from the median by > 40 in some chann
 cv2.imwrite('median960.png', med)
 """)
 
-nb = {
-    "cells": [
-        {"cell_type": t, "metadata": {}, "source": src.splitlines(keepends=True),
-         **({"execution_count": None, "outputs": []} if t == "code" else {})}
-        for t, src in CELLS
-    ],
-    "metadata": {
-        "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
-        "language_info": {"name": "python", "version": "3.12"},
-    },
-    "nbformat": 4,
-    "nbformat_minor": 5,
-}
-out = Path(__file__).with_name("image_alignment.ipynb")
-out.write_text(json.dumps(nb, indent=1, ensure_ascii=False) + "\n")
-print(f"wrote {out} ({len(CELLS)} cells)")
+
+@click.command()
+def align_notebook() -> None:
+    """Write notebooks/image_alignment.ipynb, outputs cleared."""
+    nb = {
+        "cells": [
+            {
+                "cell_type": t,
+                "metadata": {},
+                "source": src.splitlines(keepends=True),
+                **({"execution_count": None, "outputs": []} if t == "code" else {}),
+            }
+            for t, src in CELLS
+        ],
+        "metadata": {
+            "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+            "language_info": {"name": "python", "version": "3.12"},
+        },
+        "nbformat": 4,
+        "nbformat_minor": 5,
+    }
+    out = PROJECT_ROOT / "notebooks" / "image_alignment.ipynb"
+    out.write_text(json.dumps(nb, indent=1, ensure_ascii=False) + "\n")
+    print(f"wrote {out} ({len(CELLS)} cells)")
+
+
+if __name__ == "__main__":
+    align_notebook()

@@ -76,7 +76,7 @@ def outdoor() -> dict:
     vp_angle = abs(np.degrees(np.arctan2(d1[1], d1[0]) - np.arctan2(d2[1], d2[0])))
     scale = {
         n: {k: _r(v) for k, v in evaluate.scale_cm_per_px(H, fit.landmarks_img[n]).items()}
-        for n in ("NBC", "NKL", "NKR")
+        for n in ("NBC", "NKC", "NKL", "NKR")
     }
     return {
         "corners_img": {n: [_r(v) for v in fit.landmarks_img[n]] for n in court.FIT_LANDMARKS},
