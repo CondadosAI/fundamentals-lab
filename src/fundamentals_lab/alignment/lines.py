@@ -19,15 +19,25 @@ from fundamentals_lab.config import (
     LINE_BAND_PX,
     LINE_REFINE_PASSES,
     NET_POLYGON,
+    TOPHAT_KERNEL_PX,
+    TOPHAT_MIN,
     WHITE_MAX_SAT,
-    WHITE_MIN_VALUE,
 )
 
 
 def paint_pixels(image: np.ndarray, exclude_net: bool = True) -> np.ndarray:
-    """(N, 2) pixel coordinates of white paint, net region removed."""
+    """(N, 2) pixel coordinates of white paint, net region removed.
+
+    Paint is a thin bright stripe, so it is found as a ridge rather than as a
+    colour: a white top-hat (the image minus its morphological opening) keeps
+    what is brighter than its surroundings over a width narrower than the kernel.
+    A brightness threshold alone also admits the pale grey of the non-volley zone,
+    which sits on one side of the line and drags the fit towards it.
+    """
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-    mask = cv2.inRange(hsv, (0, 0, WHITE_MIN_VALUE), (179, WHITE_MAX_SAT, 255))
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (TOPHAT_KERNEL_PX, TOPHAT_KERNEL_PX))
+    ridge = cv2.morphologyEx(hsv[:, :, 2], cv2.MORPH_TOPHAT, kernel)
+    mask = ((ridge > TOPHAT_MIN) & (hsv[:, :, 1] < WHITE_MAX_SAT)).astype(np.uint8) * 255
     if exclude_net:
         cv2.fillPoly(mask, [np.array(NET_POLYGON, np.int32)], 0)
     ys, xs = np.nonzero(mask)

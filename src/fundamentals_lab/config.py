@@ -298,7 +298,11 @@ COURT_LINE_HALF_M = 0.0254
 # Order: near baseline x left sideline (off the frame, at x < 0), near baseline x
 # right sideline, near kitchen line x left sideline, near kitchen line x right.
 ALIGN_SEED_CORNERS = ((-15.0, 585.0), (985.0, 960.0), (655.0, 500.0), (1555.0, 665.0))
-WHITE_MIN_VALUE = 150  # HSV value: bright
+WHITE_MIN_VALUE = 150  # HSV value: bright (the colour-only mask, kept for the comparison)
+# The ridge detector: a line is at most ~9 px wide on this frame, so a 21 px
+# opening removes it and leaves the surface under it.
+TOPHAT_KERNEL_PX = 21
+TOPHAT_MIN = 40
 WHITE_MAX_SAT = 90  # HSV saturation: close to grey
 LINE_BAND_PX = 10.0  # half-width of the strip searched either side of a predicted line
 LINE_REFINE_PASSES = 2

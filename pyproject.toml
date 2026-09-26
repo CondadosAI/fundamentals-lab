@@ -46,6 +46,7 @@ sensing-covers = "fundamentals_lab.cli.sensing_covers:sensing_covers"
 data-experiments = "fundamentals_lab.cli.data_experiments:data_experiments"
 data-figures = "fundamentals_lab.cli.data_figures:data_figures"
 data-covers = "fundamentals_lab.cli.data_covers:data_covers"
+align-experiments = "fundamentals_lab.cli.align_experiments:align_experiments"
 
 [build-system]
 requires = ["hatchling"]
