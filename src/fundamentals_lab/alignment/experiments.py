@@ -363,7 +363,31 @@ def warping(s: Scene) -> dict:
     # Players in the frame: pixels of frame 45000's top view that differ from the plate.
     single = cv2.warpPerspective(s.frame, H_i2t, size, flags=cv2.INTER_LINEAR)
     moved = np.abs(single.astype(int) - warp_of_med.astype(int)).max(axis=2) > 40
+    # The worked example: one top-view pixel on the edge of the near centre line,
+    # pulled back to the frame, and the four pixels bilinear interpolation mixes.
+    H_t2c = np.linalg.inv(warp.court2top()[0])
+    tp = np.array([230.0, 711.0])
+    c_pt = transforms.apply(H_t2c, tp[None])[0]
+    hom = s.H_court2img @ np.array([c_pt[0], c_pt[1], 1.0])
+    u, v = hom[:2] / hom[2]
+    x0, y0 = int(np.floor(u)), int(np.floor(v))
+    fx, fy = u - x0, v - y0
+    grey = s.frame.astype(np.float64).mean(axis=2)
+    quad = [grey[y0, x0], grey[y0, x0 + 1], grey[y0 + 1, x0], grey[y0 + 1, x0 + 1]]
+    wts = [(1 - fx) * (1 - fy), fx * (1 - fy), (1 - fx) * fy, fx * fy]
+    worked = {
+        "top_px": tp.tolist(),
+        "court_m": [_r(v_, 4) for v_ in c_pt],
+        "homogeneous_img": [_r(v_, 3) for v_ in hom],
+        "img_px": [_r(u, 3), _r(v, 3)],
+        "fx_fy": [_r(fx, 3), _r(fy, 3)],
+        "grey_quad": [_r(q, 1) for q in quad],
+        "weights": [_r(w_, 3) for w_ in wts],
+        "bilinear": _r(np.dot(wts, quad), 1),
+        "nearest": _r(quad[int(round(fy)) * 2 + int(round(fx))], 1),
+    }
     return {
+        "worked_backward": worked,
         "topview_size_px": list(size),
         "topview_cm_per_px": 2.0,
         "backward_vs_cv2_max_abs_diff": int(diff.max()),
