@@ -47,6 +47,19 @@ class Scene:
         }
 
 
+# --- The scene itself: what every lesson and lab is seeded with -------------------
+
+
+def scene(s: Scene) -> dict:
+    return {
+        "landmarks_img": {n: [_r(v, 2) for v in p] for n, p in s.fit.landmarks_img.items()},
+        "landmarks_court_m": {n: [_r(v, 4) for v in court.court_point(n)] for n in court.LANDMARKS},
+        "fit_landmarks": list(court.FIT_LANDMARKS),
+        "H_court2img": [[_r(v, 6) for v in r] for r in s.H_court2img / s.H_court2img[2, 2]],
+        "frame": 45000,
+    }
+
+
 # --- 4.1 L1: homogeneous coordinates --------------------------------------------
 
 
@@ -63,7 +76,21 @@ def homogeneous(s: Scene) -> dict:
         court.homogeneous_line(*court.LINES["side_right"]),
     )
     nbl = s.fit.landmarks_img["NBL"]
+    lm = s.fit.landmarks_img
+    # The worked example: the same lines as joins of two corners, unnormalised.
+    join_left = np.cross([*lm["NBL"], 1.0], [*lm["NKL"], 1.0])
+    join_right = np.cross([*lm["NBR"], 1.0], [*lm["NKR"], 1.0])
+    vp_raw = np.cross(join_left, join_right)
+    # Three lines parallel on the ground should share one vanishing point. Seen from
+    # NKC, the directions to the two estimates differ by this angle.
+    a1 = np.subtract(court.dehomogenise(vp_sides), lm["NKC"])
+    a2 = np.subtract(court.dehomogenise(vp_centre), lm["NKC"])
+    vp_angle = np.degrees(np.arctan2(a1[1], a1[0]) - np.arctan2(a2[1], a2[0]))
     return {
+        "worked_join_left_raw": [_r(v, 2) for v in join_left],
+        "worked_join_right_raw": [_r(v, 2) for v in join_right],
+        "worked_vp_raw": [_r(v, 1) for v in vp_raw],
+        "vp_direction_disagreement_deg": _r(abs(vp_angle), 3),
         "lines_img_normalised": {n: [_r(v, 5) for v in vec] for n, vec in L.items()},
         "NBL_img": [_r(v, 2) for v in nbl],
         "NBL_off_frame_px": _r(-nbl[0], 2),
@@ -224,8 +251,25 @@ def dlt(s: Scene) -> dict:
     }
     far_px = transforms.apply(s.H_court2img, court.court_points(["FBR"]))[0]
     scale["FBR"] = {k: _r(v, 2) for k, v in evaluate.scale_cm_per_px(s.H_img2court, far_px).items()}
+    # One wrong pair among six: NKC's pixel replaced by a point 25 px away along the
+    # kitchen line, the size of error a detector makes on a shoe beside the paint.
+    wrong = src6.copy()
+    kl = s.fit.lines["near_kitchen"].line
+    direction = np.array([-kl[1], kl[0]])
+    wrong[5] = wrong[5] + 25 * direction
+    H_bad = transforms.dlt(wrong, court.court_points(six))
+    outlier = {"slip_25px": s.held_out(H_bad)}
+    # And a mislabel: the pixel of NKR given NKC's court position, which is what a
+    # matcher does when two corners look alike.
+    swapped = src6.copy()
+    swapped[5] = s.fit.landmarks_img["NKR"]
+    outlier["mislabel_NKR_as_NKC"] = s.held_out(transforms.dlt(swapped, court.court_points(six)))
+    rows_nbl = A[:2]
+
     return {
         "A_shape": list(A.shape),
+        "A_rows_NBL": [[_r(v, 3) for v in r] for r in rows_nbl],
+        "one_wrong_pair_of_six": outlier,
         "A_singular_values": [_r(v, 6) for v in sv],
         "condition_raw": _r(transforms.condition_number(src, dst, False), 1),
         "condition_normalised": _r(transforms.condition_number(src, dst, True), 2),

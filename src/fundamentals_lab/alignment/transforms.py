@@ -96,10 +96,13 @@ def dlt(src: np.ndarray, dst: np.ndarray, normalise: bool = True) -> np.ndarray:
 
 
 def condition_number(src: np.ndarray, dst: np.ndarray, normalise: bool) -> float:
-    """Ratio of the largest to the second-smallest singular value of A.
+    """sigma_1 / sigma_8 of A: the ratio that governs how noise in A moves h.
 
-    The smallest is (near) zero by design, since that is the solution, so the
-    number that governs how noise in A moves h is sigma_1 / sigma_8.
+    sigma_9 is (near) zero by design, since its singular vector is the solution. With
+    exactly four points A is 8 x 9 and the SVD returns only eight values, the ninth
+    being the exact zero of the null space; with more, it returns nine and the last
+    one is the small residual of the least-squares fit. Either way the eighth largest
+    is the one to divide by.
     """
     src = np.asarray(src, dtype=np.float64)
     dst = np.asarray(dst, dtype=np.float64)
@@ -107,7 +110,7 @@ def condition_number(src: np.ndarray, dst: np.ndarray, normalise: bool) -> float
         src = apply(normalising_transform(src), src)
         dst = apply(normalising_transform(dst), dst)
     s = np.linalg.svd(dlt_matrix(src, dst), compute_uv=False)
-    return float(s[0] / s[-2])
+    return float(s[0] / s[7])
 
 
 def decompose_2x2(M: np.ndarray) -> dict:
