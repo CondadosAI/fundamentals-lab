@@ -13,11 +13,13 @@ track, one module per unit:
 | 1.1 Image formation | `formation/` | `formation-*` |
 | 1.2 Image sensing | `sensing/` | `sensing-*` (needs `uv sync --extra sensing`) |
 | 3.1 Edge detection | `core/` | `edge-*` |
+| 3.5 Image alignment, with 4.1 lesson 1 (homogeneous coordinates) | `alignment/` | `align-*` |
 
 Run it in the browser, no install — one notebook per unit:
 [**Image formation**](https://colab.research.google.com/github/CondadosAI/fundamentals-lab/blob/main/notebooks/image_formation.ipynb) ·
 [**Image sensing**](https://colab.research.google.com/github/CondadosAI/fundamentals-lab/blob/main/notebooks/image_sensing.ipynb) ·
-[**Edge detection**](https://colab.research.google.com/github/CondadosAI/fundamentals-lab/blob/main/notebooks/edge_detection.ipynb)
+[**Edge detection**](https://colab.research.google.com/github/CondadosAI/fundamentals-lab/blob/main/notebooks/edge_detection.ipynb) ·
+[**Image alignment**](https://colab.research.google.com/github/CondadosAI/fundamentals-lab/blob/main/notebooks/image_alignment.ipynb)
 
 ## Layout
 
@@ -39,11 +41,21 @@ fundamentals-lab/
 │   │   ├── noise.py           # the photon transfer curve → gain, full well, dynamic range
 │   │   ├── response.py        # raw against developed: the tone curve, measured
 │   │   └── hdr.py             # the bracket merged, then checked against a colorimeter
+│   ├── alignment/             # unit 3.5 (and 4.1 lesson 1), image alignment
+│   │   ├── court.py           # the court as lines on a plane, at line centres (rulebook 3.A)
+│   │   ├── plate.py           # the frames, and their per-pixel median (the empty court)
+│   │   ├── lines.py           # paint as a ridge, trimmed TLS line fits, corners as cross products
+│   │   ├── transforms.py      # 2x2, affine and the DLT written out, Hartley normalisation
+│   │   ├── evaluate.py        # held-out evidence in centimetres on the court
+│   │   ├── distortion.py      # how bent the lines are, and the plumb-line k that straightens them
+│   │   ├── warp.py            # forward and backward mapping, the bird's-eye view
+│   │   └── wild.py            # the outdoor court and the Barcelona panorama
 │   └── cli/                   # one click command per file
 ├── notebooks/
 │   ├── image_formation.ipynb  # unit 1.1, Colab-ready
 │   ├── image_sensing.ipynb    # unit 1.2, Colab-ready
-│   └── edge_detection.ipynb   # unit 3.1, Colab-ready
+│   ├── edge_detection.ipynb   # unit 3.1, Colab-ready
+│   └── image_alignment.ipynb  # unit 3.5 and 4.1 lesson 1, Colab-ready
 ├── data/                      # downloaded datasets (gitignored, never redistributed)
 └── output/
     ├── edge_numbers.json      # every number unit 3.1's articles cite
@@ -87,6 +99,13 @@ uv run data-experiments     # unit 1.3, and every "in the wild" run for the whol
                             # photographs it fetches from Wikimedia Commons add ~75 MB
 uv run data-figures         # the unit's figures, plus the in-the-wild panels
 uv run data-covers          # cover backgrounds → output/covers/
+
+uv run align-download       # unit 3.5: the court frame and its median plate from condados.ai,
+                            # plus the outdoor section (yt-dlp) and the Barcelona pair;
+                            # --from-youtube rebuilds the plate from the source video
+uv run align-experiments    # every number → output/alignment_numbers.json
+uv run align-figures        # overlays, top views and cover backgrounds
+uv run align-notebook       # rebuild notebooks/image_alignment.ipynb, outputs cleared
 ```
 
 `edge-experiments` **fails loudly** if the corner eigenvalues stop matching the
@@ -222,6 +241,39 @@ same artifact, and the assets are listed under Licence below.
 | Canny's hysteresis returns 654 contours over 100 px out of 4,340; the low threshold alone needs 73,025 fragments to find 700 | `…unit_3_1.l4_canny_hysteresis` |
 | A wheel filmed at 24 fps reports −0.90 apparent revolutions per second — backwards | `in_the_wild.l2_wagon_wheel` |
 
+## Unit 3.5 — Image alignment
+
+One frame of a pickleball final (and the median of 31 around it, because the camera is
+fixed and the players are not), measured against the court's published dimensions. Keys
+are in `output/alignment_numbers.json`.
+
+| Claim | Where |
+|---|---|
+| A court corner 18.5 px outside the frame, found as the cross product of two fitted lines | `homogeneous.NBL_img` |
+| The sidelines, parallel on the ground, meet at pixel (2252, 299) | `homogeneous.vp_along_court_img` |
+| The best 2×2 misses every near-court corner by 60.4 px | `linear.best_2x2_residual_px` |
+| On the far right sideline an affine map from 3 corners is 3.97 m out, a homography from 4 is 5.95 cm out | `affine_vs_projective` |
+| Hartley normalisation takes cond(A) from 53,466 to 6.4 and moves the answer by under 0.2 cm; it makes the result independent of the pixel origin | `dlt` |
+| One mislabelled pair among six puts the far baseline 17.6 m out | `dlt.one_wrong_pair_of_six` |
+| Forward mapping leaves 55.8% of the far court's bird's-eye pixels unwritten | `warping` |
+| A one-parameter division model straightens the near baseline from 7.71 px of bow to 0.16 | `lens` |
+| Moving the four seed corners by up to 5 px moves no fitted corner by more than 0.58 px | `stability` |
+
+Three things here cost time and are worth not rediscovering:
+
+**A white shirt is white paint.** In frame 45000 the near player stands on a sideline in a
+white top; the paint detector took her for the line. The median of 31 frames is the court
+with nobody on it, and the corners it gives agree with frame 45000's to within 1.3 px.
+
+**A pale surface is a line to a brightness threshold.** The non-volley zone is surfaced in
+light grey, and part of it passes any threshold that keeps the paint. It sits on one side
+of the kitchen line and drags that line's fit. Paint is found as a ridge instead (white
+top-hat, 21 px), which took the far baseline error from 81.3 cm to 38.4.
+
+**A line seen through a net is its own seed.** Behind the mesh a painted line becomes a
+dotted band as wide as the search strip, and a line fitted to a uniform band returns the
+strip's centre. The net region is excluded by a hand-drawn polygon (`config.NET_POLYGON`).
+
 ## Licence
 
 The code in this repository is Apache-2.0 (see `LICENSE`).
@@ -265,5 +317,18 @@ does not redistribute it, and Apache-2.0 says nothing about it:
   Photographic Survey*. Downloaded, never redistributed; the repository publishes
   numbers derived from the files, not the files. Unit 1.2 uses it as its scenario, on
   educational-use grounds.
+
+- **Pickleball footage from pickleball4you on YouTube, CC BY 3.0** (YouTube's only
+  Creative Commons option). *"2026.07.25 WD Open - Sabrina Lam + Grace Thomas vs Lingzhe Xu +
+  Margit Aardmaa (Gold Medal match)"* (`T5rmWjvt8Os`): frame 45000 and a median of 31
+  frames, served by condados.ai with attribution, or fetched from YouTube with
+  `--from-youtube`. *"2024.08.30 MS4.0 Philip Wong vs Tristan Clark (Round Robin, match 6)"*
+  (`K0qrASvix3Y`): a 70 s section fetched with yt-dlp. Attribution is required by the
+  licence and appears on every figure that shows a frame. Nothing is committed here.
+- **Two photographs of Barcelona harbour** by Pap3rinik on Wikimedia Commons,
+  *BarcelonaHarbour1.jpg* and *BarcelonaHarbour2.jpg*, **public domain** (released by the
+  author, `{{PD-self}}`). Fetched through the Commons API, never committed.
+- **USA Pickleball Official Rulebook (2026), Rule 3.A.** Only the court dimensions are
+  used, as numbers in `config.py`.
 
 No model weights are used or downloaded.
