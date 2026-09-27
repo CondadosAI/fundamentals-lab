@@ -169,7 +169,8 @@ def track_at(track, frame, max_gap=30):
 
 def minimap(s: Scene):
     tracks = players_track()
-    diag, H_c2d = court_diagram(34)
+    # 3 m around the court: players stand well behind the baselines to receive
+    diag, H_c2d = court_diagram(30, margin=3.0)
     frames, trails = [], {p: [] for p in tracks}
     for frame, f in clip_frames():
         left = f.copy()
