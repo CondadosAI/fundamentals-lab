@@ -68,9 +68,12 @@ code("""
 BASE = os.environ.get('ALIGN_BASE', 'https://condados.ai/blog/what-is-a-homography')
 data = Path('data'); (data / 'frames960').mkdir(parents=True, exist_ok=True)
 
+# condados.ai sits behind Cloudflare, which refuses Python's default user agent.
+UA = {'User-Agent': 'fundamentals-lab/0.1 (+https://github.com/CondadosAI/fundamentals-lab)'}
+
 def fetch(url, dst):
     if not Path(dst).exists():
-        urllib.request.urlretrieve(url, dst)
+        Path(dst).write_bytes(urllib.request.urlopen(urllib.request.Request(url, headers=UA)).read())
     return dst
 
 cv2.imwrite('frame_045000.png', cv2.imread(fetch(f'{BASE}/frames/frame_045000.webp', 'data/frame_045000.webp')))
