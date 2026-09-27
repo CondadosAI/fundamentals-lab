@@ -256,3 +256,71 @@ WEBP_QUALITY = 82  # the site's own encoding setting, so the number means someth
 # Unit 3.1's middle Canny operating point, reused unchanged so the edge column is
 # comparable with what the edge-detection unit published.
 IMAGEDATA_CANNY = (75, 200)
+
+# =============================================================================
+# Unit 3.5 — Image alignment (and unit 4.1, lesson 1: homogeneous coordinates)
+# =============================================================================
+ALIGNMENT_NUMBERS_JSON = OUTPUT_DIR / "alignment_numbers.json"
+ALIGN_DIR = DATA_DIR / "pickleball"
+
+# "2026.07.25 WD Open - Sabrina Lam + Grace Thomas vs Lingzhe Xu + Margit Aardmaa
+# (Gold Medal match)" by pickleball4you on YouTube, CC BY 3.0. One fixed camera
+# behind a corner of the court, 1920x1080, 30000/1001 fps.
+ALIGN_VIDEO_ID = "T5rmWjvt8Os"
+ALIGN_FPS = 30000 / 1001
+# The frame every figure shows: 45000 * 1001 / 30000 = 1501.5 s into the match.
+ALIGN_FRAME = 45000
+# The camera never moves, the players do. The median of 31 frames, one every
+# 2 s either side of ALIGN_FRAME, is the court with nobody on it, and every line
+# is measured on that plate rather than on a frame where a white shirt stands on
+# a white line.
+ALIGN_PLATE_FRAMES = tuple(range(44100, 45901, 60))
+# Frame 45000 and the plate at full resolution (lossless), the 31 frames at 960 px
+# for the notebook's median demo. The full-resolution frames come from YouTube via
+# `align-download --from-youtube`.
+ALIGN_SITE_BASE = "https://condados.ai/blog/image-alignment-and-stitching/frames"
+
+# --- The court (USA Pickleball Official Rulebook 2026, Rule 3.A) ---------------
+COURT_LENGTH_M = 13.41  # 3.A.1: 44 ft
+COURT_WIDTH_M = 6.10  # 3.A.1: 20 ft
+COURT_KITCHEN_M = 2.13  # 3.A.4.c: non-volley line, 7 ft from the net
+# 3.A.4.e: lines are 2 in (5.08 cm) wide, and 3.A.2 measures the court to their
+# *outside* edge. A line fitted to paint pixels finds its centre, so the model
+# puts every line 2.54 cm inside the nominal dimension. Ignoring this moves each
+# landmark by 2.5-3.6 cm, which is the size of the effects the unit measures.
+COURT_LINE_HALF_M = 0.0254
+
+# --- Finding the painted lines ------------------------------------------------
+# Four approximate pixel positions of the near-half corners, read off the frame by
+# eye to about 5 px. They only say where to look: each line is then refitted on
+# paint pixels and the corners recomputed from the fits, twice, so the published
+# landmarks do not depend on these numbers (checked by `stability`, below).
+# Order: near baseline x left sideline (off the frame, at x < 0), near baseline x
+# right sideline, near kitchen line x left sideline, near kitchen line x right.
+ALIGN_SEED_CORNERS = ((-15.0, 585.0), (985.0, 960.0), (655.0, 500.0), (1555.0, 665.0))
+WHITE_MIN_VALUE = 150  # HSV value: bright (the colour-only mask, kept for the comparison)
+# The ridge detector: a line is at most ~9 px wide on this frame, so a 21 px
+# opening removes it and leaves the surface under it.
+TOPHAT_KERNEL_PX = 21
+TOPHAT_MIN = 40
+WHITE_MAX_SAT = 90  # HSV saturation: close to grey
+LINE_BAND_PX = 10.0  # half-width of the strip searched either side of a predicted line
+LINE_REFINE_PASSES = 2
+# The net, drawn by hand on the plate, with ~10 px of padding. Seen through the
+# mesh, a painted line becomes a dotted band as wide as the search strip, and a
+# least-squares fit to a uniform band returns the middle of the strip, which is
+# the prediction it started from. That is an echo, not a measurement, so every
+# pixel inside this polygon is excluded.
+NET_POLYGON = ((842, 354), (1735, 442), (1735, 566), (842, 447))
+SEED_PERTURB_PX = 5.0
+SEED_PERTURB_TRIALS = 20
+
+# --- Lesson 3 (DLT) ------------------------------------------------------------
+DLT_NOISE_PX = 1.0
+DLT_NOISE_TRIALS = 1000
+ALIGN_SEED = 20260926
+
+# --- Lesson 5 (warping) ----------------------------------------------------------
+# The bird's-eye view: 1 px = 2 cm, with a 1.5 m margin around the court.
+TOPVIEW_PX_PER_M = 50
+TOPVIEW_MARGIN_M = 1.5
