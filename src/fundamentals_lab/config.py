@@ -278,7 +278,7 @@ ALIGN_PLATE_FRAMES = tuple(range(44100, 45901, 60))
 # Frame 45000 and the plate at full resolution (lossless), the 31 frames at 960 px
 # for the notebook's median demo. The full-resolution frames come from YouTube via
 # `align-download --from-youtube`.
-ALIGN_SITE_BASE = "https://condados.ai/blog/image-alignment-and-stitching/frames"
+ALIGN_SITE_BASE = "https://condados.ai/blog/what-is-a-homography/frames"
 
 # --- The court (USA Pickleball Official Rulebook 2026, Rule 3.A) ---------------
 COURT_LENGTH_M = 13.41  # 3.A.1: 44 ft

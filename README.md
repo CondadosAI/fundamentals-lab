@@ -106,6 +106,7 @@ uv run align-download       # unit 3.5: the court frame and its median plate fro
 uv run align-experiments    # every number → output/alignment_numbers.json
 uv run align-figures        # overlays, top views and cover backgrounds
 uv run align-notebook       # rebuild notebooks/image_alignment.ipynb, outputs cleared
+uv run align-media          # the animations the posts open with (needs ffmpeg with libwebp)
 ```
 
 `edge-experiments` **fails loudly** if the corner eigenvalues stop matching the
@@ -328,6 +329,13 @@ does not redistribute it, and Apache-2.0 says nothing about it:
 - **Two photographs of Barcelona harbour** by Pap3rinik on Wikimedia Commons,
   *BarcelonaHarbour1.jpg* and *BarcelonaHarbour2.jpg*, **public domain** (released by the
   author, `{{PD-self}}`). Fetched through the Commons API, never committed.
+- **A printed card on a bench**, *Stationery on a bench (Unsplash).jpg* by Brigitte Tohm on
+  Wikimedia Commons, **CC0**, for the document-scanner animation. Fetched, never committed.
+- **Player ankle positions for a 10 s clip** (`output/alignment_players_clip.csv`) and ball
+  detections (`output/alignment_ball_clip.csv`), exported from
+  [CondadosAI/sportcv](https://github.com/CondadosAI/sportcv), which runs the RTMO pose model
+  through rtmlib (Apache-2.0) on the same CC BY 3.0 match. The minimap animation maps them
+  through this repository's homography, not sportcv's.
 - **USA Pickleball Official Rulebook (2026), Rule 3.A.** Only the court dimensions are
   used, as numbers in `config.py`.
 

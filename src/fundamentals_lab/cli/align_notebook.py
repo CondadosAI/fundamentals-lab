@@ -65,7 +65,7 @@ the end.
 """)
 
 code("""
-BASE = os.environ.get('ALIGN_BASE', 'https://condados.ai/blog/image-alignment-and-stitching')
+BASE = os.environ.get('ALIGN_BASE', 'https://condados.ai/blog/what-is-a-homography')
 data = Path('data'); (data / 'frames960').mkdir(parents=True, exist_ok=True)
 
 def fetch(url, dst):
