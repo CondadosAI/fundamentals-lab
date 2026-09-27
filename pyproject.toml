@@ -50,6 +50,7 @@ align-experiments = "fundamentals_lab.cli.align_experiments:align_experiments"
 align-figures = "fundamentals_lab.cli.align_figures:align_figures"
 align-download = "fundamentals_lab.cli.align_download:align_download"
 align-notebook = "fundamentals_lab.cli.align_notebook:align_notebook"
+align-media = "fundamentals_lab.cli.align_media:align_media"
 
 [build-system]
 requires = ["hatchling"]

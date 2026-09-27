@@ -242,10 +242,10 @@ def render_all() -> None:
     _save(oimg, "outdoor_fit")
     covers = {
         "homogeneous-coordinates": ext[:, 200:],
-        "image-alignment-and-stitching": pair,
-        "2d-linear-transforms": lin,
-        "affine-and-projective-transforms": aff,
-        "computing-a-homography-dlt": sm,
+        "what-is-a-homography": pair,
+        "2d-image-transforms": lin,
+        "affine-vs-perspective-transform": aff,
+        "compute-homography-dlt": sm,
         "image-warping-and-blending": np.rot90(tv["topview_plate"], 1).copy(),
     }
     for slug, img in covers.items():
