@@ -24,6 +24,7 @@ from fundamentals_lab.config import (
     ALIGN_VIDEO_ID,
 )
 
+USER_AGENT = {"User-Agent": "fundamentals-lab/0.1 (+https://github.com/CondadosAI/fundamentals-lab)"}
 FRAME_PNG = "frame_{:06d}.png"
 PLATE_PNG = "plate_median31.png"
 
@@ -49,7 +50,9 @@ def fetch_from_site() -> list[Path]:
             continue
         tmp = ALIGN_DIR / name
         logger.info(f"fetching {ALIGN_SITE_BASE}/{name}")
-        urllib.request.urlretrieve(f"{ALIGN_SITE_BASE}/{name}", tmp)
+        # condados.ai sits behind Cloudflare, which refuses Python's default user agent.
+        req = urllib.request.Request(f"{ALIGN_SITE_BASE}/{name}", headers=USER_AGENT)
+        tmp.write_bytes(urllib.request.urlopen(req).read())
         cv2.imwrite(str(dst), cv2.imread(str(tmp)))
         out.append(dst)
     return out
