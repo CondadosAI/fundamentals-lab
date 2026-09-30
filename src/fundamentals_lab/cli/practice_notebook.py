@@ -153,6 +153,9 @@ cv2.waitKey = lambda delay=0: -1
         "nbformat": 4,
         "nbformat_minor": 5,
     }
+    # nbformat 4.5 gives every cell an id; validators warn without one and will reject it.
+    for i, cell in enumerate(cells):
+        cell["id"] = f"{module}-{i:03d}"
     out = PROJECT_ROOT / "notebooks" / f"practice_{module}.ipynb"
     out.write_text(json.dumps(nb, indent=1) + "\n")
     return out
