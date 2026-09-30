@@ -88,7 +88,7 @@ site they run in the browser; here they run on the OpenCV you install below.
 """)
     code("""
 # Pinned so a Colab base-image change cannot silently move the numbers.
-%pip install -q 'opencv-python-headless>=5.0.0,<6.0.0' 'numpy>=2' 'matplotlib>=3.8'
+%pip install -q 'opencv-python>=5.0.0,<6.0.0' 'numpy>=2' 'matplotlib>=3.8'
 """)
     names = ", ".join(repr(f.rsplit("/", 1)[-1]) for f in files)
     code(f"""
