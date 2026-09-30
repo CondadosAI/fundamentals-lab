@@ -57,6 +57,7 @@ align-notebook = "fundamentals_lab.cli.align_notebook:align_notebook"
 align-media = "fundamentals_lab.cli.align_media:align_media"
 openings-media = "fundamentals_lab.cli.openings_media:openings_media"
 practice-m1 = "fundamentals_lab.cli.practice_m1:practice_m1"
+practice-m2 = "fundamentals_lab.cli.practice_m2:practice_m2"
 practice-notebook = "fundamentals_lab.cli.practice_notebook:practice_notebook"
 
 [build-system]
