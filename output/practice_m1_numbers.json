@@ -1,0 +1,99 @@
+{
+ "clip_level": 250,
+ "frames": {
+  "reference": {
+   "shape": [
+    639,
+    960,
+    3
+   ],
+   "mean_grey": 104.7,
+   "clipped_pct": 11.7,
+   "dark_pct": 0.0
+  },
+  "dark": {
+   "shape": [
+    639,
+    960,
+    3
+   ],
+   "mean_grey": 56.6,
+   "clipped_pct": 7.8,
+   "dark_pct": 5.3
+  },
+  "darker": {
+   "shape": [
+    639,
+    960,
+    3
+   ],
+   "mean_grey": 40.8,
+   "clipped_pct": 6.3,
+   "dark_pct": 22.8
+  },
+  "bright": {
+   "shape": [
+    639,
+    960,
+    3
+   ],
+   "mean_grey": 173.8,
+   "clipped_pct": 27.2,
+   "dark_pct": 0.0
+  }
+ },
+ "fixes": {
+  "dark": {
+   "none": 47.0,
+   "add": {
+    "param": 50.0,
+    "mae": 18.0
+   },
+   "multiply": {
+    "param": 2.4,
+    "mae": 9.1
+   },
+   "gamma": {
+    "param": 0.55,
+    "mae": 10.7
+   },
+   "equalize": 30.6,
+   "clahe": 35.5
+  },
+  "darker": {
+   "none": 62.3,
+   "add": {
+    "param": 65.0,
+    "mae": 25.7
+   },
+   "multiply": {
+    "param": 4.2,
+    "mae": 15.1
+   },
+   "gamma": {
+    "param": 0.4,
+    "mae": 13.9
+   },
+   "equalize": 31.9,
+   "clahe": 51.3
+  },
+  "bright": {
+   "none": 68.4,
+   "add": {
+    "param": 0.0,
+    "mae": 68.4
+   },
+   "multiply": {
+    "param": 0.5,
+    "mae": 22.8
+   },
+   "gamma": {
+    "param": 2.35,
+    "mae": 33.4
+   },
+   "equalize": 30.3,
+   "clahe": 58.8
+  }
+ },
+ "unrecoverable_pct": 15.6
+}
