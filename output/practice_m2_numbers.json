@@ -326,6 +326,10 @@
    }
   }
  },
+ "pocket_margin": {
+  "rejected_brightest_max": 45,
+  "ball_brightest_min": 144
+ },
  "missed_by_cause": {
   "touching": 9,
   "cloth-coloured": 2,

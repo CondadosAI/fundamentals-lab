@@ -267,6 +267,18 @@ def experiments() -> dict:
                 tot[k] += m[k]
         row["total"] = tot
         out["stages"][stage] = row
+    # The pocket rule's margin: the brightest pixel of every blob it rejected, against
+    # the dimmest brightest-pixel of any kept blob that lands on a labelled ball.
+    dark, lit = [], []
+    for name in PHOTOS:
+        for stage in ("pockets", "shadows"):
+            r = find_balls(load(name), **STAGES[stage])
+            dark += [b["brightest"] for b in r["rejected"] if b["why"] == "too dark"]
+            for b in r["balls"]:
+                if any(np.hypot(b["x"] - x, b["y"] - y) < r_ for x, y, r_ in LABELS[name]):
+                    lit.append(b["brightest"])
+    out["pocket_margin"] = {"rejected_brightest_max": max(dark), "ball_brightest_min": min(lit)}
+
     final = out["stages"]["shadows"]
     cause_of = {(n, x, y): c for c, xs in CAUSES.items() for (n, x, y) in xs}
     out["missed_by_cause"] = {c: 0 for c in CAUSES}
@@ -376,6 +388,28 @@ def build_media(out_dir: Path = MEDIA_DIR) -> dict[str, Path]:
         p = out_dir / f"{name}.webp"
         cv2.imwrite(str(p), still, [cv2.IMWRITE_WEBP_QUALITY, 82])
         paths[name] = p
+    # Hub: the failure gallery, four crops of the finished pipeline's output.
+    cases = [
+        ("pool-wide", (175, 235), 55, "touching: 3 balls, 1 blob"),
+        ("pool", (707, 150), 45, "green ball on green cloth"),
+        ("pool-close", (320, 490), 90, "shadow joined to the ball"),
+        ("pool", (615, 120), 30, "green stripe: two white pieces"),
+    ]
+    tiles = []
+    for name, (cx, cy), half, text in cases:
+        scored, _ = _scored(load(name), name, **STAGES["shadows"])
+        crop = scored[cy - half : cy + half, cx - round(half * 4 / 3) : cx + round(half * 4 / 3)]
+        tile = cv2.resize(crop, (400, 300), interpolation=cv2.INTER_CUBIC)
+        label(tile, text, (12, 30), 0.6)
+        tiles.append(tile)
+    gap = np.full((300, 6, 3), 40, np.uint8)
+    row1 = np.hstack([tiles[0], gap, tiles[1]])
+    row2 = np.hstack([tiles[2], gap, tiles[3]])
+    gallery = np.vstack([row1, np.full((6, row1.shape[1], 3), 40, np.uint8), row2])
+    p = out_dir / "failures.webp"
+    cv2.imwrite(str(p), gallery, [cv2.IMWRITE_WEBP_QUALITY, 82])
+    paths["failures"] = p
+
     # Hub: the pipeline step by step on pool.webp, then the result on all three photos.
     steps = [
         (img, "1. the photo"),
@@ -404,7 +438,7 @@ def build_media(out_dir: Path = MEDIA_DIR) -> dict[str, Path]:
 
 SLUGS = {
     "hub": "find-balls-pool-table-opencv",
-    "hsv": "opencv-hsv-color-space",
+    "hsv": "opencv-find-hsv-range",
     "mask": "opencv-inrange-color-mask",
     "clean": "opencv-morphology-erode-dilate",
     "contours": "opencv-find-contours",
