@@ -463,7 +463,7 @@ def build_covers(out_dir: Path | None = None) -> dict[str, Path]:
         SLUGS["mask"]: _grey3(cloth),
         SLUGS["clean"]: _grey3(clean(objects)),
         SLUGS["contours"]: _contours(img),
-        SLUGS["fixes"]: final,
+        SLUGS["fixes"]: cv2.imread(str(MEDIA_DIR / "failures.webp")),
     }
     paths = {}
     for slug, bg in backgrounds.items():
