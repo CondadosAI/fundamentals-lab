@@ -35,6 +35,20 @@ MODULES = {
         "credit": 'Frames from Mark Fairchild\'s HDR Photographic Survey, "Luxo Double Checker" '
         "(research and non-commercial use), developed by this repository's `practice-m1`.",
     },
+    "m2": {
+        "title": "OpenCV in Practice, M2: find every ball on a pool table",
+        "slugs": [
+            "opencv-find-hsv-range",
+            "opencv-inrange-color-mask",
+            "opencv-morphology-erode-dilate",
+            "opencv-find-contours",
+            "opencv-color-detection-failures",
+            "find-balls-pool-table-opencv",
+        ],
+        "credit": 'Photos "Billiards table 2.JPG", "Billiards table 1.JPG" and "Billiards '
+        'Table.JPG" by MarkBuckawicki (Wikimedia Commons, CC0), resized by this '
+        "repository's `practice-m2`; ball positions placed by hand.",
+    },
 }
 
 CELL = re.compile(r'<PyCell\b((?:[^>"]|"[^"]*")*)>\s*```python[^\n]*\n([\s\S]*?)```\s*</PyCell>')

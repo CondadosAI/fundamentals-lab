@@ -1,0 +1,364 @@
+{
+ "settings": {
+  "hue": [
+   75,
+   100
+  ],
+  "sat_min": 80,
+  "v_min": 40,
+  "edge": 19,
+  "min_area": 45,
+  "min_round": 0.55,
+  "pocket_v": 60,
+  "v_shadow": 10
+ },
+ "photos": {
+  "pool": {
+   "balls": 15,
+   "shape": [
+    720,
+    960,
+    3
+   ]
+  },
+  "pool-close": {
+   "balls": 12,
+   "shape": [
+    720,
+    960,
+    3
+   ]
+  },
+  "pool-wide": {
+   "balls": 14,
+   "shape": [
+    720,
+    960,
+    3
+   ]
+  }
+ },
+ "stages": {
+  "first": {
+   "pool": {
+    "found": 10,
+    "balls": 15,
+    "false": 1,
+    "missed_at": [
+     [
+      145,
+      157
+     ],
+     [
+      167,
+      197
+     ],
+     [
+      494,
+      92
+     ],
+     [
+      686,
+      129
+     ],
+     [
+      727,
+      155
+     ]
+    ],
+    "false_at": [
+     [
+      624.5,
+      118.5
+     ]
+    ]
+   },
+   "pool-close": {
+    "found": 8,
+    "balls": 12,
+    "false": 1,
+    "missed_at": [
+     [
+      300,
+      112
+     ],
+     [
+      539,
+      83
+     ],
+     [
+      703,
+      188
+     ],
+     [
+      841,
+      156
+     ]
+    ],
+    "false_at": [
+     [
+      19.7,
+      636.0
+     ]
+    ]
+   },
+   "pool-wide": {
+    "found": 9,
+    "balls": 14,
+    "false": 1,
+    "missed_at": [
+     [
+      178,
+      222
+     ],
+     [
+      162,
+      233
+     ],
+     [
+      188,
+      238
+     ],
+     [
+      28,
+      294
+     ],
+     [
+      28,
+      308
+     ]
+    ],
+    "false_at": [
+     [
+      517.0,
+      97.0
+     ]
+    ]
+   },
+   "total": {
+    "found": 27,
+    "balls": 41,
+    "false": 3
+   }
+  },
+  "pockets": {
+   "pool": {
+    "found": 10,
+    "balls": 15,
+    "false": 1,
+    "missed_at": [
+     [
+      145,
+      157
+     ],
+     [
+      167,
+      197
+     ],
+     [
+      494,
+      92
+     ],
+     [
+      686,
+      129
+     ],
+     [
+      727,
+      155
+     ]
+    ],
+    "false_at": [
+     [
+      624.5,
+      118.5
+     ]
+    ]
+   },
+   "pool-close": {
+    "found": 8,
+    "balls": 12,
+    "false": 0,
+    "missed_at": [
+     [
+      300,
+      112
+     ],
+     [
+      539,
+      83
+     ],
+     [
+      703,
+      188
+     ],
+     [
+      841,
+      156
+     ]
+    ],
+    "false_at": []
+   },
+   "pool-wide": {
+    "found": 8,
+    "balls": 14,
+    "false": 0,
+    "missed_at": [
+     [
+      178,
+      222
+     ],
+     [
+      162,
+      233
+     ],
+     [
+      188,
+      238
+     ],
+     [
+      28,
+      294
+     ],
+     [
+      28,
+      308
+     ],
+     [
+      90,
+      350
+     ]
+    ],
+    "false_at": []
+   },
+   "total": {
+    "found": 26,
+    "balls": 41,
+    "false": 1
+   }
+  },
+  "shadows": {
+   "pool": {
+    "found": 11,
+    "balls": 15,
+    "false": 2,
+    "missed_at": [
+     [
+      145,
+      157
+     ],
+     [
+      167,
+      197
+     ],
+     [
+      688,
+      156
+     ],
+     [
+      727,
+      155
+     ]
+    ],
+    "false_at": [
+     [
+      157.2,
+      176.0
+     ],
+     [
+      624.5,
+      118.5
+     ]
+    ]
+   },
+   "pool-close": {
+    "found": 9,
+    "balls": 12,
+    "false": 0,
+    "missed_at": [
+     [
+      703,
+      188
+     ],
+     [
+      841,
+      156
+     ],
+     [
+      329,
+      473
+     ]
+    ],
+    "false_at": []
+   },
+   "pool-wide": {
+    "found": 9,
+    "balls": 14,
+    "false": 0,
+    "missed_at": [
+     [
+      178,
+      222
+     ],
+     [
+      162,
+      233
+     ],
+     [
+      188,
+      238
+     ],
+     [
+      28,
+      294
+     ],
+     [
+      90,
+      350
+     ]
+    ],
+    "false_at": []
+   },
+   "total": {
+    "found": 29,
+    "balls": 41,
+    "false": 2
+   }
+  }
+ },
+ "pocket_margin": {
+  "rejected_brightest_max": 45,
+  "ball_brightest_min": 144
+ },
+ "missed_by_cause": {
+  "touching": 9,
+  "cloth-coloured": 2,
+  "shadow": 1
+ },
+ "v_min_sweep": {
+  "0": {
+   "found": 28,
+   "false": 3
+  },
+  "5": {
+   "found": 28,
+   "false": 2
+  },
+  "10": {
+   "found": 29,
+   "false": 2
+  },
+  "20": {
+   "found": 28,
+   "false": 2
+  },
+  "30": {
+   "found": 27,
+   "false": 2
+  },
+  "40": {
+   "found": 26,
+   "false": 1
+  }
+ }
+}
