@@ -79,6 +79,7 @@ uv sync
 uv run edge-download        # Middlebury templeRing (11.7 MB, 47 views)
 uv run edge-experiments     # every sweep → output/edge_numbers.json
 uv run edge-figures         # one figure per lesson → output/figures/
+uv run edge-hub             # the hub's pipeline on the CC0 cloister (needs boundary-download)
 
 uv run formation-download   # unit 1.1's photographs (1.5 MB)
 uv run formation-calibrate  # intrinsics and distortion → output/formation_numbers.json

@@ -346,6 +346,11 @@ def experiments(out_name: str) -> None:
         "hysteresis_vs_single_threshold": hysteresis_vs_single_threshold(gray),
         "zero_crossing_closure": zero_crossing_closure(gray),
     }
+    # The hub's panels and representation numbers run on the CC0 cloister, which the site
+    # may serve; templeRing's licence is not stated. Same functions, other photograph.
+    from fundamentals_lab.cli.edge_hub import hub_cloister
+
+    numbers["hub_cloister"] = hub_cloister()
 
     out = OUTPUT_DIR / out_name
     out.write_text(json.dumps(numbers, indent=2))
