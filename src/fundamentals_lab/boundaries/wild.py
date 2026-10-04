@@ -135,7 +135,7 @@ def pool_balls() -> dict:
     acc = ght.vote(g, tab)
     pk = ght.peaks(acc, 25, int(rr))
     hits = 0
-    for v, x, y in pk[1:]:
+    for _, x, y in pk[1:]:
         if np.min(np.hypot(c[:, 0] - x, c[:, 1] - y)) <= 0.5 * rr:
             hits += 1
     return {
