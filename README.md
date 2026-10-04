@@ -86,6 +86,10 @@ uv run formation-distort    # how far the lens moves a pixel, and what straighte
 uv run formation-dof        # depth of field at f/4 and f/22
 uv run formation-fisheye    # both camera models fitted to one fisheye lens
 
+uv run camgeom-experiments  # unit 4.1: camera matrix, calibration, PnP → output/camera_geometry_numbers.json
+uv run camgeom-figures      # unit 4.1: hub pipeline panels, lesson figures, cover backgrounds
+uv run camgeom-notebook     # unit 4.1: notebooks/camera_geometry.ipynb, outputs cleared
+
 uv sync --extra sensing     # unit 1.2 only: rawpy/LibRaw, kept out of the base install
 uv run sensing-download     # one HDRPS scene: 18 raw exposures (220 MB) and its data
 uv run sensing-inspect      # what the files declare → output/sensing_frames.json
