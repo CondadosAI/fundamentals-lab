@@ -936,11 +936,11 @@
     },
     "radius_ratio_right_over_left": 0.953,
     "heldout_second_over_first": {
-      "n": 101,
-      "median": 0.676,
-      "min": 0.041,
+      "n": 100,
+      "median": 0.681,
+      "min": 0.372,
       "max": 0.996,
-      "p05": 0.409,
+      "p05": 0.416,
       "p95": 0.968
     }
   },

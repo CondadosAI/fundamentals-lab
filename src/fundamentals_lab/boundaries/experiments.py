@@ -450,6 +450,8 @@ def ght_lesson(s: Scene) -> dict:
     tab, _ = ght.r_table(tm)
     ratios = []
     for name in _heldout_names():
+        if name == BOUNDARY_FRAME:
+            continue  # the frame the template was cut from is not held out
         b = frame.blurred(frame.load(name))
         pk = ght.peaks(ght.vote(b, tab), 2, GHT["min_dist"])
         if len(pk) == 2:
