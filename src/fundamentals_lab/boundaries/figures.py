@@ -329,9 +329,24 @@ def lab_data(s: Scene):
         img[edges == 0] = 0
         return img
 
+    def pack16(gray, edges):
+        """CircleLab: R edges; G, B the high and low bytes of the direction in [0, 360) as a
+        16-bit fraction of a turn. At r = 52 px a 2-degree step would move a vote by 1.8 px."""
+        gx = cv2.Sobel(gray, cv2.CV_32F, 1, 0)
+        gy = cv2.Sobel(gray, cv2.CV_32F, 0, 1)
+        a = np.rint((np.degrees(np.arctan2(gy, gx)) % 360) * 65536 / 360).astype(np.int64) % 65536
+        img = np.zeros((*edges.shape, 3), np.uint8)
+        img[..., 2] = edges
+        img[..., 1] = (a >> 8).astype(np.uint8)
+        img[..., 0] = (a & 255).astype(np.uint8)
+        img[edges == 0] = 0
+        return img
+
     _lossless(pack(highway.blurred(s.bgr), s.edges), "lab-highway")
+    # the frame's whole hand-painted lane mask, for the notebook's on-paint scores
+    _lossless(cv2.merge([s.lane.astype(np.uint8) * 255] * 3), "highway-lane")
     g = pool.grey(pool.load("pool-close"))
-    _lossless(pack(g, cv2.Canny(g, 50, 150)), "lab-pool-close")
+    _lossless(pack16(g, cv2.Canny(g, 50, 150)), "lab-pool-close")
 
 
 # --- covers ------------------------------------------------------------------------

@@ -27,15 +27,16 @@ md("""
 
 Companion notebook for the CondadosAI Fundamentals unit **Boundary detection** (F3 / unit 3.2):
 fitting a line to edge pixels, the Hough transform, the probabilistic Hough transform and the
-generalized Hough transform. Every Python block printed in those posts has a cell here, and each
+Hough circle transform. Every Python block printed in those posts has a cell here, and each
 lesson's exercises have a cell that computes the answers the post gives.
 
 | Used for | Source | Licence |
 |---|---|---|
-| every lesson | VisA `pcb1`, `Data/Images/Normal/0000.JPG` (Zou et al., ECCV 2022, Amazon.com, Inc. or its affiliates), reduced to 900x686 and served losslessly by condados.ai | CC BY 4.0 |
+| lessons 1 to 3 | comma10k frame `0825_e61068239ce72500_2018-11-13--21-06-53_13_903` and its hand-painted lane mask (comma.ai), served losslessly by condados.ai | MIT |
+| lesson 4 | "Billiards table 2.JPG", "Billiards table 1.JPG" and "Billiards Table.JPG" by MarkBuckawicki (Wikimedia Commons) at 960 px, and the 41 ball labels of OpenCV in Practice M2 | CC0 1.0 |
 
-The full pipeline, with the held-out frames and the in-the-wild photographs, is
-`uv run boundary-download` then `uv run boundary-experiments` in the repository.
+The full pipeline, with the 299 held-out frames, the comma2k19 video and the in-the-wild
+photographs, is `uv run boundary-download` then `uv run boundary-experiments` in the repository.
 """)
 
 code("""
@@ -52,12 +53,18 @@ import cv2
 import numpy as np
 
 # condados.ai sits behind Cloudflare, which refuses Python's default user agent.
-BASE = os.environ.get('BOUNDARY_BASE', 'https://condados.ai/blog/boundary-detection')
+BASE = os.environ.get('BOUNDARY_BASE', 'https://condados.ai')
 UA = {'User-Agent': 'fundamentals-lab/0.1 (+https://github.com/CondadosAI/fundamentals-lab)'}
-if not Path('pcb1.webp').exists():
-    req = urllib.request.Request(f'{BASE}/pcb1.webp', headers=UA)
-    Path('pcb1.webp').write_bytes(urllib.request.urlopen(req).read())
-print('OpenCV', cv2.__version__, '| NumPy', np.__version__, '|', cv2.imread('pcb1.webp').shape)
+FILES = ['/blog/boundary-detection/highway.webp', '/blog/boundary-detection/highway-lane.webp',
+         '/blog/line-fitting-least-squares/dash-mask.webp', '/blog/line-fitting-least-squares/line-mask.webp',
+         '/practice/m2/pool.webp', '/practice/m2/pool-close.webp', '/practice/m2/pool-wide.webp',
+         '/practice/m2/labels.json']
+for f in FILES:
+    name = f.rsplit('/', 1)[1]
+    if not Path(name).exists():
+        req = urllib.request.Request(BASE + f, headers=UA)
+        Path(name).write_bytes(urllib.request.urlopen(req).read())
+print('OpenCV', cv2.__version__, '| NumPy', np.__version__, '|', cv2.imread('highway.webp').shape)
 """)
 
 md("""
@@ -70,27 +77,23 @@ code(r"""
 import numpy as np
 import cv2
 
-img = cv2.imread("pcb1.webp")
-gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-blur = cv2.GaussianBlur(gray, (0, 0), 1.4)
-edges = cv2.Canny(blur, 50, 150)
+# the dash's pixels, painted by comma10k's labellers
+mask = cv2.imread("dash-mask.webp", cv2.IMREAD_GRAYSCALE)
+ys, xs = np.nonzero(mask)
+P = np.c_[xs, ys].astype(float)
 
-# the board's left side: x 110-128, y 260-450
-ys, xs = np.nonzero(edges[260:450, 110:128])
-P = np.c_[xs + 110, ys + 260].astype(float)
-
-# least squares: y = m x + b
-A = np.c_[P[:, 0], np.ones(len(P))]
-m, b = np.linalg.lstsq(A, P[:, 1], rcond=None)[0]
-ls = np.degrees(np.arctan(m)) % 180
+# least squares, y on x and x on y
+m = np.polyfit(P[:, 0], P[:, 1], 1)[0]
+m2 = np.polyfit(P[:, 1], P[:, 0], 1)[0]
+y_on_x = np.degrees(np.arctan(m)) % 180
+x_on_y = np.degrees(np.arctan2(1, m2)) % 180
 
 # total least squares: first principal direction
-mu = P.mean(axis=0)
-d = np.linalg.svd(P - mu)[2][0]
+d = np.linalg.svd(P - P.mean(axis=0))[2][0]
 tls = np.degrees(np.arctan2(d[1], d[0])) % 180
 
 print(len(P), "pixels")
-print(f"least squares:       {ls:.2f}")
+print(f"y on x: {y_on_x:.2f}   x on y: {x_on_y:.2f}")
 print(f"total least squares: {tls:.2f}")
 """)
 
@@ -98,8 +101,8 @@ code(r"""
 v = cv2.fitLine(P.astype(np.float32), cv2.DIST_L2,
                 0, 0.01, 0.01).ravel()
 fit = np.degrees(np.arctan2(v[1], v[0])) % 180
-print(f"cv2.fitLine:         {fit:.2f}")
-print(f"difference to ours:  {abs(fit - tls):.4f}")
+print(f"cv2.fitLine:        {fit:.2f}")
+print(f"difference to ours: {abs(fit - tls):.4f}")
 """)
 
 md("""
@@ -121,22 +124,17 @@ print("correct" if (abs(tls_angle(P) - fit) < 0.01) else "not yet")
 
 code(r"""
 # Exercises 2 and 3: the numbers under "What you should see"
-def fits(Q):
-    A = np.c_[Q[:, 0], np.ones(len(Q))]
-    m = np.linalg.lstsq(A, Q[:, 1], rcond=None)[0][0]
+def three(Q):
+    m = np.polyfit(Q[:, 0], Q[:, 1], 1)[0]
+    m2 = np.polyfit(Q[:, 1], Q[:, 0], 1)[0]
     d = np.linalg.svd(Q - Q.mean(axis=0))[2][0]
-    return np.degrees(np.arctan(m)) % 180, np.degrees(np.arctan2(d[1], d[0])) % 180
+    return (np.degrees(np.arctan(m)) % 180, np.degrees(np.arctan2(1, m2)) % 180,
+            np.degrees(np.arctan2(d[1], d[0])) % 180)
 
-ys, xs = np.nonzero(edges[198:212, 290:540])
-T = np.c_[xs + 290, ys + 198].astype(float)
-print("top edge: LS %.4f  TLS %.4f" % fits(T))
-
-mu = P.mean(axis=0)
-for deg in (0, 15, 45, 80):
-    t = np.radians(-deg)
-    R = np.array([[np.cos(t), -np.sin(t)], [np.sin(t), np.cos(t)]])
-    a, b = fits((P - mu) @ R.T + mu)
-    print(f"turned {deg:2} deg: LS {a:6.2f}  TLS {b:6.2f}  gap {((a - b + 90) % 180) - 90:+.2f}")
+R = cv2.getRotationMatrix2D(tuple(P.mean(axis=0)), -60, 1)
+print("dash turned 60 deg: y on x %.2f  x on y %.2f  TLS %.2f" % three(P @ R[:, :2].T + R[:, 2]))
+ly, lx = np.nonzero(cv2.imread("line-mask.webp", cv2.IMREAD_GRAYSCALE))
+print("solid line, %d px: y on x %.2f  x on y %.2f  TLS %.2f" % (len(lx), *three(np.c_[lx, ly].astype(float))))
 """)
 
 md("""
@@ -149,15 +147,23 @@ code(r"""
 import numpy as np
 import cv2
 
-img = cv2.imread("pcb1.webp")
+img = cv2.imread("highway.webp")
+h, w = img.shape[:2]
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 blur = cv2.GaussianBlur(gray, (0, 0), 1.4)
-edges = cv2.Canny(blur, 50, 150)
+
+# only the road ahead: a fixed trapezoid
+road = np.zeros((h, w), np.uint8)
+corners = [(0.02, 0.78), (0.42, 0.50),
+           (0.58, 0.50), (0.98, 0.78)]
+poly = np.array([(fx * w, fy * h)
+                 for fx, fy in corners], np.int32)
+cv2.fillPoly(road, [poly], 255)
+edges = cv2.Canny(blur, 25, 75) & road
 
 ys, xs = np.nonzero(edges)
 xs = xs.astype(np.float32)
 ys = ys.astype(np.float32)
-h, w = edges.shape
 n_rho = 2 * (w + h) + 1
 half = (n_rho - 1) // 2
 
@@ -182,13 +188,13 @@ code(r"""
 # local maximum against its four neighbours
 A = np.pad(acc, 1)
 m = A[1:-1, 1:-1]
-peak = ((m > 120) & (m > A[:-2, 1:-1])
+peak = ((m > 60) & (m > A[:-2, 1:-1])
         & (m >= A[2:, 1:-1]) & (m > A[1:-1, :-2])
         & (m >= A[1:-1, 2:]))
 ours = set(zip(*np.nonzero(peak)))
 
 ref = cv2.HoughLinesWithAccumulator(
-    edges, 1, np.pi / 180, 120).reshape(-1, 3)
+    edges, 1, np.pi / 180, 60).reshape(-1, 3)
 cv = {(round(rr) + half, round(np.degrees(tt)))
       for rr, tt, _ in ref}
 print("ours:", len(ours), " OpenCV:", len(cv))
@@ -205,16 +211,37 @@ Fill it in; the last line checks your answer.
 """)
 
 code(r"""
-pts = [(290, 203), (319, 203), (454, 203)]
+pts = [(490, 437), (318, 548), (119, 678)]
 cell = (0, 0)  # (rho, theta in degrees)
 print(cell)
 
 # checks your answer
-print("correct" if (tuple(int(v) for v in cell) == (203, 90)) else "not yet")
+print("correct" if (tuple(int(v) for v in cell) == (633, 57)) else "not yet")
 """)
 
 code(r"""
-# Exercises 2 and 3: the numbers under "What you should see"
+# Exercises 2 and 3: the numbers under "What you should see".
+# A line is on paint when half of the edge pixels within 1.5 px of it lie within 3 px of the
+# hand-painted lane mask, the rule the unit scores with.
+lane = cv2.imread("highway-lane.webp", cv2.IMREAD_GRAYSCALE) > 0
+near = cv2.dilate(lane.astype(np.uint8), np.ones((7, 7), np.uint8)) > 0
+ey, ex = np.nonzero(edges)
+
+def peaks(a, thr):
+    A = np.pad(a, 1)
+    m = A[1:-1, 1:-1]
+    pk = ((m > thr) & (m > A[:-2, 1:-1]) & (m >= A[2:, 1:-1])
+          & (m > A[1:-1, :-2]) & (m >= A[1:-1, 2:]))
+    return [(int(a[r, t]), int(r) - half, int(t)) for r, t in zip(*np.nonzero(pk))]
+
+def on_paint(lines, deg_per_bin=1.0):
+    n = 0
+    for _, rho, t in lines:
+        th = np.radians(t * deg_per_bin)
+        d = np.abs(ex * np.cos(th) + ey * np.sin(th) - rho) <= 1.5
+        n += bool(d.any() and near[ey[d], ex[d]].mean() >= 0.5)
+    return n
+
 acc2 = np.zeros((n_rho, 360), np.int32)
 ang = np.float32(0)
 step2 = np.float32(np.pi / 360)
@@ -224,19 +251,14 @@ for t in range(360):
     r = np.rint(xs * c + ys * s).astype(int)
     acc2[:, t] = np.bincount(r + half, minlength=n_rho)
     ang = np.float32(ang + step2)
-A2 = np.pad(acc2, 1)
-m2 = A2[1:-1, 1:-1]
-pk2 = ((m2 > 120) & (m2 > A2[:-2, 1:-1]) & (m2 >= A2[2:, 1:-1])
-       & (m2 > A2[1:-1, :-2]) & (m2 >= A2[1:-1, 2:]))
-print("0.5 deg bins:", int(pk2.sum()), "lines, strongest", int(acc2.max()))
+p2 = peaks(acc2, 60)
+print("0.5 deg bins:", len(p2), "lines,", on_paint(p2, 0.5), "on paint, strongest", int(acc2.max()))
 
-holes = np.array([(140, 225), (713, 225), (141, 455), (710, 455)], float)
-for p in (15, 20, 25):
-    c = cv2.HoughCircles(blur, cv2.HOUGH_GRADIENT, 1, 40, param1=150,
-                         param2=p, minRadius=6, maxRadius=14)
-    c = np.empty((0, 3)) if c is None else c[0]
-    found = sum(len(c) and np.min(np.hypot(*(c[:, :2] - h).T)) <= 4 for h in holes)
-    print(f"param2 {p}: {len(c)} circles, {found} of 4 holes")
+for thr in (40, 120, 200):
+    p = peaks(acc, thr)
+    print(f"over {thr}: {len(p)} lines, {on_paint(p)} on paint;",
+          "theta of each:", sorted(t for _, _, t in p) if len(p) < 6 else "...")
+print("strongest cell of the dash (theta 115-130):", int(acc[:, 115:131].max()))
 """)
 
 md("""
@@ -249,10 +271,16 @@ code(r"""
 import numpy as np
 import cv2
 
-img = cv2.imread("pcb1.webp")
-gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-blur = cv2.GaussianBlur(gray, (0, 0), 1.4)
-edges = cv2.Canny(blur, 50, 150)
+img = cv2.imread("highway.webp")
+h, w = img.shape[:2]
+blur = cv2.GaussianBlur(
+    cv2.cvtColor(img, cv2.COLOR_BGR2GRAY), (0, 0), 1.4)
+road = np.zeros((h, w), np.uint8)
+corners = [(0.02, 0.78), (0.42, 0.50),
+           (0.58, 0.50), (0.98, 0.78)]
+cv2.fillPoly(road, [np.array(
+    [(fx * w, fy * h) for fx, fy in corners], np.int32)], 255)
+edges = cv2.Canny(blur, 25, 75) & road
 
 gx = cv2.Sobel(blur, cv2.CV_32F, 1, 0)
 gy = cv2.Sobel(blur, cv2.CV_32F, 0, 1)
@@ -269,7 +297,6 @@ for t in range(180):
     sin_t[t] = np.sin(np.float64(ang))
     ang = np.float32(ang + np.float32(np.pi / 180))
 
-h, w = edges.shape
 n_rho = 2 * (w + h) + 1
 half = (n_rho - 1) // 2
 acc = np.zeros((n_rho, 180), np.int32)
@@ -286,23 +313,23 @@ print("votes cast:", len(xs) * (2 * k + 1))
 code(r"""
 A = np.pad(acc, 1)
 m = A[1:-1, 1:-1]
-peak = ((m > 120) & (m > A[:-2, 1:-1])
+peak = ((m > 60) & (m > A[:-2, 1:-1])
         & (m >= A[2:, 1:-1]) & (m > A[1:-1, :-2])
         & (m >= A[1:-1, 2:]))
-ours = sorted(zip(*np.nonzero(peak)),
-              key=lambda rt: -acc[rt])
-ref = cv2.HoughLines(edges, 1, np.pi / 180, 120)
+# the lane prior: nothing within 20 degrees of flat
+ours = [(r, t) for r, t in zip(*np.nonzero(peak))
+        if not 70 <= t <= 110]
+ref = cv2.HoughLines(edges, 1, np.pi / 180, 60)
 cv = {(round(rr) + half, round(np.degrees(tt)))
       for rr, tt in ref.reshape(-1, 2)}
-print("restricted lines:", len(ours))
-for r, t in ours:
-    print(f"  rho {r - half:5}  theta {t:3}  "
-          f"votes {acc[r, t]:3}  in OpenCV's: {(r, t) in cv}")
+print("restricted lines:", len(ours),
+      " also in OpenCV's full set:",
+      sum((r, t) in cv for r, t in ours), "of", len(cv))
 
-seg1 = cv2.HoughLinesP(edges, 1, np.pi / 180, 90,
-                       minLineLength=80, maxLineGap=5)
-seg2 = cv2.HoughLinesP(edges, 1, np.pi / 180, 90,
-                       minLineLength=80, maxLineGap=5)
+seg1 = cv2.HoughLinesP(edges, 1, np.pi / 180, 40,
+                       minLineLength=40, maxLineGap=20)
+seg2 = cv2.HoughLinesP(edges, 1, np.pi / 180, 40,
+                       minLineLength=40, maxLineGap=20)
 print("segments:", len(seg1),
       " same on a second run:", np.array_equal(seg1, seg2))
 """)
@@ -318,14 +345,19 @@ def votes(direction, k):
     return []  # whole-degree thetas in [0, 180)
 
 print(sorted(votes(178.2, 3)))
-print(sorted(votes(93.63, 5)))
+print(sorted(votes(61.39, 5)))
 
 # checks your answer
-print("correct" if (sorted(votes(178.2, 3)) == [0, 1, 175, 176, 177, 178, 179] and sorted(votes(93.63, 5)) == list(range(89, 100))) else "not yet")
+print("correct" if (sorted(votes(178.2, 3)) == [0, 1, 175, 176, 177, 178, 179] and sorted(votes(61.39, 5)) == list(range(56, 67))) else "not yet")
 """)
 
 code(r"""
 # Exercises 2 and 3: the numbers under "What you should see"
+lane = cv2.imread("highway-lane.webp", cv2.IMREAD_GRAYSCALE) > 0
+near = cv2.dilate(lane.astype(np.uint8), np.ones((7, 7), np.uint8)) > 0
+paint = lane & (road > 0)
+ey, ex = np.nonzero(edges)
+
 acc_k2 = np.zeros((n_rho, 180), np.int32)
 for off in range(-2, 3):
     t = (centre + off) % 180
@@ -333,107 +365,122 @@ for off in range(-2, 3):
     np.add.at(acc_k2, (r.astype(int) + half, t), 1)
 A = np.pad(acc_k2, 1)
 m = A[1:-1, 1:-1]
-pk = ((m > 120) & (m > A[:-2, 1:-1]) & (m >= A[2:, 1:-1])
+pk = ((m > 60) & (m > A[:-2, 1:-1]) & (m >= A[2:, 1:-1])
       & (m > A[1:-1, :-2]) & (m >= A[1:-1, 2:]))
-print("k = 2:", int(pk.sum()), "lines, strongest", int(acc_k2.max()))
+k2 = [(int(r) - half, int(t)) for r, t in zip(*np.nonzero(pk)) if not 70 <= t <= 110]
+on = 0
+for rho, t in k2:
+    d = np.abs(ex * np.cos(np.radians(t)) + ey * np.sin(np.radians(t)) - rho) <= 1.5
+    on += bool(d.any() and near[ey[d], ex[d]].mean() >= 0.5)
+print("k = 2:", len(k2), "lines,", on, "on paint, strongest", int(acc_k2.max()))
 
-for gap in (2, 5, 20):
-    seg = cv2.HoughLinesP(edges, 1, np.pi / 180, 90, minLineLength=80, maxLineGap=gap)
-    print(f"maxLineGap {gap:2}: {0 if seg is None else len(seg)} segments")
+for gap in (5, 20, 60):
+    seg = cv2.HoughLinesP(edges, 1, np.pi / 180, 40, minLineLength=40, maxLineGap=gap)
+    seg = [] if seg is None else seg.reshape(-1, 4)
+    cover = np.zeros(lane.shape, np.uint8)
+    for x1, y1, x2, y2 in seg:
+        cv2.line(cover, (int(x1), int(y1)), (int(x2), int(y2)), 1, 7)
+    print(f"maxLineGap {gap:2}: {len(seg)} segments, paint covered {(cover.astype(bool) & paint).sum() / paint.sum():.1%}")
 """)
 
 md("""
-## 4. The generalized Hough transform
+## 4. The Hough circle transform
 
-The cells of [the lesson](https://condados.ai/blog/generalized-hough-transform), in order.
+The cells of [the lesson](https://condados.ai/blog/hough-circle-transform), in order.
 """)
 
 code(r"""
+import json
 import numpy as np
 import cv2
 
-img = cv2.imread("pcb1.webp")
-gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-blur = cv2.GaussianBlur(gray, (0, 0), 1.4)
+img = cv2.imread("pool-close.webp")
+g = cv2.medianBlur(
+    cv2.cvtColor(img, cv2.COLOR_BGR2GRAY), 5)
+labels = json.load(open("labels.json"))
+bx, by, br = max(labels["pool-close"], key=lambda b: b[2])
 
-# the left transducer, mesh flattened (lesson text)
-cx, cy, r = 252.5, 345.5, 115.0
-R = int(r) + 6
-tm = blur[int(cy) - R:int(cy) + R,
-          int(cx) - R:int(cx) + R].copy()
-yy, xx = np.mgrid[:2 * R, :2 * R]
-mesh = np.hypot(xx - R, yy - R) < 0.75 * r
-tm[mesh] = int(np.median(tm[~mesh]))
+edges = cv2.Canny(g, 50, 150)
+gx = cv2.Sobel(g, cv2.CV_32F, 1, 0)
+gy = cv2.Sobel(g, cv2.CV_32F, 0, 1)
+ys, xs = np.nonzero(edges)
+mag = np.hypot(gx[ys, xs], gy[ys, xs]) + 1e-9
+ux, uy = gx[ys, xs] / mag, gy[ys, xs] / mag
 
-P = [np.float32(v * 180 / np.pi) for v in
-     (0.9997878412794807, -0.3258083974640975,
-      0.1555786518463281, -0.04432655554792128)]
+r = 52
+H, W = g.shape
+acc = np.zeros((H, W), np.int32)
+for s in (1, -1):  # both ways along the gradient
+    cx = np.rint(xs + s * r * ux).astype(int)
+    cy = np.rint(ys + s * r * uy).astype(int)
+    ok = (cx >= 0) & (cy >= 0) & (cx < W) & (cy < H)
+    np.add.at(acc, (cy[ok], cx[ok]), 1)
+print("edge pixels:", len(xs), " ball:", (bx, by, br))
 
-def fast_atan2(y, x):  # cv::fastAtan2, degrees
-    ax, ay = np.abs(x), np.abs(y)
-    eps = np.float32(2.220446049250313e-16)
-    big = ax >= ay
-    c = np.where(big, ay / (ax + eps), ax / (ay + eps))
-    c2 = c * c
-    a = (((P[3] * c2 + P[2]) * c2 + P[1]) * c2 + P[0]) * c
-    a = np.where(big, a, 90 - a)
-    a = np.where(x < 0, 180 - a, a)
-    return np.where(y < 0, 360 - a, a)
-
-def edges_and_rows(g, levels=360):
-    e = cv2.Canny(g, 50, 150)
-    gx = cv2.Sobel(g, cv2.CV_32F, 1, 0)
-    gy = cv2.Sobel(g, cv2.CV_32F, 0, 1)
-    ys, xs = np.nonzero(e)
-    ang = fast_atan2(gy[ys, xs], gx[ys, xs])
-    rows = np.rint(ang * np.float32(levels / 360))
-    return xs, ys, rows.astype(int)
-
-xs, ys, rows = edges_and_rows(tm)
-ref = (tm.shape[1] // 2, tm.shape[0] // 2)
-table = {}
-for x, y, row in zip(xs, ys, rows):
-    table.setdefault(row, []).append(
-        (ref[0] - x, ref[1] - y))
-print(sum(map(len, table.values())), "offsets in",
-      len(table), "rows")
+for cell in (1, 2, 4):
+    h, w = H // cell * cell, W // cell * cell
+    a = acc[:h, :w].reshape(
+        h // cell, cell, w // cell, cell).sum(axis=(1, 3))
+    y0, x0 = (by - 120) // cell, (bx - 120) // cell
+    win = a[y0:y0 + 240 // cell, x0:x0 + 240 // cell]
+    yy, xx = np.unravel_index(win.argmax(), win.shape)
+    px, py = (x0 + xx + 0.5) * cell, (y0 + yy + 0.5) * cell
+    d = np.hypot(px - bx, py - by)
+    print(f"cell {cell} px: {win.max()} votes"
+          f" at ({px}, {py}), {d:.1f} px off")
 """)
 
 code(r"""
-xs, ys, rows = edges_and_rows(blur)
-h, w = blur.shape
-acc = np.zeros((h // 2 + 3, w // 2 + 3), np.int32)
-for row in np.unique(rows):
-    off = np.float32(table.get(row, np.empty((0, 2))))
-    if not len(off):
-        continue
-    sel = rows == row
-    px = xs[sel, None] + off[None, :, 0]
-    py = ys[sel, None] + off[None, :, 1]
-    X = np.rint(px * np.float32(0.5)).astype(int)
-    Y = np.rint(py * np.float32(0.5)).astype(int)
-    np.add.at(acc, (Y.ravel(), X.ravel()), 1)
+found = cv2.HoughCircles(
+    g, cv2.HOUGH_GRADIENT_ALT, 1.5, 12,
+    param1=300, param2=0.8,
+    minRadius=8, maxRadius=60)[0]
+x, y, rr = min(found,
+               key=lambda c: np.hypot(c[0] - bx, c[1] - by))
+print("circles on the photo:", len(found))
+print(f"big ball: ({x:.1f}, {y:.1f}) radius {rr:.1f},"
+      f" {np.hypot(x - bx, y - by):.2f} px from the label")
+""")
 
-def two_peaks(a):
-    out = []
-    for _ in range(2):
-        y, x = np.unravel_index(a.argmax(), a.shape)
-        out.append((int(a[y, x]), 2 * int(x), 2 * int(y)))
-        a[max(0, y - 50):y + 51, max(0, x - 50):x + 51] = 0
-    return out
+code(r"""
+import json
+import numpy as np
+import cv2
 
-print("ours:  ", two_peaks(acc.copy()))
-g = cv2.createGeneralizedHoughBallard()
-g.setCannyLowThresh(50)
-g.setCannyHighThresh(150)
-g.setLevels(360)
-g.setDp(2)
-g.setMinDist(100)
-g.setVotesThreshold(40)
-g.setTemplate(tm)
-pos, votes = g.detect(blur)
-print("OpenCV:", [(int(v[0]), round(p[0]), round(p[1]))
-                  for p, v in zip(pos[0][:2], votes[0][:2])])
+labels = json.load(open("labels.json"))
+grey = {n: cv2.medianBlur(cv2.cvtColor(
+    cv2.imread(n + ".webp"), cv2.COLOR_BGR2GRAY), 5)
+    for n in labels}
+
+def match(found, truth):
+    pairs = sorted(
+        (np.hypot(x - lx, y - ly), i, j)
+        for i, (lx, ly, _) in enumerate(truth)
+        for j, (x, y, _) in enumerate(found))
+    li, cj = set(), set()
+    for d, i, j in pairs:
+        if i in li or j in cj or d >= max(truth[i][2], 8):
+            continue
+        li.add(i)
+        cj.add(j)
+    return len(li), len(found) - len(cj)
+
+def score(method, dp, p1, p2):
+    hit = false = 0
+    for n, truth in labels.items():
+        c = cv2.HoughCircles(grey[n], method, dp, 12,
+                             param1=p1, param2=p2,
+                             minRadius=8, maxRadius=60)
+        h, f = match([] if c is None else c[0], truth)
+        hit, false = hit + h, false + f
+    return hit, false
+
+for p2 in (20, 25, 30, 35, 40):
+    h, f = score(cv2.HOUGH_GRADIENT, 1, 100, p2)
+    print(f"GRADIENT     param2={p2}:  {h}/41, {f} false")
+for p2 in (0.7, 0.8, 0.85, 0.9):
+    h, f = score(cv2.HOUGH_GRADIENT_ALT, 1.5, 300, p2)
+    print(f"GRADIENT_ALT param2={p2}: {h}/41, {f} false")
 """)
 
 md("""
@@ -443,47 +490,24 @@ Fill it in; the last line checks your answer.
 """)
 
 code(r"""
-def offset(phi, r):
-    return (0, 0)  # (dx, dy) back to the centre
+import math
 
-print(offset(0, 115), offset(90, 115), offset(45, 100))
+def centre(x, y, direction, r):
+    return (x, y)  # move r pixels along the direction
+
+print(centre(179, 454, 86.7, 52))
+print(centre(216, 466, 130.0, 52))
 
 # checks your answer
-print("correct" if (tuple(offset(0, 115)) == (-115, 0) and tuple(offset(90, 115)) == (0, -115) and tuple(offset(45, 100)) == (-71, -71)) else "not yet")
+print("correct" if ([round(v) for v in centre(179, 454, 86.7, 52)] == [182, 506] and [round(v) for v in centre(216, 466, 130.0, 52)] == [183, 506]) else "not yet")
 """)
 
 code(r"""
 # Exercises 2 and 3: the numbers under "What you should see"
-def vote_peaks(template):
-    xs_t, ys_t, rows_t = edges_and_rows(template)
-    ref_t = (template.shape[1] // 2, template.shape[0] // 2)
-    tab = {}
-    for x, y, row in zip(xs_t, ys_t, rows_t):
-        tab.setdefault(row, []).append((ref_t[0] - x, ref_t[1] - y))
-    xs_i, ys_i, rows_i = edges_and_rows(blur)
-    a = np.zeros((h // 2 + 3, w // 2 + 3), np.int32)
-    for row in np.unique(rows_i):
-        off = np.float32(tab.get(row, np.empty((0, 2))))
-        if not len(off):
-            continue
-        sel = rows_i == row
-        X = np.rint((xs_i[sel, None] + off[None, :, 0]) * np.float32(0.5)).astype(int)
-        Y = np.rint((ys_i[sel, None] + off[None, :, 1]) * np.float32(0.5)).astype(int)
-        np.add.at(a, (Y.ravel(), X.ravel()), 1)
-    return two_peaks(a)
-
-small = cv2.resize(tm, None, fx=0.95, fy=0.95, interpolation=cv2.INTER_AREA)
-print("template at 0.95x:", vote_peaks(small))
-
-cx2, cy2, r2 = 605.5, 338.5, 109.6
-R2 = int(r2) + 6
-tm2 = blur[int(cy2) - R2:int(cy2) + R2, int(cx2) - R2:int(cx2) + R2].copy()
-yy2, xx2 = np.mgrid[:2 * R2, :2 * R2]
-mesh2 = np.hypot(xx2 - R2, yy2 - R2) < 0.75 * r2
-tm2[mesh2] = int(np.median(tm2[~mesh2]))
-print("template from the right transducer:", vote_peaks(tm2))
+print("ALT, param2 0.9:", score(cv2.HOUGH_GRADIENT_ALT, 1.5, 300, 0.9))
+for p2 in (20, 30):
+    print(f"GRADIENT, param2 {p2}:", score(cv2.HOUGH_GRADIENT, 1, 100, p2))
 """)
-
 
 
 @click.command()
