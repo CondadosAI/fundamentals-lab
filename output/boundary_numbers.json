@@ -488,6 +488,20 @@
         "frames_with_no_line": 108
       }
     },
+    "showcase": {
+      "frame": "2904_cc0342d8a2184b9d_2018-08-05--17-17-25_46_850.png",
+      "false_lines_full": 54,
+      "full": {
+        "lines": 72,
+        "on_paint": 18,
+        "paint_covered": 1.0
+      },
+      "restricted_5_prior": {
+        "lines": 13,
+        "on_paint": 13,
+        "paint_covered": 1.0
+      }
+    },
     "worked_example_orientation_deg": {
       "490,437": 61.39,
       "318,548": 56.84,

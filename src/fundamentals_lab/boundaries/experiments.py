@@ -387,6 +387,7 @@ def probabilistic_lesson(s: Scene) -> dict:
 
     held = {"day": [], "night": []}
     held_lines = {"full": [], "prior": [], "restricted_5_prior": []}
+    showcase = None
     for name, day in _sample():
         sc = Scene(name)
         held["day" if day else "night"].append(highway.score_segments(sc.lane, pph(edges=sc.edges)))
@@ -410,12 +411,24 @@ def probabilistic_lesson(s: Scene) -> dict:
                 if L
                 else {"lines": 0, "on_paint": 0, "paint_covered": 0.0}
             )
+        # A daytime frame where the full vote is worst and the restrictions clean it: the figure.
+        full, rp = held_lines["full"][-1], held_lines["restricted_5_prior"][-1]
+        if day and full["lines"] >= 20 and rp["lines"] >= 2 and rp["on_paint"] == rp["lines"]:
+            gain = full["lines"] - full["on_paint"]
+            if showcase is None or gain > showcase["false_lines_full"]:
+                showcase = {
+                    "frame": name,
+                    "false_lines_full": gain,
+                    "full": full,
+                    "restricted_5_prior": rp,
+                }
 
     return {
         "full_votes_cast": full_votes,
         "restricted": restricted,
         "lane_prior": prior,
         "heldout_lines": {k: _summary_lines(v) for k, v in held_lines.items()},
+        "showcase": showcase,
         "worked_example_orientation_deg": {
             f"{x},{y}": _r(orient[y, x], 2) for x, y in worked_pixels(s)
         },
