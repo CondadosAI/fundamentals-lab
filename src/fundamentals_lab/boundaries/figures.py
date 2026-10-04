@@ -283,6 +283,24 @@ def covers(s: Scene):
     del board
 
 
+def lab_data(s: Scene):
+    """The board for the labs, as one lossless PNG.
+
+    R: the unit's Canny edge map (255 or 0). G: gradient direction in [0, 360) halved,
+    for the generalized Hough's R-table. B: gradient direction folded to [0, 180), for
+    gradient-restricted voting. Same Sobel on the same blur as experiments.py.
+    """
+    gx = cv2.Sobel(s.blur, cv2.CV_32F, 1, 0)
+    gy = cv2.Sobel(s.blur, cv2.CV_32F, 0, 1)
+    a360 = ght.fast_atan2(gy, gx)
+    a180 = np.degrees(np.arctan2(gy, gx)) % 180
+    img = np.zeros((*s.edges.shape, 3), np.uint8)  # BGR order on disk
+    img[..., 2] = s.edges
+    img[..., 1] = np.clip(np.floor(a360 / 2), 0, 179).astype(np.uint8)
+    img[..., 0] = np.clip(np.rint(a180) % 180, 0, 179).astype(np.uint8)
+    return _save(img, "lab-board")
+
+
 def render_all():
     s = Scene()
     working_frame(s)
@@ -293,3 +311,4 @@ def render_all():
     lesson4(s)
     wild_figures()
     covers(s)
+    lab_data(s)
