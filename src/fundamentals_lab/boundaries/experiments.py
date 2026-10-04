@@ -157,8 +157,28 @@ def fitting_lesson(s: Scene) -> dict:
         "ls_b": _r(b, 2),
         "ls_angle_deg": _r(np.degrees(np.arctan(m)), 3),
         "denominator": _r(n * sxx - sx * sx, 1),
+        "centred": {
+            "mean_x": _r(x.mean(), 3),
+            "mean_y": _r(y.mean(), 3),
+            "Sxx": _r(((x - x.mean()) ** 2).sum(), 3),
+            "Sxy": _r(((x - x.mean()) * (y - y.mean())).sum(), 3),
+            "Syy": _r(((y - y.mean()) ** 2).sum(), 3),
+        },
         "tls_angle_deg": _r(tls["angle_deg"], 3),
     }
+
+    # The left side's pixels turned away from vertical about their centroid: where the bias lives.
+    P = frame.box_points(s.edges, LEFT_EDGE_BOX)
+    mu = P.mean(0)
+    sweep = {}
+    for deg in (0, 15, 30, 45, 60, 80):
+        t = np.radians(-deg)
+        R = np.array([[np.cos(t), -np.sin(t)], [np.sin(t), np.cos(t)]])
+        Q = (P - mu) @ R.T + mu
+        a = fitting.least_squares(Q)["angle_deg"] % 180
+        b = fitting.total_least_squares(Q)["angle_deg"] % 180
+        sweep[str(deg)] = {"ls": _r(a, 2), "tls": _r(b, 2), "gap": _r(((a - b + 90) % 180) - 90, 2)}
+    out["rotation_sweep"] = sweep
 
     # One outlier: a pixel 40 px to the right of the left edge, halfway down.
     P = frame.box_points(s.edges, LEFT_EDGE_BOX)
