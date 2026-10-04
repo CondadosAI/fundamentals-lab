@@ -751,5 +751,132 @@
     "opencv": "5.0.0",
     "numpy": "2.5.2",
     "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "wild": {
+    "cloister_fit": {
+      "edges": [
+        {
+          "votes": 279,
+          "points": 511,
+          "ls": 87.94,
+          "tls": 88.06
+        },
+        {
+          "votes": 259,
+          "points": 509,
+          "ls": 88.03,
+          "tls": 88.12
+        },
+        {
+          "votes": 235,
+          "points": 529,
+          "ls": 87.91,
+          "tls": 87.95
+        },
+        {
+          "votes": 228,
+          "points": 397,
+          "ls": 88.88,
+          "tls": 89.04
+        },
+        {
+          "votes": 228,
+          "points": 489,
+          "ls": 93.64,
+          "tls": 90.07
+        },
+        {
+          "votes": 223,
+          "points": 529,
+          "ls": 87.97,
+          "tls": 88.05
+        },
+        {
+          "votes": 207,
+          "points": 360,
+          "ls": 152.33,
+          "tls": 90.0
+        },
+        {
+          "votes": 193,
+          "points": 520,
+          "ls": 87.85,
+          "tls": 87.95
+        },
+        {
+          "votes": 193,
+          "points": 548,
+          "ls": 150.04,
+          "tls": 90.0
+        },
+        {
+          "votes": 192,
+          "points": 754,
+          "ls": 95.51,
+          "tls": 90.08
+        }
+      ],
+      "ls_off_vertical_median": 2.12,
+      "tls_off_vertical_median": 1.42,
+      "ls_off_vertical_max": 62.33,
+      "tls_off_vertical_max": 2.05
+    },
+    "cloister_vanishing": {
+      "lines_over_80": 2771,
+      "oblique_used": 12,
+      "intersections": 34,
+      "median_point": [
+        464.6,
+        539.5
+      ],
+      "frame": [
+        900,
+        1163
+      ],
+      "within_20px": 0.941,
+      "median_distance_px": 5.3
+    },
+    "document": {
+      "edge_pixels": 10325,
+      "votes_full": 1858500,
+      "segments": 10,
+      "lines_over_90": 36,
+      "longest": [
+        282.9,
+        261.5,
+        258.4,
+        185.2
+      ],
+      "angles_of_longest": [
+        52.0,
+        52.0,
+        52.9,
+        142.0
+      ]
+    },
+    "pool": {
+      "circles_found_by_hough": 8,
+      "median_radius": 22.3,
+      "radius_range": [
+        11.8,
+        23.4
+      ],
+      "template_circle": [
+        658.5,
+        178.5,
+        22.3
+      ],
+      "ght_top_votes": [
+        274,
+        15,
+        11,
+        9,
+        8,
+        8,
+        8,
+        8
+      ],
+      "ght_peaks_on_a_ball_in_top24": 2
+    }
   }
 }

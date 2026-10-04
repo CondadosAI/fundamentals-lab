@@ -12,7 +12,7 @@ import cv2
 import numpy as np
 from loguru import logger
 
-from fundamentals_lab.boundaries import experiments
+from fundamentals_lab.boundaries import experiments, wild
 from fundamentals_lab.config import BOUNDARY_NUMBERS_JSON, OUTPUT_DIR
 
 SECTIONS = {
@@ -21,6 +21,7 @@ SECTIONS = {
     "hough": experiments.hough_lesson,
     "probabilistic": experiments.probabilistic_lesson,
     "ght": experiments.ght_lesson,
+    "wild": lambda s: wild.all_wild(),
 }
 
 
