@@ -81,11 +81,11 @@ def hub_pipeline() -> None:
     k = np.ones((2, 2), np.uint8)  # one-pixel lines survive a third-of-the-page width
     panels = [
         (bgr, "1  Image"),
-        ((blurred * 255).astype(np.uint8), "2  Grey, smoothed"),
-        (u8(mag), "3  How much it changes"),
-        (_direction_image(mag, ori), "4  Which way it changes"),
-        (cv2.dilate(u8(thin), k), "5  Thinned to the peak"),
-        (cv2.dilate(edges.astype(np.uint8) * 255, k), "6  Linked: 0 or 255"),
+        ((blurred * 255).astype(np.uint8), "2–3  Grey, smoothed"),
+        (u8(mag), "4  Measure: strength"),
+        (_direction_image(mag, ori), "4  Measure: direction"),
+        (cv2.dilate(u8(thin), k), "5  Thin to the peak"),
+        (cv2.dilate(edges.astype(np.uint8) * 255, k), "6  Link: 0 or 255"),
     ]
     fig, axes = plt.subplots(3, 2, figsize=(8, 10.3), dpi=110, facecolor=BG_HEX)
     for ax, (img, title) in zip(axes.ravel(), panels, strict=True):
