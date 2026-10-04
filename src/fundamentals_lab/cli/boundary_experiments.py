@@ -20,7 +20,7 @@ SECTIONS = {
     "fitting": experiments.fitting_lesson,
     "hough": experiments.hough_lesson,
     "probabilistic": experiments.probabilistic_lesson,
-    "ght": experiments.ght_lesson,
+    "circles": experiments.circles_lesson,
     "wild": lambda s: wild.all_wild(),
 }
 
@@ -30,7 +30,7 @@ SECTIONS = {
     "--only", multiple=True, type=click.Choice(list(SECTIONS)), help="Run these sections only."
 )
 def boundary_experiments(only: tuple[str, ...]) -> None:
-    """Measure the board: fits, the accumulator, restricted voting, PPH and the R-table."""
+    """Measure the highway (fits, accumulator, restricted voting, PPH) and the pool table (circles)."""
     s = experiments.Scene()
     numbers = (
         json.loads(BOUNDARY_NUMBERS_JSON.read_text()) if BOUNDARY_NUMBERS_JSON.exists() else {}

@@ -1,8 +1,8 @@
-"""Each lesson's measurement repeated on a second, real photograph.
+"""Each lesson's measurement repeated on a second, real scene.
 
-All three photographs are CC0 and registered in CondadosAI/cv-assets:
-the cloister (Sindugab, Wikimedia Commons), the stationery on a bench (Brigitte Tohm,
-Unsplash via Commons) and a pool table after the break (MarkBuckawicki, Commons).
+The cloister (Sindugab, Wikimedia Commons, CC0) for lessons 1 and 2, the stationery on a
+bench (Brigitte Tohm, Unsplash via Commons, CC0) for lesson 3, and VisA's `candle` category
+(Zou et al., ECCV 2022, Amazon, CC BY 4.0: four tea lights per photo) for lesson 4.
 """
 
 from __future__ import annotations
@@ -10,12 +10,12 @@ from __future__ import annotations
 import cv2
 import numpy as np
 
-from fundamentals_lab.boundaries import fitting, ght, hough
+from fundamentals_lab.boundaries import fitting, hough
 from fundamentals_lab.config import DATA_DIR
 
 CLOISTER = DATA_DIR / "wild" / "cloister.jpg"
 DOCUMENT = DATA_DIR / "wild-document" / "stationery_bench_unsplash.jpg"
-POOL = DATA_DIR / "pool" / "Billiards_table_1.JPG"
+CANDLES = DATA_DIR / "visa-candle"
 WIDTH = 900
 
 
@@ -117,35 +117,22 @@ def document_segments() -> dict:
     }
 
 
-def pool_balls() -> dict:
-    """L4: one ball as the template, the generalized Hough on the rest of the table."""
-    bgr = _load(POOL)
-    g, _ = _edges(bgr)
-    c = cv2.HoughCircles(
-        g, cv2.HOUGH_GRADIENT, 1, 18, param1=150, param2=22, minRadius=8, maxRadius=24
-    )
-    c = np.empty((0, 3)) if c is None else c[0]
-    if not len(c):
-        return {"circles": 0}
-    rr = np.median(c[:, 2])
-    # the template: the detected circle closest to the median radius
-    k = int(np.argmin(np.abs(c[:, 2] - rr)))
-    tm = ght.ring_template(g, c[k], None)
-    tab, _ = ght.r_table(tm)
-    acc = ght.vote(g, tab)
-    pk = ght.peaks(acc, 25, int(rr))
-    hits = 0
-    for _, x, y in pk[1:]:
-        if np.min(np.hypot(c[:, 0] - x, c[:, 1] - y)) <= 0.5 * rr:
-            hits += 1
-    return {
-        "circles_found_by_hough": int(len(c)),
-        "median_radius": round(float(rr), 1),
-        "radius_range": [round(float(c[:, 2].min()), 1), round(float(c[:, 2].max()), 1)],
-        "template_circle": [round(float(v), 1) for v in c[k]],
-        "ght_top_votes": [p[0] for p in pk[:8]],
-        "ght_peaks_on_a_ball_in_top24": hits,
-    }
+def candles() -> dict:
+    """L4: four tea lights per photo, head-on and apart. How often does HoughCircles count 4?"""
+    counts, radii = {}, []
+    files = sorted(CANDLES.glob("*.JPG"))
+    for f in files:
+        img = _load(f)
+        g = cv2.medianBlur(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY), 5)
+        c = cv2.HoughCircles(g, cv2.HOUGH_GRADIENT_ALT, 1.5, 40, param1=300, param2=0.8,
+                             minRadius=40, maxRadius=200)
+        n = 0 if c is None else len(c[0])
+        counts[str(n)] = counts.get(str(n), 0) + 1
+        if c is not None:
+            radii += c[0][:, 2].tolist()
+    return {"photos": len(files), "circles_per_photo": counts,
+            "radius_median": round(float(np.median(radii)), 1),
+            "radius_p05_p95": [round(float(np.percentile(radii, 5)), 1), round(float(np.percentile(radii, 95)), 1)]}
 
 
 def all_wild() -> dict:
@@ -153,5 +140,5 @@ def all_wild() -> dict:
         "cloister_fit": cloister_fit(),
         "cloister_vanishing": cloister_vanishing(),
         "document": document_segments(),
-        "pool": pool_balls(),
+        "candles": candles(),
     }
