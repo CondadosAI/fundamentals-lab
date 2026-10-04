@@ -1,9 +1,11 @@
-"""Animated opening for unit 3.2: lane segments on a minute of real freeway driving.
+"""Animated opening for unit 3.2: the car's lane on real freeway driving, ADAS-style.
 
 comma2k19 (comma.ai, MIT; Schafer et al., arXiv 1812.05752), segment
 `b0c9d2329ad1606b|2018-08-03--10-35-16/13`: daytime CA-280. Each frame goes through the
 pipeline the lessons build: the road trapezoid, Canny, then HoughLinesP with a gap long
-enough to join a dashed line, and the near-horizontal strokes dropped (lesson 3's prior).
+enough to join a dashed line, and the near-horizontal strokes dropped (lesson 3's prior). The
+segments on each side of the car are then fitted with one total-least-squares line (lesson 1),
+averaged over recent frames, extended up the road, and the lane between them is filled.
 """
 
 from __future__ import annotations
@@ -44,23 +46,102 @@ def lane_segments(bgr: np.ndarray) -> np.ndarray:
     return s[(ang > 20) & (ang < 160)]
 
 
-def highway_lanes(width: int = 720):
+def side_line(segs: np.ndarray, side: str, cx: float):
+    """One lane boundary from the HoughLinesP segments on one side of the car: points sampled
+    along every segment (so a long segment weighs more), fitted by total least squares
+    (lesson 1), returned as x = a*y + b. Left boundaries lean one way, right ones the other."""
+    pts = []
+    for x1, y1, x2, y2 in segs:
+        if y1 == y2:
+            continue
+        lean = (x2 - x1) / (y2 - y1)  # dx per row; negative on the left boundary
+        mid = (x1 + x2) / 2
+        if (side == "left" and lean < 0 and mid < cx) or (
+            side == "right" and lean > 0 and mid > cx
+        ):
+            n = int(np.hypot(x2 - x1, y2 - y1)) + 1
+            pts.append(np.c_[np.linspace(x1, x2, n), np.linspace(y1, y2, n)])
+    if not pts:
+        return None
+    vx, vy, x0, y0 = cv2.fitLine(
+        np.vstack(pts).astype(np.float32), cv2.DIST_L2, 0, 0.01, 0.01
+    ).ravel()
+    if abs(vy) < 0.2:
+        return None
+    a = vx / vy
+    return np.array([a, x0 - a * y0])
+
+
+def highway_lanes(width: int = 720, smooth: float = 0.35, hold: int = 10):
+    """ADAS-style overlay: the two boundaries of the car's lane, each one line fitted to that
+    side's HoughLinesP segments, averaged over recent frames, extended up the road and the lane
+    between them filled. The thin white strokes are the segments themselves."""
     cap = cv2.VideoCapture(str(segment_path()))
     frames, i = [], 0
+    state = {"left": None, "right": None}
+    missing = {"left": 0, "right": 0}
     while len(frames) < SECONDS * FPS:
         ok, f = cap.read()
         if not ok:
             break
-        if i % 2 == 0:  # 20 fps source
-            v = (f * 0.6 + np.array(BG) * 0.4).astype(np.uint8)
-            cv2.polylines(v, [highway.road_polygon(f.shape)], True, (180, 180, 180), 1, cv2.LINE_AA)
-            segs = lane_segments(f)
+        h, w = f.shape[:2]
+        segs = lane_segments(f)
+        for side in ("left", "right"):
+            line = side_line(segs, side, w / 2)
+            if line is not None:
+                # a boundary of the car's own lane meets the bottom of the road on its own side
+                xb = line[0] * 0.78 * h + line[1]
+                ok_side = 0 <= xb <= 0.42 * w if side == "left" else 0.58 * w <= xb <= w
+                line = line if ok_side else None
+            if line is None:
+                missing[side] += 1
+                if missing[side] > hold:
+                    state[side] = None
+            else:
+                missing[side] = 0
+                prev = state[side]
+                state[side] = line if prev is None else (1 - smooth) * prev + smooth * line
+        # 20 fps source; the first 0.6 s (under a bridge) only warms up the averaging
+        if i % 2 == 0 and i >= 12:
+            v = (f * 0.7 + np.array(BG) * 0.3).astype(np.uint8)
             for x1, y1, x2, y2 in segs:
-                cv2.line(v, (int(x1), int(y1)), (int(x2), int(y2)), GREEN, 4, cv2.LINE_AA)
-            v = cv2.resize(
-                v, (width, int(width * f.shape[0] / f.shape[1])), interpolation=cv2.INTER_AREA
-            )
-            label(v, f"lane segments: {len(segs)}", (12, 30), 0.7)
+                cv2.line(v, (int(x1), int(y1)), (int(x2), int(y2)), (235, 235, 235), 1, cv2.LINE_AA)
+            L, R = state["left"], state["right"]
+            y_bot = int(0.78 * h)
+            if L is not None and R is not None:
+                # up the road to just short of where the two boundaries meet
+                y_meet = (R[1] - L[1]) / (L[0] - R[0]) if L[0] != R[0] else 0.45 * h
+                y_top = int(max(0.45 * h, y_meet + 0.02 * h))
+                xs = lambda ln, y: int(ln[0] * y + ln[1])  # noqa: E731
+                poly = np.array(
+                    [
+                        (xs(L, y_bot), y_bot),
+                        (xs(L, y_top), y_top),
+                        (xs(R, y_top), y_top),
+                        (xs(R, y_bot), y_bot),
+                    ],
+                    np.int32,
+                )
+                fill = v.copy()
+                cv2.fillPoly(fill, [poly], (120, 200, 60))
+                v = cv2.addWeighted(fill, 0.35, v, 0.65, 0)
+                for ln in (L, R):
+                    cv2.line(
+                        v, (xs(ln, y_bot), y_bot), (xs(ln, y_top), y_top), GREEN, 6, cv2.LINE_AA
+                    )
+            else:
+                for ln in (L, R):
+                    if ln is not None:
+                        y_top = int(0.5 * h)
+                        cv2.line(
+                            v,
+                            (int(ln[0] * y_bot + ln[1]), y_bot),
+                            (int(ln[0] * y_top + ln[1]), y_top),
+                            GREEN,
+                            6,
+                            cv2.LINE_AA,
+                        )
+            v = cv2.resize(v, (width, int(width * h / w)), interpolation=cv2.INTER_AREA)
             frames.append(v)
         i += 1
     return frames, FPS
