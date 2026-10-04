@@ -107,6 +107,13 @@ uv run align-experiments    # every number → output/alignment_numbers.json
 uv run align-figures        # overlays, top views and cover backgrounds
 uv run align-notebook       # rebuild notebooks/image_alignment.ipynb, outputs cleared
 uv run align-media          # the animations the posts open with (needs ffmpeg with libwebp)
+
+uv run boundary-download    # unit 3.2: VisA pcb1's 1,004 normal frames (--from-dir <VisA
+                            # folder>, or streamed from the 1.93 GB tar) and three CC0 photos
+uv run boundary-experiments # every number → output/boundary_numbers.json
+uv run boundary-figures     # figures, the lossless working frame, the labs' data, covers
+uv run boundary-media       # the court-lines animation the posts open with
+uv run boundary-notebook    # rebuild notebooks/boundary_detection.ipynb, outputs cleared
 ```
 
 `edge-experiments` **fails loudly** if the corner eigenvalues stop matching the
@@ -275,6 +282,35 @@ top-hat, 21 px), which took the far baseline error from 81.3 cm to 38.4.
 dotted band as wide as the search strip, and a line fitted to a uniform band returns the
 strip's centre. The net region is excluded by a hand-drawn polygon (`config.NET_POLYGON`).
 
+## Unit 3.2 — Boundary detection
+
+One circuit board from an inspection dataset (VisA `pcb1`, frame `0000`, at 900×686), with
+101 other frames of the same board as held-out checks. Keys are in
+`output/boundary_numbers.json`; every count is deterministic, so nothing is timed.
+
+| Claim | Where |
+|---|---|
+| Least squares puts the board's vertical left side at 81.67°, total least squares at 89.28° | `fitting.left_edge` |
+| Over 101 frames, total least squares sits a median 0.66° from vertical, least squares 11.2° | `fitting.heldout_left_edge` |
+| The from-scratch accumulator returns OpenCV's 312 lines with the same votes; in float64 it differs on 3 | `hough.same_set_as_opencv`, `hough.float64_lines_differing` |
+| Voting within ±5° of the gradient casts 6.1% of the votes and leaves 8 lines, all on the outline | `probabilistic.restricted.5` |
+| `HoughLinesP` returns 21 segments, identical on two runs | `probabilistic.pph` |
+| The R-table matches `GeneralizedHoughBallard` on 5.0; the template scores itself 4,097 and its twin 168 | `ght.ring_only` |
+| On 100 frames it was not cut from, the twin gets a median 68% of the first peak | `ght.heldout_second_over_first` |
+
+Two things here cost time and are worth not rediscovering:
+
+**Parity with OpenCV is in the arithmetic.** `cv2.HoughLines` computes ρ in float32 from an
+angle table built by adding the step to a float32 angle 180 times; done in float64 from exact
+angles, 3 of 312 lines change cell. `GeneralizedHoughBallard` uses `fastAtan2`, a rounded row
+index and the template centre `(w // 2, h // 2)`; the geometric centre, half a pixel away,
+drops the self-match from 4,097 to 3,778. On OpenCV 4.11 (the page's Pyodide build) Ballard
+casts 3 more votes at the self-match than on 5.0; not traced.
+
+**A template scored on its own frame is a self-match.** The first held-out check of the
+generalized Hough included frame `0000`, which the template is cut from, and reported a 4%
+minimum that was the self-match itself. `ght_lesson` now leaves that frame out.
+
 ## Licence
 
 The code in this repository is Apache-2.0 (see `LICENSE`).
@@ -336,6 +372,15 @@ does not redistribute it, and Apache-2.0 says nothing about it:
   [CondadosAI/sportcv](https://github.com/CondadosAI/sportcv), which runs the RTMO pose model
   through rtmlib (Apache-2.0) on the same CC BY 3.0 match. The minimap animation maps them
   through this repository's homography, not sportcv's.
+- **VisA, the Visual Anomaly dataset** (Zou, Jeong, Pemula, Zhang & Dabeer, ECCV 2022),
+  Amazon.com, Inc. or its affiliates, **CC BY 4.0** (`LICENSE-DATASET` in
+  `amazon-science/spot-diff`; the utility code there is Apache-2.0). Unit 3.2 downloads the
+  1,004 normal `pcb1` frames and does not redistribute them; attribution is required wherever
+  a frame or a figure made from one is shown, and there is no share-alike or non-commercial
+  clause. condados.ai serves one reduced frame for the lessons' in-page cells, credited there.
+- **Three CC0 photographs for unit 3.2's in-the-wild checks**, fetched from Wikimedia Commons
+  by `boundary-download`: "The Cloister Mandapam, in One point perspective" by Sindugab,
+  "Stationery on a bench (Unsplash)" by Brigitte Tohm, "Billiards table 1" by MarkBuckawicki.
 - **USA Pickleball Official Rulebook (2026), Rule 3.A.** Only the court dimensions are
   used, as numbers in `config.py`.
 
