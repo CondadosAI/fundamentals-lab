@@ -350,13 +350,18 @@ def probabilistic_lesson(s: Scene) -> dict:
         a, cast = hough.restricted_accumulator(s.edges, orient, k)
         lm = hough.local_maxima(a, HOUGH_THRESHOLD)
         top = [(r, t) for _, r, t in lm[:10]]
+        full_set = {(r, t) for _, r, t in s.lines}
         restricted[str(k)] = {
+            "lines": [[v, hough.rho_of(r, a), t] for v, r, t in lm],
+            "also_in_full_set": sum((r, t) in full_set for _, r, t in lm),
             "votes_cast": cast,
             "fraction_of_full": _r(cast / full_votes, 4),
             "lines_over_threshold": len(lm),
             "top10_shared_with_full": len(set(top) & set(full_top)),
             "top_votes": int(a.max()),
         }
+
+    worked = {f"{x},{y}": _r(orient[y, x], 2) for x, y in ((290, 203), (319, 203), (454, 203))}
 
     def pph(thr=PPH["threshold"], minl=PPH["min_length"], gap=PPH["max_gap"]):
         seg = cv2.HoughLinesP(s.edges, 1, np.pi / 180, thr, minLineLength=minl, maxLineGap=gap)
@@ -372,6 +377,7 @@ def probabilistic_lesson(s: Scene) -> dict:
             sweep[f"{minl}/{gap}"] = int(len(sg))
     return {
         "full_votes_cast": full_votes,
+        "worked_example_orientation_deg": worked,
         "restricted": restricted,
         "pph": {
             **PPH,
