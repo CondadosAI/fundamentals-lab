@@ -73,8 +73,13 @@ def score_lines(edges: np.ndarray, lane: np.ndarray, lines) -> dict:
         if d.any() and near[ys[d], xs[d]].mean() >= 0.5:
             on += 1
         c, s = np.cos(t), np.sin(t)
-        cv2.line(cover, (int(c * rho - 3000 * s), int(s * rho + 3000 * c)),
-                 (int(c * rho + 3000 * s), int(s * rho - 3000 * c)), 1, 2 * 3 + 1)
+        cv2.line(
+            cover,
+            (int(c * rho - 3000 * s), int(s * rho + 3000 * c)),
+            (int(c * rho + 3000 * s), int(s * rho - 3000 * c)),
+            1,
+            2 * 3 + 1,
+        )
     recall = float((cover.astype(bool) & paint).sum() / max(1, paint.sum()))
     return {"lines": len(lines), "on_paint": on, "paint_covered": round(recall, 3)}
 

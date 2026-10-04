@@ -124,15 +124,22 @@ def candles() -> dict:
     for f in files:
         img = _load(f)
         g = cv2.medianBlur(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY), 5)
-        c = cv2.HoughCircles(g, cv2.HOUGH_GRADIENT_ALT, 1.5, 40, param1=300, param2=0.8,
-                             minRadius=40, maxRadius=200)
+        c = cv2.HoughCircles(
+            g, cv2.HOUGH_GRADIENT_ALT, 1.5, 40, param1=300, param2=0.8, minRadius=40, maxRadius=200
+        )
         n = 0 if c is None else len(c[0])
         counts[str(n)] = counts.get(str(n), 0) + 1
         if c is not None:
             radii += c[0][:, 2].tolist()
-    return {"photos": len(files), "circles_per_photo": counts,
-            "radius_median": round(float(np.median(radii)), 1),
-            "radius_p05_p95": [round(float(np.percentile(radii, 5)), 1), round(float(np.percentile(radii, 95)), 1)]}
+    return {
+        "photos": len(files),
+        "circles_per_photo": counts,
+        "radius_median": round(float(np.median(radii)), 1),
+        "radius_p05_p95": [
+            round(float(np.percentile(radii, 5)), 1),
+            round(float(np.percentile(radii, 95)), 1),
+        ],
+    }
 
 
 def all_wild() -> dict:

@@ -11,7 +11,10 @@ from fundamentals_lab.config import POOL_DIR, POOL_MEDIAN, POOL_MIN_DIST, POOL_P
 
 
 def labels() -> dict[str, list[tuple[int, int, int]]]:
-    return {k: [tuple(v) for v in vs] for k, vs in json.loads((POOL_DIR / "labels.json").read_text()).items()}
+    return {
+        k: [tuple(v) for v in vs]
+        for k, vs in json.loads((POOL_DIR / "labels.json").read_text()).items()
+    }
 
 
 def load(name: str) -> np.ndarray:
@@ -26,15 +29,26 @@ def grey(img: np.ndarray) -> np.ndarray:
 
 
 def detect(img: np.ndarray, method: int, dp: float, param1: float, param2: float) -> list:
-    c = cv2.HoughCircles(grey(img), method, dp, POOL_MIN_DIST, param1=param1, param2=param2,
-                         minRadius=POOL_RADII[0], maxRadius=POOL_RADII[1])
+    c = cv2.HoughCircles(
+        grey(img),
+        method,
+        dp,
+        POOL_MIN_DIST,
+        param1=param1,
+        param2=param2,
+        minRadius=POOL_RADII[0],
+        maxRadius=POOL_RADII[1],
+    )
     return [] if c is None else [tuple(map(float, v)) for v in c[0]]
 
 
 def match(circles, truth) -> dict:
-    """M2's rule: one detection per ball, closest pairs first, within the ball's radius (8 px min)."""
-    pairs = sorted((float(np.hypot(x - lx, y - ly)), i, j)
-                   for i, (lx, ly, _) in enumerate(truth) for j, (x, y, _) in enumerate(circles))
+    """M2's rule: one detection per ball, closest pairs first, within its radius (8 px min)."""
+    pairs = sorted(
+        (float(np.hypot(x - lx, y - ly)), i, j)
+        for i, (lx, ly, _) in enumerate(truth)
+        for j, (x, y, _) in enumerate(circles)
+    )
     hit_l, hit_c, rerr = set(), set(), []
     for d, i, j in pairs:
         if i in hit_l or j in hit_c or d >= max(truth[i][2], 8):
@@ -42,10 +56,16 @@ def match(circles, truth) -> dict:
         hit_l.add(i)
         hit_c.add(j)
         rerr.append(abs(circles[j][2] - truth[i][2]))
-    return {"found": len(hit_l), "balls": len(truth), "false": len(circles) - len(hit_c),
-            "radius_errors": rerr,
-            "missed": [list(truth[i]) for i in range(len(truth)) if i not in hit_l],
-            "false_at": [[round(v, 1) for v in circles[j]] for j in range(len(circles)) if j not in hit_c]}
+    return {
+        "found": len(hit_l),
+        "balls": len(truth),
+        "false": len(circles) - len(hit_c),
+        "radius_errors": rerr,
+        "missed": [list(truth[i]) for i in range(len(truth)) if i not in hit_l],
+        "false_at": [
+            [round(v, 1) for v in circles[j]] for j in range(len(circles)) if j not in hit_c
+        ],
+    }
 
 
 def run_all(method: int, dp: float, param1: float, param2: float, photos=POOL_PHOTOS) -> dict:
@@ -58,9 +78,13 @@ def run_all(method: int, dp: float, param1: float, param2: float, photos=POOL_PH
     found = sum(p["found"] for p in per.values())
     balls = sum(p["balls"] for p in per.values())
     false = sum(p["false"] for p in per.values())
-    return {"found": found, "balls": balls, "false": false,
-            "median_radius_error_px": round(float(np.median(errs)), 2) if errs else None,
-            "per_photo": per}
+    return {
+        "found": found,
+        "balls": balls,
+        "false": false,
+        "median_radius_error_px": round(float(np.median(errs)), 2) if errs else None,
+        "per_photo": per,
+    }
 
 
 def fixed_radius_accumulator(g: np.ndarray, r: int, canny=(50, 150)) -> np.ndarray:

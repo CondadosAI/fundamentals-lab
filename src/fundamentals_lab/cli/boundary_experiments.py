@@ -30,7 +30,7 @@ SECTIONS = {
     "--only", multiple=True, type=click.Choice(list(SECTIONS)), help="Run these sections only."
 )
 def boundary_experiments(only: tuple[str, ...]) -> None:
-    """Measure the highway (fits, accumulator, restricted voting, PPH) and the pool table (circles)."""
+    """Measure the highway (fits, Hough, restricted voting, PPH) and the pool table (circles)."""
     s = experiments.Scene()
     numbers = (
         json.loads(BOUNDARY_NUMBERS_JSON.read_text()) if BOUNDARY_NUMBERS_JSON.exists() else {}

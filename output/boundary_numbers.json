@@ -1,954 +1,2163 @@
 {
   "scene": {
-    "frame": "pcb1/Data/Images/Normal/0000.JPG",
-    "source_size": [
-      1404,
-      1070
+    "highway_frame": "comma10k/imgs/0825_e61068239ce72500_2018-11-13--21-06-53_13_903.png",
+    "size": [
+      1164,
+      874
     ],
-    "working_size": [
-      900,
-      686
+    "road_trapezoid_px": [
+      [
+        23,
+        681
+      ],
+      [
+        488,
+        437
+      ],
+      [
+        675,
+        437
+      ],
+      [
+        1140,
+        681
+      ]
     ],
-    "width": 900,
-    "edge_pixels": 23628,
-    "normal_frames": 1004,
+    "edge_pixels": 1749,
+    "edge_pixels_on_paint": 0.945,
+    "lane_pixels_in_road": 7902,
+    "sample_frames": 299,
+    "sample_day": 57,
+    "score_tolerance_px": 3,
+    "pool_photos": [
+      "pool",
+      "pool-close",
+      "pool-wide"
+    ],
+    "pool_balls": 41,
     "opencv": "5.0.0"
   },
   "fitting": {
-    "left_edge": {
-      "box": [
-        110,
-        260,
-        128,
-        450
-      ],
-      "points": 380,
-      "x_range": [
-        119,
-        126
-      ],
-      "y_range": [
-        260,
-        449
-      ],
-      "ls": {
-        "m": 6.8322,
-        "b": -480.9892,
-        "angle_deg": 81.673,
-        "cond": 6379.6144,
-        "vertical_rss": 1045588.142
+    "markings": [
+      {
+        "pixels": 5761,
+        "x_range": [
+          115,
+          498
+        ],
+        "y_range": [
+          437,
+          681
+        ],
+        "y_on_x": 146.19,
+        "x_on_y": 146.02,
+        "tls": 146.13,
+        "fitline": 146.13,
+        "spread_deg": 0.17
       },
-      "tls": {
-        "angle_deg": 89.2832,
-        "perpendicular_rms": 2.243,
-        "centroid": [
-          122.29,
-          354.5
-        ]
-      },
-      "fitline_angle_deg": 89.2832,
-      "ls_minus_tls_deg": -7.61,
-      "ls_perpendicular_rss": 21929.7,
-      "tls_perpendicular_rss": 1911.1
-    },
-    "top_edge": {
-      "box": [
-        290,
-        198,
-        540,
-        212
-      ],
-      "points": 520,
-      "x_range": [
-        290,
-        539
-      ],
-      "y_range": [
-        198,
-        208
-      ],
-      "ls": {
-        "m": -0.0046,
-        "b": 206.2643,
-        "angle_deg": -0.2647,
-        "cond": 2499.3303,
-        "vertical_rss": 3778.66
-      },
-      "tls": {
-        "angle_deg": 179.735,
-        "perpendicular_rms": 2.696,
-        "centroid": [
-          416.08,
-          204.34
-        ]
-      },
-      "fitline_angle_deg": 179.735,
-      "ls_minus_tls_deg": 0.0,
-      "ls_perpendicular_rss": 3778.6,
-      "tls_perpendicular_rss": 3778.6
-    },
+      {
+        "pixels": 1955,
+        "x_range": [
+          852,
+          957
+        ],
+        "y_range": [
+          582,
+          638
+        ],
+        "y_on_x": 28.42,
+        "x_on_y": 33.52,
+        "tls": 29.67,
+        "fitline": 29.67,
+        "spread_deg": 5.11
+      }
+    ],
+    "worked_marking": 1,
     "worked_example": {
       "points": [
         [
-          119,
-          280
+          859,
+          593
         ],
         [
-          124,
-          280
+          892,
+          593
         ],
         [
-          119,
-          320
+          875,
+          604
         ],
         [
-          124,
-          320
+          911,
+          604
         ],
         [
-          120,
-          360
+          891,
+          615
         ],
         [
-          125,
-          360
+          929,
+          615
         ],
         [
-          121,
-          400
+          907,
+          626
         ],
         [
-          125,
-          400
+          947,
+          626
         ]
       ],
-      "n": 8,
-      "sum_x": 977.0,
-      "sum_y": 2720.0,
-      "sum_xx": 119365.0,
-      "sum_xy": 332400.0,
-      "ls_m": 4.5013,
-      "ls_b": -209.72,
-      "ls_angle_deg": 77.475,
-      "denominator": 391.0,
-      "centred": {
-        "mean_x": 122.125,
-        "mean_y": 340.0,
-        "Sxx": 48.875,
-        "Sxy": 220.0,
-        "Syy": 16000.0
-      },
-      "tls_angle_deg": 89.21
-    },
-    "rotation_sweep": {
-      "0": {
-        "ls": 81.67,
-        "tls": 89.28,
-        "gap": -7.61
-      },
-      "15": {
-        "ls": 73.94,
-        "tls": 74.28,
-        "gap": -0.34
-      },
-      "30": {
-        "ls": 59.12,
-        "tls": 59.28,
-        "gap": -0.16
-      },
-      "45": {
-        "ls": 44.19,
-        "tls": 44.28,
-        "gap": -0.09
-      },
-      "60": {
-        "ls": 29.23,
-        "tls": 29.28,
-        "gap": -0.05
-      },
-      "80": {
-        "ls": 9.27,
-        "tls": 9.28,
-        "gap": -0.02
-      }
+      "mean": [
+        901.375,
+        609.5
+      ],
+      "Sxx": 5655.875,
+      "Syy": 1210.0,
+      "Sxy": 1886.5,
+      "y_on_x_slope": 0.3335,
+      "x_on_y_slope": 1.5591,
+      "y_on_x": 18.45,
+      "x_on_y": 32.68,
+      "tls": 20.16
     },
     "one_outlier": {
-      "ls_angle_deg": 75.526,
-      "tls_angle_deg": 89.282,
-      "offset_px": 40
+      "y_on_x": 28.39,
+      "x_on_y": 33.52,
+      "tls": 29.64
     },
-    "heldout_left_edge": {
-      "frames": 101,
-      "not_found": 0,
-      "ls_angle": {
-        "n": 101,
-        "median": 84.394,
-        "min": 2.614,
-        "max": 180.0,
-        "p05": 36.857,
-        "p95": 171.319
+    "heldout": {
+      "markings": 473,
+      "y_on_x_vs_x_on_y_deg": {
+        "n": 473,
+        "median": 0.461,
+        "min": 0.011,
+        "max": 38.269,
+        "p05": 0.069,
+        "p95": 10.876
       },
-      "tls_angle": {
-        "n": 101,
-        "median": 89.622,
-        "min": 86.034,
-        "max": 91.725,
-        "p05": 88.013,
-        "p95": 90.908
-      },
-      "ls_off_vertical_deg": {
-        "n": 101,
-        "median": 11.231,
-        "min": 0.757,
-        "max": 90.0,
-        "p05": 1.403,
-        "p95": 85.384
-      },
-      "tls_off_vertical_deg": {
-        "n": 101,
-        "median": 0.664,
+      "y_on_x_vs_tls_deg": {
+        "n": 473,
+        "median": 0.152,
         "min": 0.0,
-        "max": 3.966,
-        "p05": 0.008,
-        "p95": 1.987
+        "max": 14.665,
+        "p05": 0.01,
+        "p95": 2.189
+      },
+      "x_on_y_vs_tls_deg": {
+        "n": 473,
+        "median": 0.314,
+        "min": 0.008,
+        "max": 38.158,
+        "p05": 0.053,
+        "p95": 7.237
+      },
+      "share_over_1deg": 0.33,
+      "within_20deg_of_vertical": 1,
+      "y_on_x_vs_tls_near_vertical": {
+        "n": 1,
+        "median": 3.975,
+        "min": 3.975,
+        "max": 3.975,
+        "p05": 3.975,
+        "p95": 3.975
       }
     }
   },
   "hough": {
-    "edge_pixels": 23628,
+    "edge_pixels": 1749,
     "n_theta": 180,
-    "n_rho": 3173,
-    "cells": 571140,
-    "votes_cast": 4253040,
-    "threshold": 120,
-    "lines_over_threshold": 312,
+    "n_rho": 4077,
+    "cells": 733860,
+    "votes_cast": 314820,
+    "threshold": 60,
     "top_lines": [
       {
-        "votes": 322,
-        "rho": 207,
-        "theta_deg": 90
+        "votes": 362,
+        "rho": 633,
+        "theta_deg": 57
       },
       {
-        "votes": 277,
-        "rho": 202,
-        "theta_deg": 90
+        "votes": 309,
+        "rho": 641,
+        "theta_deg": 55
       },
       {
-        "votes": 255,
-        "rho": 473,
-        "theta_deg": 90
+        "votes": 140,
+        "rho": 635,
+        "theta_deg": 58
       },
       {
-        "votes": 206,
-        "rho": 211,
-        "theta_deg": 89
+        "votes": 122,
+        "rho": 637,
+        "theta_deg": 54
       },
       {
-        "votes": 193,
-        "rho": 470,
-        "theta_deg": 90
+        "votes": 120,
+        "rho": 630,
+        "theta_deg": 56
       },
       {
-        "votes": 184,
-        "rho": -114,
-        "theta_deg": 179
+        "votes": 94,
+        "rho": 49,
+        "theta_deg": 121
       },
       {
-        "votes": 175,
-        "rho": 425,
-        "theta_deg": 89
+        "votes": 92,
+        "rho": 631,
+        "theta_deg": 58
       },
       {
-        "votes": 168,
-        "rho": 342,
-        "theta_deg": 95
+        "votes": 84,
+        "rho": 638,
+        "theta_deg": 57
       }
     ],
-    "opencv_lines": 312,
+    "lines": 15,
+    "on_paint": 15,
+    "paint_covered": 0.894,
+    "lines_by_marking": {
+      "painted_markings_hit": 2,
+      "lines_per_marking": [
+        10,
+        5
+      ],
+      "lines_off_paint": 0
+    },
+    "opencv_lines": 15,
     "same_set_as_opencv": true,
     "same_votes_as_opencv": true,
-    "float64_lines_differing": 3,
+    "float64_lines_differing": 0,
     "worked_example": {
-      "row": 203,
+      "cell": [
+        633,
+        57
+      ],
+      "votes": 362,
       "pixels": [
         {
-          "x": 290,
-          "y": 203,
+          "x": 490,
+          "y": 437,
           "rho": {
-            "0": 290.0,
-            "45": 348.6,
-            "89": 208.0,
-            "90": 203.0,
-            "91": 197.9,
-            "135": -61.5
+            "47": 653.8,
+            "56": 636.3,
+            "57": 633.4,
+            "58": 630.3,
+            "67": 593.7
           }
         },
         {
-          "x": 319,
-          "y": 203,
+          "x": 318,
+          "y": 548,
           "rho": {
-            "0": 319.0,
-            "45": 369.1,
-            "89": 208.5,
-            "90": 203.0,
-            "91": 197.4,
-            "135": -82.0
+            "47": 617.7,
+            "56": 632.1,
+            "57": 632.8,
+            "58": 633.2,
+            "67": 628.7
           }
         },
         {
-          "x": 454,
-          "y": 203,
+          "x": 119,
+          "y": 678,
           "rho": {
-            "0": 454.0,
-            "45": 464.6,
-            "89": 210.9,
-            "90": 203.0,
-            "91": 195.0,
-            "135": -177.5
+            "47": 577.0,
+            "56": 628.6,
+            "57": 633.4,
+            "58": 638.0,
+            "67": 670.6
           }
         }
       ],
       "thetas": [
-        0,
-        45,
-        89,
-        90,
-        91,
-        135
+        47,
+        56,
+        57,
+        58,
+        67
       ]
     },
     "bin_size": {
       "0.5": {
-        "cells": 1142280,
-        "top_votes": 322,
-        "lines_over_threshold": 564
+        "cells": 1467720,
+        "top_votes": 362,
+        "lines": 31,
+        "on_paint": 31,
+        "paint_covered": 0.906
       },
       "1.0": {
-        "cells": 571140,
-        "top_votes": 322,
-        "lines_over_threshold": 312
+        "cells": 733860,
+        "top_votes": 362,
+        "lines": 15,
+        "on_paint": 15,
+        "paint_covered": 0.894
       },
       "2.0": {
-        "cells": 285570,
-        "top_votes": 322,
-        "lines_over_threshold": 163
-      }
-    },
-    "top_peak_neighbourhood": {
-      "centre": [
-        207,
-        90
-      ],
-      "votes": [
-        [
-          11,
-          7,
-          3,
-          30,
-          22
-        ],
-        [
-          14,
-          64,
-          3,
-          68,
-          26
-        ],
-        [
-          15,
-          87,
-          176,
-          33,
-          28
-        ],
-        [
-          39,
-          32,
-          322,
-          28,
-          33
-        ],
-        [
-          37,
-          82,
-          112,
-          31,
-          61
-        ],
-        [
-          50,
-          76,
-          5,
-          25,
-          49
-        ],
-        [
-          54,
-          93,
-          5,
-          25,
-          55
-        ]
-      ]
-    },
-    "texture_line": {
-      "rho": 342,
-      "theta_deg": 95,
-      "votes": 168,
-      "from_inside_transducers": 123,
-      "from_mesh": 95
-    },
-    "transducers": [
-      [
-        252.5,
-        345.5,
-        115.0
-      ],
-      [
-        605.5,
-        338.5,
-        109.6
-      ]
-    ],
-    "holes_param2": {
-      "10": {
-        "detections": 29,
-        "holes_found": 4,
-        "not_holes": 25
-      },
-      "15": {
-        "detections": 13,
-        "holes_found": 4,
-        "not_holes": 9
-      },
-      "20": {
-        "detections": 4,
-        "holes_found": 3,
-        "not_holes": 1
-      },
-      "25": {
-        "detections": 2,
-        "holes_found": 1,
-        "not_holes": 1
+        "cells": 366930,
+        "top_votes": 167,
+        "lines": 10,
+        "on_paint": 10,
+        "paint_covered": 0.893
       }
     },
     "heldout": {
-      "frames": 101,
-      "top_votes": {
-        "n": 101,
-        "median": 279.0,
-        "min": 189.0,
-        "max": 610.0,
-        "p05": 202.0,
-        "p95": 556.0
+      "day": {
+        "frames": 57,
+        "lines": {
+          "n": 57,
+          "median": 28.0,
+          "min": 0.0,
+          "max": 135.0,
+          "p05": 0.8,
+          "p95": 81.0
+        },
+        "precision": {
+          "n": 54,
+          "median": 0.31,
+          "min": 0.0,
+          "max": 1.0,
+          "p05": 0.0,
+          "p95": 1.0
+        },
+        "paint_covered": {
+          "n": 57,
+          "median": 0.845,
+          "min": 0.0,
+          "max": 1.0,
+          "p05": 0.0,
+          "p95": 1.0
+        },
+        "frames_with_no_line": 3
       },
-      "lines_over_threshold": {
-        "n": 101,
-        "median": 296.0,
-        "min": 121.0,
-        "max": 525.0,
-        "p05": 162.0,
-        "p95": 391.0
-      },
-      "transducer_left_r": {
-        "n": 101,
-        "median": 111.8,
-        "min": 91.9,
-        "max": 118.4,
-        "p05": 104.9,
-        "p95": 114.0
-      },
-      "transducer_right_r": {
-        "n": 101,
-        "median": 111.8,
-        "min": 99.6,
-        "max": 120.6,
-        "p05": 107.4,
-        "p95": 114.0
-      },
-      "transducer_frames": 101
+      "night": {
+        "frames": 242,
+        "lines": {
+          "n": 242,
+          "median": 15.0,
+          "min": 0.0,
+          "max": 678.0,
+          "p05": 0.0,
+          "p95": 100.95
+        },
+        "precision": {
+          "n": 203,
+          "median": 0.541,
+          "min": 0.0,
+          "max": 1.0,
+          "p05": 0.0,
+          "p95": 1.0
+        },
+        "paint_covered": {
+          "n": 242,
+          "median": 0.721,
+          "min": 0.0,
+          "max": 1.0,
+          "p05": 0.0,
+          "p95": 1.0
+        },
+        "frames_with_no_line": 39
+      }
     }
   },
   "probabilistic": {
-    "full_votes_cast": 4253040,
-    "worked_example_orientation_deg": {
-      "290,203": 93.63,
-      "319,203": 87.12,
-      "454,203": 86.63
-    },
+    "full_votes_cast": 314820,
     "restricted": {
       "2": {
-        "lines": [
-          [
-            250,
-            207,
-            90
-          ],
-          [
-            137,
-            211,
-            89
-          ]
-        ],
-        "also_in_full_set": 2,
-        "votes_cast": 118140,
+        "votes_cast": 8745,
         "fraction_of_full": 0.0278,
-        "lines_over_threshold": 2,
-        "top10_shared_with_full": 2,
-        "top_votes": 250
+        "top_votes": 302,
+        "also_in_full_set": 9,
+        "lines": 9,
+        "on_paint": 9,
+        "paint_covered": 0.798
       },
       "5": {
-        "lines": [
-          [
-            305,
-            207,
-            90
-          ],
-          [
-            180,
-            211,
-            89
-          ],
-          [
-            180,
-            473,
-            90
-          ],
-          [
-            177,
-            202,
-            90
-          ],
-          [
-            155,
-            469,
-            90
-          ],
-          [
-            144,
-            -114,
-            179
-          ],
-          [
-            141,
-            -118,
-            179
-          ],
-          [
-            128,
-            734,
-            1
-          ]
-        ],
-        "also_in_full_set": 7,
-        "votes_cast": 259908,
+        "votes_cast": 19239,
         "fraction_of_full": 0.0611,
-        "lines_over_threshold": 8,
-        "top10_shared_with_full": 5,
-        "top_votes": 305
+        "top_votes": 349,
+        "also_in_full_set": 12,
+        "lines": 12,
+        "on_paint": 12,
+        "paint_covered": 0.886
       },
       "10": {
-        "lines": [
-          [
-            316,
-            207,
-            90
-          ],
-          [
-            244,
-            202,
-            90
-          ],
-          [
-            228,
-            473,
-            90
-          ],
-          [
-            200,
-            211,
-            89
-          ],
-          [
-            177,
-            470,
-            90
-          ],
-          [
-            174,
-            -114,
-            179
-          ],
-          [
-            149,
-            -118,
-            179
-          ],
-          [
-            135,
-            477,
-            89
-          ],
-          [
-            131,
-            198,
-            91
-          ],
-          [
-            129,
-            734,
-            1
-          ],
-          [
-            124,
-            213,
-            89
-          ],
-          [
-            122,
-            467,
-            91
-          ]
-        ],
-        "also_in_full_set": 12,
-        "votes_cast": 496188,
+        "votes_cast": 36729,
         "fraction_of_full": 0.1167,
-        "lines_over_threshold": 12,
-        "top10_shared_with_full": 6,
-        "top_votes": 316
+        "top_votes": 361,
+        "also_in_full_set": 13,
+        "lines": 13,
+        "on_paint": 13,
+        "paint_covered": 0.889
       }
+    },
+    "lane_prior": {
+      "full_vote": {
+        "lines": 15,
+        "on_paint": 15,
+        "paint_covered": 0.894
+      },
+      "restricted_5": {
+        "lines": 12,
+        "on_paint": 12,
+        "paint_covered": 0.886
+      }
+    },
+    "heldout_lines": {
+      "full": {
+        "frames": 299,
+        "lines": {
+          "n": 299,
+          "median": 17.0,
+          "min": 0.0,
+          "max": 678.0,
+          "p05": 0.0,
+          "p95": 100.1
+        },
+        "precision": {
+          "n": 257,
+          "median": 0.5,
+          "min": 0.0,
+          "max": 1.0,
+          "p05": 0.0,
+          "p95": 1.0
+        },
+        "paint_covered": {
+          "n": 299,
+          "median": 0.757,
+          "min": 0.0,
+          "max": 1.0,
+          "p05": 0.0,
+          "p95": 1.0
+        },
+        "frames_with_no_line": 42
+      },
+      "prior": {
+        "frames": 299,
+        "lines": {
+          "n": 299,
+          "median": 8.0,
+          "min": 0.0,
+          "max": 111.0,
+          "p05": 0.0,
+          "p95": 46.1
+        },
+        "precision": {
+          "n": 207,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "p05": 0.0,
+          "p95": 1.0
+        },
+        "paint_covered": {
+          "n": 299,
+          "median": 0.637,
+          "min": 0.0,
+          "max": 1.0,
+          "p05": 0.0,
+          "p95": 1.0
+        },
+        "frames_with_no_line": 92
+      },
+      "restricted_5_prior": {
+        "frames": 299,
+        "lines": {
+          "n": 299,
+          "median": 3.0,
+          "min": 0.0,
+          "max": 48.0,
+          "p05": 0.0,
+          "p95": 22.2
+        },
+        "precision": {
+          "n": 191,
+          "median": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "p05": 0.0,
+          "p95": 1.0
+        },
+        "paint_covered": {
+          "n": 299,
+          "median": 0.454,
+          "min": 0.0,
+          "max": 1.0,
+          "p05": 0.0,
+          "p95": 0.986
+        },
+        "frames_with_no_line": 108
+      }
+    },
+    "worked_example_orientation_deg": {
+      "490,437": 61.39,
+      "318,548": 56.84,
+      "119,678": 40.82
     },
     "pph": {
-      "threshold": 90,
-      "min_length": 80,
-      "max_gap": 5,
-      "segments": 21,
+      "threshold": 40,
+      "min_length": 40,
+      "max_gap": 20,
+      "segments": 10,
+      "on_paint": 10,
+      "paint_covered": 0.798,
       "deterministic": true,
-      "longest_px": 254.0,
-      "median_length_px": 105.2,
-      "first": [
-        [
-          289,
-          207,
-          543,
-          207
-        ],
-        [
-          385,
-          202,
-          515,
-          202
-        ],
-        [
-          405,
-          473,
-          492,
-          473
-        ],
-        [
-          119,
-          274,
-          121,
-          442
-        ],
-        [
-          305,
-          470,
-          426,
-          470
-        ]
-      ]
+      "longest_px": 442.4,
+      "median_length_px": 156.0
     },
     "pph_sweep_minlen_gap": {
-      "40/2": 21,
-      "40/5": 102,
-      "40/20": 158,
-      "80/2": 6,
-      "80/5": 21,
-      "80/20": 143,
-      "160/2": 1,
-      "160/5": 2,
-      "160/20": 42
-    }
-  },
-  "ght": {
-    "left_transducer": [
-      252.5,
-      345.5,
-      115.0
-    ],
-    "right_transducer": [
-      605.5,
-      338.5,
-      109.6
-    ],
-    "full_crop": {
-      "template_size": [
-        242,
-        242
-      ],
-      "reference": [
-        121,
-        121
-      ],
-      "r_table_bins": 361,
-      "r_table_rows": 7750,
-      "ours": [
-        [
-          8703,
-          252,
-          344
-        ],
-        [
-          230,
-          608,
-          344
-        ],
-        [
-          43,
-          228,
-          232
-        ],
-        [
-          42,
-          448,
-          264
-        ]
-      ],
-      "opencv": [
-        [
-          8703,
-          252,
-          344
-        ],
-        [
-          230,
-          608,
-          344
-        ],
-        [
-          45,
-          516,
-          304
-        ],
-        [
-          43,
-          228,
-          232
-        ]
-      ],
-      "same_as_opencv": true
-    },
-    "ring_only": {
-      "template_size": [
-        242,
-        242
-      ],
-      "reference": [
-        121,
-        121
-      ],
-      "r_table_bins": 360,
-      "r_table_rows": 4012,
-      "ours": [
-        [
-          4097,
-          252,
-          344
-        ],
-        [
-          168,
-          604,
-          344
-        ],
-        [
-          36,
-          480,
-          284
-        ],
-        [
-          30,
-          712,
-          304
-        ]
-      ],
-      "opencv": [
-        [
-          4097,
-          252,
-          344
-        ],
-        [
-          168,
-          604,
-          344
-        ]
-      ],
-      "same_as_opencv": true,
-      "half_pixel_reference": [
-        [
-          3778,
-          252,
-          344
-        ],
-        [
-          94,
-          608,
-          342
-        ]
-      ],
-      "rows_sample": {
-        "0": [
-          [
-            102,
-            121
-          ],
-          [
-            84,
-            121
-          ],
-          [
-            -104,
-            121
-          ]
-        ],
-        "90": [
-          [
-            -120,
-            119
-          ],
-          [
-            -120,
-            118
-          ],
-          [
-            2,
-            115
-          ]
-        ],
-        "180": [
-          [
-            120,
-            121
-          ],
-          [
-            66,
-            121
-          ],
-          [
-            -107,
-            121
-          ]
-        ],
-        "270": [
-          [
-            76,
-            116
-          ],
-          [
-            75,
-            116
-          ],
-          [
-            -120,
-            110
-          ]
-        ]
+      "20/5": {
+        "segments": 18,
+        "on_paint": 18,
+        "paint_covered": 0.794
+      },
+      "20/20": {
+        "segments": 11,
+        "on_paint": 11,
+        "paint_covered": 0.84
+      },
+      "20/60": {
+        "segments": 11,
+        "on_paint": 11,
+        "paint_covered": 0.876
+      },
+      "40/5": {
+        "segments": 17,
+        "on_paint": 17,
+        "paint_covered": 0.731
+      },
+      "40/20": {
+        "segments": 10,
+        "on_paint": 10,
+        "paint_covered": 0.798
+      },
+      "40/60": {
+        "segments": 11,
+        "on_paint": 11,
+        "paint_covered": 0.876
+      },
+      "80/5": {
+        "segments": 9,
+        "on_paint": 9,
+        "paint_covered": 0.596
+      },
+      "80/20": {
+        "segments": 8,
+        "on_paint": 8,
+        "paint_covered": 0.7
+      },
+      "80/60": {
+        "segments": 9,
+        "on_paint": 9,
+        "paint_covered": 0.811
       }
     },
-    "ring_only_from_right": {
-      "ours": [
-        [
-          3902,
-          604,
-          338
-        ],
-        [
-          182,
-          256,
-          340
-        ]
-      ],
-      "opencv": [
-        [
-          3902,
-          604,
-          338
-        ],
-        [
-          182,
-          256,
-          340
-        ]
-      ],
-      "r_table_rows": 4156
-    },
-    "accumulator_cells_dp2": 156738,
-    "scale": {
-      "0.90": [
-        [
-          153,
-          244,
-          336
-        ],
-        [
-          97,
-          608,
-          332
-        ]
-      ],
-      "0.95": [
-        [
-          330,
-          248,
-          340
-        ],
-        [
-          119,
-          604,
-          336
-        ]
-      ],
-      "1.00": [
-        [
-          4097,
-          252,
-          344
-        ],
-        [
-          168,
-          604,
-          344
-        ]
-      ],
-      "1.05": [
-        [
-          371,
-          256,
-          348
-        ],
-        [
-          137,
-          600,
-          348
-        ]
-      ]
-    },
-    "radius_ratio_right_over_left": 0.953,
-    "heldout_second_over_first": {
-      "n": 100,
-      "median": 0.681,
-      "min": 0.372,
-      "max": 0.996,
-      "p05": 0.416,
-      "p95": 0.968
+    "heldout": {
+      "day": {
+        "frames": 57,
+        "segments": {
+          "n": 57,
+          "median": 15.0,
+          "min": 0.0,
+          "max": 71.0,
+          "p05": 2.8,
+          "p95": 39.2
+        },
+        "precision": {
+          "n": 55,
+          "median": 0.297,
+          "min": 0.0,
+          "max": 1.0,
+          "p05": 0.0,
+          "p95": 1.0
+        },
+        "paint_covered": {
+          "n": 57,
+          "median": 0.634,
+          "min": 0.0,
+          "max": 0.984,
+          "p05": 0.0,
+          "p95": 0.864
+        }
+      },
+      "night": {
+        "frames": 242,
+        "segments": {
+          "n": 242,
+          "median": 10.5,
+          "min": 0.0,
+          "max": 157.0,
+          "p05": 0.0,
+          "p95": 56.85
+        },
+        "precision": {
+          "n": 217,
+          "median": 0.474,
+          "min": 0.0,
+          "max": 1.0,
+          "p05": 0.0,
+          "p95": 1.0
+        },
+        "paint_covered": {
+          "n": 242,
+          "median": 0.443,
+          "min": 0.0,
+          "max": 0.995,
+          "p05": 0.0,
+          "p95": 0.91
+        }
+      }
     }
   },
-  "environment": {
-    "python": "3.12.9",
-    "opencv": "5.0.0",
-    "numpy": "2.5.2",
-    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  "circles": {
+    "gradient": {
+      "20": {
+        "found": 32,
+        "balls": 41,
+        "false": 26,
+        "median_radius_error_px": 1.3,
+        "per_photo": {
+          "pool": {
+            "found": 14,
+            "balls": 15,
+            "false": 8,
+            "missed": [
+              [
+                615,
+                120,
+                13
+              ]
+            ],
+            "false_at": [
+              [
+                296.5,
+                637.5,
+                30.3
+              ],
+              [
+                179.5,
+                171.5,
+                38.0
+              ],
+              [
+                149.5,
+                147.5,
+                31.0
+              ],
+              [
+                162.5,
+                177.5,
+                21.1
+              ],
+              [
+                154.5,
+                159.5,
+                11.6
+              ],
+              [
+                143.5,
+                171.5,
+                8.8
+              ],
+              [
+                137.5,
+                148.5,
+                9.6
+              ],
+              [
+                788.5,
+                304.5,
+                15.8
+              ]
+            ]
+          },
+          "pool-close": {
+            "found": 11,
+            "balls": 12,
+            "false": 15,
+            "missed": [
+              [
+                841,
+                156,
+                22
+              ]
+            ],
+            "false_at": [
+              [
+                201.5,
+                493.5,
+                29.6
+              ],
+              [
+                168.5,
+                510.5,
+                43.8
+              ],
+              [
+                813.5,
+                146.5,
+                54.9
+              ],
+              [
+                176.5,
+                496.5,
+                41.4
+              ],
+              [
+                191.5,
+                470.5,
+                22.5
+              ],
+              [
+                332.5,
+                466.5,
+                39.7
+              ],
+              [
+                709.5,
+                201.5,
+                33.0
+              ],
+              [
+                713.5,
+                214.5,
+                38.3
+              ],
+              [
+                187.5,
+                490.5,
+                29.7
+              ],
+              [
+                164.5,
+                482.5,
+                23.0
+              ],
+              [
+                208.5,
+                276.5,
+                9.6
+              ],
+              [
+                311.5,
+                491.5,
+                25.7
+              ],
+              [
+                211.5,
+                289.5,
+                16.1
+              ],
+              [
+                346.5,
+                469.5,
+                29.1
+              ],
+              [
+                416.5,
+                228.5,
+                14.9
+              ]
+            ]
+          },
+          "pool-wide": {
+            "found": 7,
+            "balls": 14,
+            "false": 3,
+            "missed": [
+              [
+                449,
+                107,
+                11
+              ],
+              [
+                210,
+                160,
+                8
+              ],
+              [
+                162,
+                233,
+                11
+              ],
+              [
+                188,
+                238,
+                10
+              ],
+              [
+                28,
+                308,
+                11
+              ],
+              [
+                90,
+                350,
+                12
+              ],
+              [
+                292,
+                596,
+                23
+              ]
+            ],
+            "false_at": [
+              [
+                782.5,
+                89.5,
+                50.6
+              ],
+              [
+                722.5,
+                94.5,
+                37.8
+              ],
+              [
+                612.5,
+                200.5,
+                38.6
+              ]
+            ]
+          }
+        }
+      },
+      "25": {
+        "found": 26,
+        "balls": 41,
+        "false": 9,
+        "median_radius_error_px": 1.45,
+        "per_photo": {
+          "pool": {
+            "found": 11,
+            "balls": 15,
+            "false": 1,
+            "missed": [
+              [
+                414,
+                109,
+                14
+              ],
+              [
+                494,
+                92,
+                13
+              ],
+              [
+                615,
+                120,
+                13
+              ],
+              [
+                727,
+                155,
+                14
+              ]
+            ],
+            "false_at": [
+              [
+                178.5,
+                173.5,
+                36.1
+              ]
+            ]
+          },
+          "pool-close": {
+            "found": 9,
+            "balls": 12,
+            "false": 8,
+            "missed": [
+              [
+                300,
+                112,
+                15
+              ],
+              [
+                480,
+                110,
+                15
+              ],
+              [
+                841,
+                156,
+                22
+              ]
+            ],
+            "false_at": [
+              [
+                813.5,
+                146.5,
+                54.9
+              ],
+              [
+                176.5,
+                496.5,
+                41.4
+              ],
+              [
+                192.5,
+                495.5,
+                38.1
+              ],
+              [
+                191.5,
+                470.5,
+                22.5
+              ],
+              [
+                713.5,
+                214.5,
+                38.3
+              ],
+              [
+                189.5,
+                482.5,
+                21.8
+              ],
+              [
+                165.5,
+                483.5,
+                25.1
+              ],
+              [
+                206.5,
+                274.5,
+                11.0
+              ]
+            ]
+          },
+          "pool-wide": {
+            "found": 6,
+            "balls": 14,
+            "false": 0,
+            "missed": [
+              [
+                449,
+                107,
+                11
+              ],
+              [
+                210,
+                160,
+                8
+              ],
+              [
+                162,
+                233,
+                11
+              ],
+              [
+                188,
+                238,
+                10
+              ],
+              [
+                28,
+                308,
+                11
+              ],
+              [
+                90,
+                350,
+                12
+              ],
+              [
+                288,
+                320,
+                15
+              ],
+              [
+                292,
+                596,
+                23
+              ]
+            ],
+            "false_at": []
+          }
+        }
+      },
+      "30": {
+        "found": 12,
+        "balls": 41,
+        "false": 4,
+        "median_radius_error_px": 2.55,
+        "per_photo": {
+          "pool": {
+            "found": 5,
+            "balls": 15,
+            "false": 1,
+            "missed": [
+              [
+                414,
+                109,
+                14
+              ],
+              [
+                494,
+                92,
+                13
+              ],
+              [
+                615,
+                120,
+                13
+              ],
+              [
+                686,
+                129,
+                13
+              ],
+              [
+                688,
+                156,
+                14
+              ],
+              [
+                727,
+                155,
+                14
+              ],
+              [
+                509,
+                162,
+                17
+              ],
+              [
+                592,
+                197,
+                18
+              ],
+              [
+                896,
+                220,
+                17
+              ],
+              [
+                350,
+                250,
+                22
+              ]
+            ],
+            "false_at": [
+              [
+                178.5,
+                173.5,
+                36.1
+              ]
+            ]
+          },
+          "pool-close": {
+            "found": 6,
+            "balls": 12,
+            "false": 3,
+            "missed": [
+              [
+                300,
+                112,
+                15
+              ],
+              [
+                480,
+                110,
+                15
+              ],
+              [
+                539,
+                83,
+                13
+              ],
+              [
+                657,
+                101,
+                16
+              ],
+              [
+                841,
+                156,
+                22
+              ],
+              [
+                201,
+                266,
+                30
+              ]
+            ],
+            "false_at": [
+              [
+                192.5,
+                495.5,
+                38.1
+              ],
+              [
+                191.5,
+                470.5,
+                22.5
+              ],
+              [
+                189.5,
+                482.5,
+                21.8
+              ]
+            ]
+          },
+          "pool-wide": {
+            "found": 1,
+            "balls": 14,
+            "false": 0,
+            "missed": [
+              [
+                449,
+                107,
+                11
+              ],
+              [
+                210,
+                160,
+                8
+              ],
+              [
+                317,
+                163,
+                11
+              ],
+              [
+                277,
+                213,
+                12
+              ],
+              [
+                178,
+                222,
+                11
+              ],
+              [
+                162,
+                233,
+                11
+              ],
+              [
+                188,
+                238,
+                10
+              ],
+              [
+                28,
+                294,
+                11
+              ],
+              [
+                28,
+                308,
+                11
+              ],
+              [
+                90,
+                350,
+                12
+              ],
+              [
+                118,
+                333,
+                12
+              ],
+              [
+                288,
+                320,
+                15
+              ],
+              [
+                292,
+                596,
+                23
+              ]
+            ],
+            "false_at": []
+          }
+        }
+      },
+      "35": {
+        "found": 8,
+        "balls": 41,
+        "false": 1,
+        "median_radius_error_px": 0.6,
+        "per_photo": {
+          "pool": {
+            "found": 3,
+            "balls": 15,
+            "false": 0,
+            "missed": [
+              [
+                167,
+                197,
+                22
+              ],
+              [
+                414,
+                109,
+                14
+              ],
+              [
+                494,
+                92,
+                13
+              ],
+              [
+                615,
+                120,
+                13
+              ],
+              [
+                686,
+                129,
+                13
+              ],
+              [
+                688,
+                156,
+                14
+              ],
+              [
+                727,
+                155,
+                14
+              ],
+              [
+                509,
+                162,
+                17
+              ],
+              [
+                592,
+                197,
+                18
+              ],
+              [
+                896,
+                220,
+                17
+              ],
+              [
+                350,
+                250,
+                22
+              ],
+              [
+                424,
+                298,
+                23
+              ]
+            ],
+            "false_at": []
+          },
+          "pool-close": {
+            "found": 5,
+            "balls": 12,
+            "false": 1,
+            "missed": [
+              [
+                300,
+                112,
+                15
+              ],
+              [
+                480,
+                110,
+                15
+              ],
+              [
+                539,
+                83,
+                13
+              ],
+              [
+                657,
+                101,
+                16
+              ],
+              [
+                703,
+                188,
+                23
+              ],
+              [
+                841,
+                156,
+                22
+              ],
+              [
+                201,
+                266,
+                30
+              ]
+            ],
+            "false_at": [
+              [
+                191.5,
+                473.5,
+                19.4
+              ]
+            ]
+          },
+          "pool-wide": {
+            "found": 0,
+            "balls": 14,
+            "false": 0,
+            "missed": [
+              [
+                449,
+                107,
+                11
+              ],
+              [
+                210,
+                160,
+                8
+              ],
+              [
+                317,
+                163,
+                11
+              ],
+              [
+                277,
+                213,
+                12
+              ],
+              [
+                178,
+                222,
+                11
+              ],
+              [
+                162,
+                233,
+                11
+              ],
+              [
+                188,
+                238,
+                10
+              ],
+              [
+                28,
+                294,
+                11
+              ],
+              [
+                28,
+                308,
+                11
+              ],
+              [
+                90,
+                350,
+                12
+              ],
+              [
+                118,
+                333,
+                12
+              ],
+              [
+                288,
+                320,
+                15
+              ],
+              [
+                626,
+                218,
+                17
+              ],
+              [
+                292,
+                596,
+                23
+              ]
+            ],
+            "false_at": []
+          }
+        }
+      },
+      "40": {
+        "found": 3,
+        "balls": 41,
+        "false": 0,
+        "median_radius_error_px": 1.7,
+        "per_photo": {
+          "pool": {
+            "found": 1,
+            "balls": 15,
+            "false": 0,
+            "missed": [
+              [
+                167,
+                197,
+                22
+              ],
+              [
+                414,
+                109,
+                14
+              ],
+              [
+                494,
+                92,
+                13
+              ],
+              [
+                615,
+                120,
+                13
+              ],
+              [
+                686,
+                129,
+                13
+              ],
+              [
+                688,
+                156,
+                14
+              ],
+              [
+                727,
+                155,
+                14
+              ],
+              [
+                509,
+                162,
+                17
+              ],
+              [
+                592,
+                197,
+                18
+              ],
+              [
+                896,
+                220,
+                17
+              ],
+              [
+                350,
+                250,
+                22
+              ],
+              [
+                573,
+                260,
+                20
+              ],
+              [
+                424,
+                298,
+                23
+              ],
+              [
+                791,
+                311,
+                23
+              ]
+            ],
+            "false_at": []
+          },
+          "pool-close": {
+            "found": 2,
+            "balls": 12,
+            "false": 0,
+            "missed": [
+              [
+                300,
+                112,
+                15
+              ],
+              [
+                480,
+                110,
+                15
+              ],
+              [
+                539,
+                83,
+                13
+              ],
+              [
+                657,
+                101,
+                16
+              ],
+              [
+                703,
+                188,
+                23
+              ],
+              [
+                841,
+                156,
+                22
+              ],
+              [
+                813,
+                173,
+                24
+              ],
+              [
+                714,
+                227,
+                28
+              ],
+              [
+                201,
+                266,
+                30
+              ],
+              [
+                329,
+                473,
+                48
+              ]
+            ],
+            "false_at": []
+          },
+          "pool-wide": {
+            "found": 0,
+            "balls": 14,
+            "false": 0,
+            "missed": [
+              [
+                449,
+                107,
+                11
+              ],
+              [
+                210,
+                160,
+                8
+              ],
+              [
+                317,
+                163,
+                11
+              ],
+              [
+                277,
+                213,
+                12
+              ],
+              [
+                178,
+                222,
+                11
+              ],
+              [
+                162,
+                233,
+                11
+              ],
+              [
+                188,
+                238,
+                10
+              ],
+              [
+                28,
+                294,
+                11
+              ],
+              [
+                28,
+                308,
+                11
+              ],
+              [
+                90,
+                350,
+                12
+              ],
+              [
+                118,
+                333,
+                12
+              ],
+              [
+                288,
+                320,
+                15
+              ],
+              [
+                626,
+                218,
+                17
+              ],
+              [
+                292,
+                596,
+                23
+              ]
+            ],
+            "false_at": []
+          }
+        }
+      }
+    },
+    "gradient_alt": {
+      "0.7": {
+        "found": 28,
+        "balls": 41,
+        "false": 3,
+        "median_radius_error_px": 1.37,
+        "per_photo": {
+          "pool": {
+            "found": 10,
+            "balls": 15,
+            "false": 2,
+            "missed": [
+              [
+                167,
+                197,
+                22
+              ],
+              [
+                615,
+                120,
+                13
+              ],
+              [
+                896,
+                220,
+                17
+              ],
+              [
+                350,
+                250,
+                22
+              ],
+              [
+                424,
+                298,
+                23
+              ]
+            ],
+            "false_at": [
+              [
+                265.5,
+                678.0,
+                16.7
+              ],
+              [
+                801.0,
+                343.5,
+                13.1
+              ]
+            ]
+          },
+          "pool-close": {
+            "found": 11,
+            "balls": 12,
+            "false": 1,
+            "missed": [
+              [
+                841,
+                156,
+                22
+              ]
+            ],
+            "false_at": [
+              [
+                192.0,
+                474.0,
+                19.2
+              ]
+            ]
+          },
+          "pool-wide": {
+            "found": 7,
+            "balls": 14,
+            "false": 0,
+            "missed": [
+              [
+                449,
+                107,
+                11
+              ],
+              [
+                210,
+                160,
+                8
+              ],
+              [
+                162,
+                233,
+                11
+              ],
+              [
+                188,
+                238,
+                10
+              ],
+              [
+                28,
+                308,
+                11
+              ],
+              [
+                90,
+                350,
+                12
+              ],
+              [
+                292,
+                596,
+                23
+              ]
+            ],
+            "false_at": []
+          }
+        }
+      },
+      "0.8": {
+        "found": 27,
+        "balls": 41,
+        "false": 1,
+        "median_radius_error_px": 1.3,
+        "per_photo": {
+          "pool": {
+            "found": 10,
+            "balls": 15,
+            "false": 0,
+            "missed": [
+              [
+                167,
+                197,
+                22
+              ],
+              [
+                727,
+                155,
+                14
+              ],
+              [
+                896,
+                220,
+                17
+              ],
+              [
+                350,
+                250,
+                22
+              ],
+              [
+                424,
+                298,
+                23
+              ]
+            ],
+            "false_at": []
+          },
+          "pool-close": {
+            "found": 10,
+            "balls": 12,
+            "false": 1,
+            "missed": [
+              [
+                480,
+                110,
+                15
+              ],
+              [
+                841,
+                156,
+                22
+              ]
+            ],
+            "false_at": [
+              [
+                192.0,
+                474.0,
+                19.1
+              ]
+            ]
+          },
+          "pool-wide": {
+            "found": 7,
+            "balls": 14,
+            "false": 0,
+            "missed": [
+              [
+                449,
+                107,
+                11
+              ],
+              [
+                210,
+                160,
+                8
+              ],
+              [
+                162,
+                233,
+                11
+              ],
+              [
+                188,
+                238,
+                10
+              ],
+              [
+                28,
+                308,
+                11
+              ],
+              [
+                90,
+                350,
+                12
+              ],
+              [
+                292,
+                596,
+                23
+              ]
+            ],
+            "false_at": []
+          }
+        }
+      },
+      "0.85": {
+        "found": 23,
+        "balls": 41,
+        "false": 1,
+        "median_radius_error_px": 1.14,
+        "per_photo": {
+          "pool": {
+            "found": 7,
+            "balls": 15,
+            "false": 0,
+            "missed": [
+              [
+                167,
+                197,
+                22
+              ],
+              [
+                414,
+                109,
+                14
+              ],
+              [
+                686,
+                129,
+                13
+              ],
+              [
+                727,
+                155,
+                14
+              ],
+              [
+                592,
+                197,
+                18
+              ],
+              [
+                896,
+                220,
+                17
+              ],
+              [
+                350,
+                250,
+                22
+              ],
+              [
+                424,
+                298,
+                23
+              ]
+            ],
+            "false_at": []
+          },
+          "pool-close": {
+            "found": 9,
+            "balls": 12,
+            "false": 1,
+            "missed": [
+              [
+                480,
+                110,
+                15
+              ],
+              [
+                841,
+                156,
+                22
+              ],
+              [
+                201,
+                266,
+                30
+              ]
+            ],
+            "false_at": [
+              [
+                192.0,
+                474.0,
+                19.0
+              ]
+            ]
+          },
+          "pool-wide": {
+            "found": 7,
+            "balls": 14,
+            "false": 0,
+            "missed": [
+              [
+                449,
+                107,
+                11
+              ],
+              [
+                210,
+                160,
+                8
+              ],
+              [
+                162,
+                233,
+                11
+              ],
+              [
+                188,
+                238,
+                10
+              ],
+              [
+                28,
+                308,
+                11
+              ],
+              [
+                90,
+                350,
+                12
+              ],
+              [
+                292,
+                596,
+                23
+              ]
+            ],
+            "false_at": []
+          }
+        }
+      },
+      "0.9": {
+        "found": 20,
+        "balls": 41,
+        "false": 0,
+        "median_radius_error_px": 1.19,
+        "per_photo": {
+          "pool": {
+            "found": 7,
+            "balls": 15,
+            "false": 0,
+            "missed": [
+              [
+                167,
+                197,
+                22
+              ],
+              [
+                414,
+                109,
+                14
+              ],
+              [
+                686,
+                129,
+                13
+              ],
+              [
+                727,
+                155,
+                14
+              ],
+              [
+                592,
+                197,
+                18
+              ],
+              [
+                896,
+                220,
+                17
+              ],
+              [
+                350,
+                250,
+                22
+              ],
+              [
+                424,
+                298,
+                23
+              ]
+            ],
+            "false_at": []
+          },
+          "pool-close": {
+            "found": 7,
+            "balls": 12,
+            "false": 0,
+            "missed": [
+              [
+                480,
+                110,
+                15
+              ],
+              [
+                703,
+                188,
+                23
+              ],
+              [
+                841,
+                156,
+                22
+              ],
+              [
+                201,
+                266,
+                30
+              ],
+              [
+                329,
+                473,
+                48
+              ]
+            ],
+            "false_at": []
+          },
+          "pool-wide": {
+            "found": 6,
+            "balls": 14,
+            "false": 0,
+            "missed": [
+              [
+                449,
+                107,
+                11
+              ],
+              [
+                210,
+                160,
+                8
+              ],
+              [
+                162,
+                233,
+                11
+              ],
+              [
+                188,
+                238,
+                10
+              ],
+              [
+                28,
+                294,
+                11
+              ],
+              [
+                28,
+                308,
+                11
+              ],
+              [
+                90,
+                350,
+                12
+              ],
+              [
+                292,
+                596,
+                23
+              ]
+            ],
+            "false_at": []
+          }
+        }
+      }
+    },
+    "chosen_on_pool": {
+      "gradient": {
+        "param2": 25,
+        "scored_on_other_two": {
+          "found": 15,
+          "balls": 26,
+          "false": 8,
+          "median_radius_error_px": 1.3,
+          "per_photo": {
+            "pool-close": {
+              "found": 9,
+              "balls": 12,
+              "false": 8
+            },
+            "pool-wide": {
+              "found": 6,
+              "balls": 14,
+              "false": 0
+            }
+          }
+        }
+      },
+      "gradient_alt": {
+        "param2": 0.8,
+        "scored_on_other_two": {
+          "found": 17,
+          "balls": 26,
+          "false": 1,
+          "median_radius_error_px": 1.3,
+          "per_photo": {
+            "pool-close": {
+              "found": 10,
+              "balls": 12,
+              "false": 1
+            },
+            "pool-wide": {
+              "found": 7,
+              "balls": 14,
+              "false": 0
+            }
+          }
+        }
+      }
+    },
+    "m2_colour_pipeline": {
+      "found": 29,
+      "balls": 41,
+      "false": 2
+    },
+    "textbook_accumulator": {
+      "label": [
+        179,
+        504,
+        52
+      ],
+      "peak": [
+        183,
+        506
+      ],
+      "peak_votes": 14,
+      "peak_to_label_px": 4.47,
+      "opencv_alt": [
+        181.5,
+        505.5,
+        53.3
+      ],
+      "opencv_to_label_px": 2.92,
+      "edge_pixels": 9603,
+      "radii_in_the_search": 53
+    }
   },
   "wild": {
     "cloister_fit": {
@@ -1052,29 +2261,22 @@
         142.0
       ]
     },
-    "pool": {
-      "circles_found_by_hough": 8,
-      "median_radius": 22.3,
-      "radius_range": [
-        11.8,
-        23.4
-      ],
-      "template_circle": [
-        658.5,
-        178.5,
-        22.3
-      ],
-      "ght_top_votes": [
-        274,
-        15,
-        11,
-        9,
-        8,
-        8,
-        8,
-        8
-      ],
-      "ght_peaks_on_a_ball_in_top24": 2
+    "candles": {
+      "photos": 100,
+      "circles_per_photo": {
+        "4": 100
+      },
+      "radius_median": 144.4,
+      "radius_p05_p95": [
+        142.7,
+        146.3
+      ]
     }
+  },
+  "environment": {
+    "python": "3.12.9",
+    "opencv": "5.0.0",
+    "numpy": "2.5.2",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
   }
 }

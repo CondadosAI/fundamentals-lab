@@ -15,6 +15,7 @@ import numpy as np
 from fundamentals_lab.boundaries import fitting, highway, hough, pool
 from fundamentals_lab.config import (
     DAY_MIN_BRIGHTNESS,
+    FLAT_THETA,
     HIGHWAY_FRAME,
     HOUGH_THRESHOLD,
     POOL_GRADIENT,
@@ -38,8 +39,14 @@ def _spread(values) -> dict:
     v = np.asarray(values, float)
     if not v.size:
         return {"n": 0}
-    return {"n": int(v.size), "median": _r(np.median(v)), "min": _r(v.min()), "max": _r(v.max()),
-            "p05": _r(np.percentile(v, 5)), "p95": _r(np.percentile(v, 95))}
+    return {
+        "n": int(v.size),
+        "median": _r(np.median(v)),
+        "min": _r(v.min()),
+        "max": _r(v.max()),
+        "p05": _r(np.percentile(v, 5)),
+        "p95": _r(np.percentile(v, 95)),
+    }
 
 
 def _fold(a: float) -> float:
@@ -87,7 +94,9 @@ def _sample():
             if p.name == HIGHWAY_FRAME:
                 continue
             img = cv2.imread(str(p))
-            out.append((p.name, float(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY).mean()) >= DAY_MIN_BRIGHTNESS))
+            out.append(
+                (p.name, float(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY).mean()) >= DAY_MIN_BRIGHTNESS)
+            )
         _SAMPLE_CACHE = out
     return _SAMPLE_CACHE
 
@@ -97,7 +106,13 @@ def worked_pixels(s: Scene) -> list[tuple[int, int]]:
     _, ri, ti = s.lines[0]
     rho, t = hough.rho_of(ri, s.acc), np.radians(ti)
     ys, xs = np.nonzero(s.edges)
-    on = np.rint(xs.astype(np.float32) * np.float32(np.cos(t)) + ys.astype(np.float32) * np.float32(np.sin(t))) == rho
+    on = (
+        np.rint(
+            xs.astype(np.float32) * np.float32(np.cos(t))
+            + ys.astype(np.float32) * np.float32(np.sin(t))
+        )
+        == rho
+    )
     sx, sy = xs[on], ys[on]
     order = np.argsort(sy)
     return [(int(sx[i]), int(sy[i])) for i in (order[0], order[len(order) // 2], order[-1])]
@@ -133,15 +148,19 @@ def fitting_lesson(s: Scene) -> dict:
     for P in marks[:4]:
         f = three_fits(P)
         vx, vy, *_ = cv2.fitLine(P.astype(np.float32), cv2.DIST_L2, 0, 0.01, 0.01).ravel()
-        spread = max(_gap(f["y_on_x"], f["x_on_y"]), _gap(f["y_on_x"], f["tls"]), _gap(f["x_on_y"], f["tls"]))
-        per.append({
-            "pixels": int(len(P)),
-            "x_range": [int(P[:, 0].min()), int(P[:, 0].max())],
-            "y_range": [int(P[:, 1].min()), int(P[:, 1].max())],
-            **{k: _r(v, 2) for k, v in f.items()},
-            "fitline": _r(_fold(np.degrees(np.arctan2(vy, vx))), 2),
-            "spread_deg": _r(spread, 2),
-        })
+        spread = max(
+            _gap(f["y_on_x"], f["x_on_y"]), _gap(f["y_on_x"], f["tls"]), _gap(f["x_on_y"], f["tls"])
+        )
+        per.append(
+            {
+                "pixels": int(len(P)),
+                "x_range": [int(P[:, 0].min()), int(P[:, 0].max())],
+                "y_range": [int(P[:, 1].min()), int(P[:, 1].max())],
+                **{k: _r(v, 2) for k, v in f.items()},
+                "fitline": _r(_fold(np.degrees(np.arctan2(vy, vx))), 2),
+                "spread_deg": _r(spread, 2),
+            }
+        )
     # the marking the lesson works on: the widest disagreement among the four largest
     k = int(np.argmax([p["spread_deg"] for p in per]))
     P = marks[k]
@@ -159,9 +178,13 @@ def fitting_lesson(s: Scene) -> dict:
     syy = ((y - y.mean()) ** 2).sum()
     sxy = ((x - x.mean()) * (y - y.mean())).sum()
     worked = {
-        "points": [list(p) for p in pts], "mean": [_r(x.mean(), 3), _r(y.mean(), 3)],
-        "Sxx": _r(sxx, 3), "Syy": _r(syy, 3), "Sxy": _r(sxy, 3),
-        "y_on_x_slope": _r(sxy / sxx, 4), "x_on_y_slope": _r(sxy / syy, 4),
+        "points": [list(p) for p in pts],
+        "mean": [_r(x.mean(), 3), _r(y.mean(), 3)],
+        "Sxx": _r(sxx, 3),
+        "Syy": _r(syy, 3),
+        "Sxy": _r(sxy, 3),
+        "y_on_x_slope": _r(sxy / sxx, 4),
+        "x_on_y_slope": _r(sxy / syy, 4),
         **{k2: _r(v, 2) for k2, v in three_fits(W).items()},
     }
 
@@ -182,7 +205,10 @@ def fitting_lesson(s: Scene) -> dict:
     angles = np.array(angles)
     steep = np.abs(90 - angles) < 20
     return {
-        "markings": per, "worked_marking": k, "worked_example": worked, "one_outlier": outlier,
+        "markings": per,
+        "worked_marking": k,
+        "worked_example": worked,
+        "one_outlier": outlier,
         "heldout": {
             "markings": len(spreads),
             "y_on_x_vs_x_on_y_deg": _spread(spreads),
@@ -200,9 +226,13 @@ def fitting_lesson(s: Scene) -> dict:
 
 def _summary_lines(rows):
     prec = [r["on_paint"] / r["lines"] for r in rows if r["lines"]]
-    return {"frames": len(rows), "lines": _spread([r["lines"] for r in rows]),
-            "precision": _spread(prec), "paint_covered": _spread([r["paint_covered"] for r in rows]),
-            "frames_with_no_line": sum(r["lines"] == 0 for r in rows)}
+    return {
+        "frames": len(rows),
+        "lines": _spread([r["lines"] for r in rows]),
+        "precision": _spread(prec),
+        "paint_covered": _spread([r["paint_covered"] for r in rows]),
+        "frames_with_no_line": sum(r["lines"] == 0 for r in rows),
+    }
 
 
 def hough_lesson(s: Scene) -> dict:
@@ -212,46 +242,79 @@ def hough_lesson(s: Scene) -> dict:
     half = (acc.shape[0] - 1) // 2
     cv_keys = [(int(round(r)) + half, int(round(t / (np.pi / 180)))) for r, t, _ in cvl]
     ours = {(r, t) for _, r, t in lines}
-    f64 = hough.local_maxima(hough.accumulator(s.edges, dtype=np.float64, exact_angle=True), HOUGH_THRESHOLD)
+    f64 = hough.local_maxima(
+        hough.accumulator(s.edges, dtype=np.float64, exact_angle=True), HOUGH_THRESHOLD
+    )
 
     v, ri, ti = lines[0]
     rho = hough.rho_of(ri, acc)
     thetas = [ti - 10, ti - 1, ti, ti + 1, ti + 10]
-    table = [{"x": px, "y": py,
-              "rho": {str(th): _r(px * np.cos(np.radians(th)) + py * np.sin(np.radians(th)), 1) for th in thetas}}
-             for px, py in worked_pixels(s)]
+    table = [
+        {
+            "x": px,
+            "y": py,
+            "rho": {
+                str(th): _r(px * np.cos(np.radians(th)) + py * np.sin(np.radians(th)), 1)
+                for th in thetas
+            },
+        }
+        for px, py in worked_pixels(s)
+    ]
 
     bins = {}
     for step in (0.5, 1.0, 2.0):
         a = hough.accumulator(s.edges, theta_deg=step)
         lm = hough.local_maxima(a, HOUGH_THRESHOLD)
-        sc = highway.score_lines(s.edges, s.lane, [(hough.rho_of(r, a), np.radians(tt * step)) for _, r, tt in lm])
+        sc = highway.score_lines(
+            s.edges, s.lane, [(hough.rho_of(r, a), np.radians(tt * step)) for _, r, tt in lm]
+        )
         bins[str(step)] = {"cells": int(a.size), "top_votes": int(a.max()), **sc}
 
-    marks = highway.markings(s.lane)
-    per_mark = []
-    for P in marks[:4]:
-        n = 0
-        for rr, tt in s.line_list():
-            n += (np.abs(P[:, 0] * np.cos(tt) + P[:, 1] * np.sin(tt) - rr) <= 2).mean() > 0.3
-        per_mark.append(int(n))
+    # Which painted marking each line belongs to: the one most of its edge pixels sit on.
+    paint = highway.lane_in_road(s.lane).astype(np.uint8)
+    k = 2 * SCORE_TOL_PX + 1
+    _, lab = cv2.connectedComponents(cv2.dilate(paint, np.ones((k, k), np.uint8)))
+    ys, xs = np.nonzero(s.edges)
+    owner = {}
+    for rr, tt in s.line_list():
+        d = np.abs(xs * np.cos(tt) + ys * np.sin(tt) - rr) <= 1.5
+        ids = lab[ys[d], xs[d]]
+        ids = ids[ids > 0]
+        key = int(np.bincount(ids).argmax()) if ids.size else 0
+        owner[key] = owner.get(key, 0) + 1
+    per_mark = {
+        "painted_markings_hit": sum(1 for k2 in owner if k2),
+        "lines_per_marking": sorted((v for k2, v in owner.items() if k2), reverse=True),
+        "lines_off_paint": owner.get(0, 0),
+    }
 
     held = {"day": [], "night": []}
     for name, day in _sample():
         sc = Scene(name)
-        row = highway.score_lines(sc.edges, sc.lane, sc.line_list()) if sc.lines else {
-            "lines": 0, "on_paint": 0, "paint_covered": 0.0}
+        row = (
+            highway.score_lines(sc.edges, sc.lane, sc.line_list())
+            if sc.lines
+            else {"lines": 0, "on_paint": 0, "paint_covered": 0.0}
+        )
         held["day" if day else "night"].append(row)
 
     return {
-        "edge_pixels": n_edge, "n_theta": int(acc.shape[1]), "n_rho": int(acc.shape[0]),
-        "cells": int(acc.size), "votes_cast": n_edge * int(acc.shape[1]), "threshold": HOUGH_THRESHOLD,
-        "top_lines": [{"votes": vv, "rho": hough.rho_of(r, acc), "theta_deg": tt} for vv, r, tt in lines[:8]],
+        "edge_pixels": n_edge,
+        "n_theta": int(acc.shape[1]),
+        "n_rho": int(acc.shape[0]),
+        "cells": int(acc.size),
+        "votes_cast": n_edge * int(acc.shape[1]),
+        "threshold": HOUGH_THRESHOLD,
+        "top_lines": [
+            {"votes": vv, "rho": hough.rho_of(r, acc), "theta_deg": tt} for vv, r, tt in lines[:8]
+        ],
         **highway.score_lines(s.edges, s.lane, s.line_list()),
-        "lines_per_marking_4_largest": per_mark,
+        "lines_by_marking": per_mark,
         "opencv_lines": int(len(cvl)),
         "same_set_as_opencv": set(cv_keys) == ours,
-        "same_votes_as_opencv": bool(all(acc[k] == int(vv) for k, vv in zip(cv_keys, cvl[:, 2], strict=True))),
+        "same_votes_as_opencv": bool(
+            all(acc[k] == int(vv) for k, vv in zip(cv_keys, cvl[:, 2], strict=True))
+        ),
         "float64_lines_differing": len(set(cv_keys) ^ {(r, t) for _, r, t in f64}) // 2,
         "worked_example": {"cell": [rho, ti], "votes": int(v), "pixels": table, "thetas": thetas},
         "bin_size": bins,
@@ -264,8 +327,12 @@ def hough_lesson(s: Scene) -> dict:
 
 def _summary_segments(rows):
     prec = [r["on_paint"] / r["segments"] for r in rows if r["segments"]]
-    return {"frames": len(rows), "segments": _spread([r["segments"] for r in rows]),
-            "precision": _spread(prec), "paint_covered": _spread([r["paint_covered"] for r in rows])}
+    return {
+        "frames": len(rows),
+        "segments": _spread([r["segments"] for r in rows]),
+        "precision": _spread(prec),
+        "paint_covered": _spread([r["paint_covered"] for r in rows]),
+    }
 
 
 def probabilistic_lesson(s: Scene) -> dict:
@@ -279,10 +346,31 @@ def probabilistic_lesson(s: Scene) -> dict:
     for k in RESTRICT_DEGREES:
         a, cast = hough.restricted_accumulator(s.edges, orient, k)
         lm = hough.local_maxima(a, HOUGH_THRESHOLD)
-        sc = highway.score_lines(s.edges, s.lane, [(hough.rho_of(r, a), np.radians(t)) for _, r, t in lm])
-        restricted[str(k)] = {"votes_cast": cast, "fraction_of_full": _r(cast / full_votes, 4),
-                              "top_votes": int(a.max()),
-                              "also_in_full_set": sum((r, t) in full_set for _, r, t in lm), **sc}
+        sc = highway.score_lines(
+            s.edges, s.lane, [(hough.rho_of(r, a), np.radians(t)) for _, r, t in lm]
+        )
+        restricted[str(k)] = {
+            "votes_cast": cast,
+            "fraction_of_full": _r(cast / full_votes, 4),
+            "top_votes": int(a.max()),
+            "also_in_full_set": sum((r, t) in full_set for _, r, t in lm),
+            **sc,
+        }
+
+    # The lane prior: drop every line within 20 degrees of horizontal, on its own and on
+    # top of the gradient restriction.
+    def lane_lines(acc, lines):
+        return [
+            (hough.rho_of(r, acc), np.radians(t))
+            for _, r, t in lines
+            if not FLAT_THETA[0] <= t <= FLAT_THETA[1]
+        ]
+
+    prior = {"full_vote": highway.score_lines(s.edges, s.lane, lane_lines(s.acc, s.lines))}
+    a5, _ = hough.restricted_accumulator(s.edges, orient, 5)
+    prior["restricted_5"] = highway.score_lines(
+        s.edges, s.lane, lane_lines(a5, hough.local_maxima(a5, HOUGH_THRESHOLD))
+    )
 
     def pph(thr=PPH["threshold"], minl=PPH["min_length"], gap=PPH["max_gap"], edges=None):
         e = s.edges if edges is None else edges
@@ -291,20 +379,53 @@ def probabilistic_lesson(s: Scene) -> dict:
 
     seg, seg2 = pph(), pph()
     lengths = np.hypot(seg[:, 2] - seg[:, 0], seg[:, 3] - seg[:, 1])
-    sweep = {f"{minl}/{gap}": highway.score_segments(s.lane, pph(minl=minl, gap=gap))
-             for minl in (20, 40, 80) for gap in (5, 20, 60)}
+    sweep = {
+        f"{minl}/{gap}": highway.score_segments(s.lane, pph(minl=minl, gap=gap))
+        for minl in (20, 40, 80)
+        for gap in (5, 20, 60)
+    }
 
     held = {"day": [], "night": []}
+    held_lines = {"full": [], "prior": [], "restricted_5_prior": []}
     for name, day in _sample():
-        img, lane = highway.load(name)
-        held["day" if day else "night"].append(highway.score_segments(lane, pph(edges=highway.edge_map(img))))
+        sc = Scene(name)
+        held["day" if day else "night"].append(highway.score_segments(sc.lane, pph(edges=sc.edges)))
+        o = (
+            np.degrees(
+                np.arctan2(
+                    cv2.Sobel(highway.blurred(sc.bgr), cv2.CV_32F, 0, 1),
+                    cv2.Sobel(highway.blurred(sc.bgr), cv2.CV_32F, 1, 0),
+                )
+            )
+            % 180
+        ).astype(np.float32)
+        ar, _ = hough.restricted_accumulator(sc.edges, o, 5)
+        for key, L in (
+            ("full", sc.line_list()),
+            ("prior", lane_lines(sc.acc, sc.lines)),
+            ("restricted_5_prior", lane_lines(ar, hough.local_maxima(ar, HOUGH_THRESHOLD))),
+        ):
+            held_lines[key].append(
+                highway.score_lines(sc.edges, sc.lane, L)
+                if L
+                else {"lines": 0, "on_paint": 0, "paint_covered": 0.0}
+            )
 
     return {
-        "full_votes_cast": full_votes, "restricted": restricted,
-        "worked_example_orientation_deg": {f"{x},{y}": _r(orient[y, x], 2) for x, y in worked_pixels(s)},
-        "pph": {**PPH, **highway.score_segments(s.lane, seg), "deterministic": bool(np.array_equal(seg, seg2)),
-                "longest_px": _r(lengths.max(), 1) if len(seg) else None,
-                "median_length_px": _r(np.median(lengths), 1) if len(seg) else None},
+        "full_votes_cast": full_votes,
+        "restricted": restricted,
+        "lane_prior": prior,
+        "heldout_lines": {k: _summary_lines(v) for k, v in held_lines.items()},
+        "worked_example_orientation_deg": {
+            f"{x},{y}": _r(orient[y, x], 2) for x, y in worked_pixels(s)
+        },
+        "pph": {
+            **PPH,
+            **highway.score_segments(s.lane, seg),
+            "deterministic": bool(np.array_equal(seg, seg2)),
+            "longest_px": _r(lengths.max(), 1) if len(seg) else None,
+            "median_length_px": _r(np.median(lengths), 1) if len(seg) else None,
+        },
         "pph_sweep_minlen_gap": sweep,
         "heldout": {k: _summary_segments(rows) for k, rows in held.items()},
     }
@@ -314,18 +435,28 @@ def probabilistic_lesson(s: Scene) -> dict:
 
 
 def circles_lesson(s: Scene) -> dict:
-    grad = {str(p2): pool.run_all(cv2.HOUGH_GRADIENT, POOL_GRADIENT["dp"], POOL_GRADIENT["param1"], p2)
-            for p2 in POOL_GRADIENT["param2"]}
-    alt = {str(p2): pool.run_all(cv2.HOUGH_GRADIENT_ALT, POOL_GRADIENT_ALT["dp"], POOL_GRADIENT_ALT["param1"], p2)
-           for p2 in POOL_GRADIENT_ALT["param2"]}
+    grad = {
+        str(p2): pool.run_all(cv2.HOUGH_GRADIENT, POOL_GRADIENT["dp"], POOL_GRADIENT["param1"], p2)
+        for p2 in POOL_GRADIENT["param2"]
+    }
+    alt = {
+        str(p2): pool.run_all(
+            cv2.HOUGH_GRADIENT_ALT, POOL_GRADIENT_ALT["dp"], POOL_GRADIENT_ALT["param1"], p2
+        )
+        for p2 in POOL_GRADIENT_ALT["param2"]
+    }
 
     def chosen(method, cfg):
         """Choose param2 on one photo (most found minus false), score it on the other two."""
+
         def net(p2):
             r = pool.run_all(method, cfg["dp"], cfg["param1"], p2, photos=("pool",))
             return r["found"] - r["false"]
+
         best = max(cfg["param2"], key=net)
-        rest = pool.run_all(method, cfg["dp"], cfg["param1"], best, photos=("pool-close", "pool-wide"))
+        rest = pool.run_all(
+            method, cfg["dp"], cfg["param1"], best, photos=("pool-close", "pool-wide")
+        )
         for v in rest["per_photo"].values():
             v.pop("missed")
             v.pop("false_at")
@@ -338,19 +469,31 @@ def circles_lesson(s: Scene) -> dict:
     g = pool.grey(img)
     acc = pool.fixed_radius_accumulator(g, int(br))
     y0, x0 = max(0, by - 3 * br), max(0, bx - 3 * br)
-    win = acc[y0:by + 3 * br, x0:bx + 3 * br]
+    win = acc[y0 : by + 3 * br, x0 : bx + 3 * br]
     py, px = np.unravel_index(int(win.argmax()), win.shape)
     px, py = px + x0, py + y0
-    cv = pool.detect(img, cv2.HOUGH_GRADIENT_ALT, POOL_GRADIENT_ALT["dp"], POOL_GRADIENT_ALT["param1"], 0.8)
+    cv = pool.detect(
+        img, cv2.HOUGH_GRADIENT_ALT, POOL_GRADIENT_ALT["dp"], POOL_GRADIENT_ALT["param1"], 0.8
+    )
     near = min(cv, key=lambda c: np.hypot(c[0] - bx, c[1] - by)) if cv else None
-    textbook = {"label": [bx, by, br], "peak": [int(px), int(py)], "peak_votes": int(acc[py, px]),
-                "peak_to_label_px": _r(np.hypot(px - bx, py - by), 2),
-                "opencv_alt": [_r(v, 1) for v in near] if near else None,
-                "opencv_to_label_px": _r(np.hypot(near[0] - bx, near[1] - by), 2) if near else None,
-                "edge_pixels": int((cv2.Canny(g, 50, 150) > 0).sum()),
-                "radii_in_the_search": 60 - 8 + 1}
+    textbook = {
+        "label": [bx, by, br],
+        "peak": [int(px), int(py)],
+        "peak_votes": int(acc[py, px]),
+        "peak_to_label_px": _r(np.hypot(px - bx, py - by), 2),
+        "opencv_alt": [_r(v, 1) for v in near] if near else None,
+        "opencv_to_label_px": _r(np.hypot(near[0] - bx, near[1] - by), 2) if near else None,
+        "edge_pixels": int((cv2.Canny(g, 50, 150) > 0).sum()),
+        "radii_in_the_search": 60 - 8 + 1,
+    }
 
-    return {"gradient": grad, "gradient_alt": alt,
-            "chosen_on_pool": {"gradient": chosen(cv2.HOUGH_GRADIENT, POOL_GRADIENT),
-                               "gradient_alt": chosen(cv2.HOUGH_GRADIENT_ALT, POOL_GRADIENT_ALT)},
-            "m2_colour_pipeline": M2_COLOUR, "textbook_accumulator": textbook}
+    return {
+        "gradient": grad,
+        "gradient_alt": alt,
+        "chosen_on_pool": {
+            "gradient": chosen(cv2.HOUGH_GRADIENT, POOL_GRADIENT),
+            "gradient_alt": chosen(cv2.HOUGH_GRADIENT_ALT, POOL_GRADIENT_ALT),
+        },
+        "m2_colour_pipeline": M2_COLOUR,
+        "textbook_accumulator": textbook,
+    }
