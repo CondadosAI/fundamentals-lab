@@ -67,6 +67,98 @@ def ar_cube():
     return frames, 2
 
 
+def hub_pipeline():
+    """The hub's pipeline on board view 0, as six panels titled with the hub's step numbers:
+    the corners, the pinhole prediction without the bend, the bend itself, the prediction
+    with it, the straightened photo and a cube drawn in 3-D."""
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    from fundamentals_lab.formation.calibration import board_points
+
+    greys, img_pts, K, dist, rvecs, tvecs = _boards()
+    g, seen, r, t = greys[0], img_pts[0].reshape(-1, 2), rvecs[0], tvecs[0]
+    base = cv2.cvtColor(g, cv2.COLOR_GRAY2BGR)
+    dim = (base * 0.6).astype(np.uint8)
+    board = board_points().astype(np.float32)
+
+    def dots(img, pts, colour, rad=4):
+        for x, y in pts:
+            cv2.circle(img, (round(float(x) * 4), round(float(y) * 4)), rad * 4, colour, -1,
+                       cv2.LINE_AA, shift=2)
+
+    p1 = dim.copy()
+    dots(p1, seen, GREEN)
+
+    pin, _ = cv2.projectPoints(board, r, t, K, None)
+    pin = pin.reshape(-1, 2)
+    p2 = dim.copy()
+    for a, b in zip(seen, pin, strict=True):
+        cv2.line(p2, tuple(np.rint(a).astype(int)), tuple(np.rint(b).astype(int)), AMBER, 2)
+    dots(p2, seen, GREEN, 3)
+    dots(p2, pin, RED, 3)
+
+    # the bend: where the lens moves points on a grid, drawn at true size
+    p3 = dim.copy()
+    h, w = g.shape
+    xs, ys = np.meshgrid(np.arange(20, w, 40), np.arange(20, h, 40))
+    grid = np.stack([xs.ravel(), ys.ravel()], 1).astype(np.float32)
+    rays = cv2.undistortPoints(grid[:, None], K, None).reshape(-1, 2)
+    rays3 = np.c_[rays, np.ones(len(rays))].astype(np.float32)
+    bent, _ = cv2.projectPoints(rays3, np.zeros(3), np.zeros(3), K, dist)
+    for a, b in zip(grid, bent.reshape(-1, 2), strict=True):
+        cv2.arrowedLine(p3, tuple(np.rint(a).astype(int)), tuple(np.rint(b).astype(int)),
+                        AMBER, 2, cv2.LINE_AA, tipLength=0.25)
+
+    full, _ = cv2.projectPoints(board, r, t, K, dist)
+    p4 = dim.copy()
+    dots(p4, seen, GREEN, 4)
+    dots(p4, full.reshape(-1, 2), RED, 2)
+
+    p5 = cv2.undistort(base, K, dist)
+
+    p6 = base.copy()
+    cube = np.float32(
+        [[3, 1, 0], [6, 1, 0], [6, 4, 0], [3, 4, 0], [3, 1, -3], [6, 1, -3], [6, 4, -3], [3, 4, -3]]
+    )
+    c, _ = cv2.projectPoints(cube, r, t, K, dist)
+    c = np.rint(c.reshape(-1, 2)).astype(np.int32)
+    overlay = p6.copy()
+    cv2.fillPoly(overlay, [c[:4]], GREEN)
+    p6 = cv2.addWeighted(overlay, 0.55, p6, 0.45, 0)
+    for i in range(4):
+        cv2.line(p6, tuple(c[i]), tuple(c[i + 4]), AMBER, 3, cv2.LINE_AA)
+    cv2.polylines(p6, [c[4:]], True, RED, 3, cv2.LINE_AA)
+
+    panels = [
+        (p1, "1  Points on the board"),
+        (p2, "2, 4  Without the bend"),
+        (p3, "3  The bend"),
+        (p4, "2–4  With the bend"),
+        (p5, "5  Use: straightened"),
+        (p6, "5  Use: a cube in 3-D"),
+    ]
+    bg = "#0e1218"
+    fig, axes = plt.subplots(3, 2, figsize=(8, 10.3), dpi=110, facecolor=bg)
+    for ax, (img, title) in zip(axes.ravel(), panels, strict=True):
+        ax.set_facecolor(bg)
+        ax.imshow(img[..., ::-1], aspect="auto")
+        ax.set_title(title, color="#e2e8f0", fontsize=19, loc="left", pad=6)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        for sp in ax.spines.values():
+            sp.set_color("#334155")
+    fig.tight_layout(pad=0.6, h_pad=1.2, w_pad=0.8)
+    out = OUTPUT_DIR / "figures" / "formation"
+    out.mkdir(parents=True, exist_ok=True)
+    fig.savefig(out / "hub-pipeline.png", facecolor=bg)
+    plt.close(fig)
+    logger.info(f"wrote {out / 'hub-pipeline.png'}")
+    return out / "hub-pipeline.png"
+
+
 def undistort_morph(step: int = 64):
     """One board eased from the photo as taken to the corrected one, and back.
 
