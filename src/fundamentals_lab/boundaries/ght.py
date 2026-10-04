@@ -70,7 +70,7 @@ def r_table(
     xs, ys, bins = _edges_and_bins(template, levels, parity)
     ref = reference_point(template, parity)
     table: dict[int, list] = {}
-    for x, y, b in zip(xs.tolist(), ys.tolist(), bins.tolist()):
+    for x, y, b in zip(xs.tolist(), ys.tolist(), bins.tolist(), strict=False):
         table.setdefault(b, []).append((ref[0] - x, ref[1] - y))
     return table, ref
 
@@ -131,4 +131,4 @@ def opencv_ballard(image: np.ndarray, template: np.ndarray) -> list[tuple[int, i
     pos, votes = g.detect(image)
     if pos is None:
         return []
-    return [(int(v[0]), int(round(p[0])), int(round(p[1]))) for p, v in zip(pos[0], votes[0])]
+    return [(int(v[0]), int(round(p[0])), int(round(p[1]))) for p, v in zip(pos[0], votes[0], strict=False)]

@@ -87,7 +87,7 @@ def left_edge_points(edges: np.ndarray, band: float = 6.0):
     acc = hough.accumulator(edges)
     w = edges.shape[1]
     best = None
-    for v, ri, ti in hough.local_maxima(acc, 60):
+    for _v, ri, ti in hough.local_maxima(acc, 60):
         rho = hough.rho_of(ri, acc)
         if (ti <= 3 or ti >= 177) and 0 < abs(rho) < w / 3:
             best = (rho, np.radians(ti))
@@ -270,7 +270,7 @@ def hough_lesson(s: Scene) -> dict:
                 acc[r, t] == int(vv)
                 for (r, t), vv in zip(
                     [(int(round(a)) + half, int(round(b / (np.pi / 180)))) for a, b, _ in cvl],
-                    cvl[:, 2],
+                    cvl[:, 2], strict=False,
                 )
             )
         ),
