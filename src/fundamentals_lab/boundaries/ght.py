@@ -131,4 +131,7 @@ def opencv_ballard(image: np.ndarray, template: np.ndarray) -> list[tuple[int, i
     pos, votes = g.detect(image)
     if pos is None:
         return []
-    return [(int(v[0]), int(round(p[0])), int(round(p[1]))) for p, v in zip(pos[0], votes[0], strict=False)]
+    return [
+        (int(v[0]), int(round(p[0])), int(round(p[1])))
+        for p, v in zip(pos[0], votes[0], strict=False)
+    ]

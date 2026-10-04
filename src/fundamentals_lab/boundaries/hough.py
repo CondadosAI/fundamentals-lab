@@ -64,7 +64,9 @@ def local_maxima(acc: np.ndarray, threshold: int) -> list[tuple[int, int, int]]:
         & (c >= A[1:-1, 2:])
     )
     ri, ti = np.nonzero(m)
-    out = sorted(zip(acc[ri, ti].tolist(), ri.tolist(), ti.tolist(), strict=False), key=lambda t: -t[0])
+    out = sorted(
+        zip(acc[ri, ti].tolist(), ri.tolist(), ti.tolist(), strict=False), key=lambda t: -t[0]
+    )
     return out
 
 

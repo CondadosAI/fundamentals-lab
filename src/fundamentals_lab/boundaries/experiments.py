@@ -270,7 +270,8 @@ def hough_lesson(s: Scene) -> dict:
                 acc[r, t] == int(vv)
                 for (r, t), vv in zip(
                     [(int(round(a)) + half, int(round(b / (np.pi / 180)))) for a, b, _ in cvl],
-                    cvl[:, 2], strict=False,
+                    cvl[:, 2],
+                    strict=False,
                 )
             )
         ),
