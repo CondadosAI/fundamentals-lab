@@ -424,6 +424,17 @@ def ght_lesson(s: Scene) -> dict:
             some = sorted(tab)[::90][:4]
             out[label]["rows_sample"] = {str(b): tab[b][:3] for b in some}
 
+    # The same, with the table built from the right transducer instead.
+    tm_r = ght.ring_template(s.blur, s.transducers[1], GHT_RING_INNER)
+    tab_r, _ = ght.r_table(tm_r)
+    out["ring_only_from_right"] = {
+        "ours": ght.peaks(ght.vote(s.blur, tab_r), 2, GHT["min_dist"]),
+        "opencv": ght.opencv_ballard(s.blur, tm_r)[:2],
+        "r_table_rows": int(sum(len(v) for v in tab_r.values())),
+    }
+    h, w = s.blur.shape
+    out["accumulator_cells_dp2"] = int((h // GHT["dp"] + 3) * (w // GHT["dp"] + 3))
+
     # Scale: resize the ring template and vote again; where does each transducer peak go?
     tm = ght.ring_template(s.blur, left, GHT_RING_INNER)
     scales = {}
