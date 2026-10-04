@@ -279,6 +279,13 @@ def hough_lesson(s: Scene) -> dict:
         )
         bins[str(step)] = {"cells": int(a.size), "top_votes": int(a.max()), **sc}
 
+    thresholds = {}
+    for thr in (40, 60, 120, 200):
+        lm = hough.local_maxima(acc, thr)
+        thresholds[str(thr)] = highway.score_lines(
+            s.edges, s.lane, [(hough.rho_of(r, acc), np.radians(t)) for _, r, t in lm]
+        )
+
     # Which painted marking each line belongs to: the one most of its edge pixels sit on.
     paint = highway.lane_in_road(s.lane).astype(np.uint8)
     k = 2 * SCORE_TOL_PX + 1
@@ -327,6 +334,7 @@ def hough_lesson(s: Scene) -> dict:
         "float64_lines_differing": len(set(cv_keys) ^ {(r, t) for _, r, t in f64}) // 2,
         "worked_example": {"cell": [rho, ti], "votes": int(v), "pixels": table, "thetas": thetas},
         "bin_size": bins,
+        "thresholds": thresholds,
         "heldout": {k: _summary_lines(rows) for k, rows in held.items()},
     }
 

@@ -322,6 +322,28 @@
         "paint_covered": 0.893
       }
     },
+    "thresholds": {
+      "40": {
+        "lines": 33,
+        "on_paint": 33,
+        "paint_covered": 0.983
+      },
+      "60": {
+        "lines": 15,
+        "on_paint": 15,
+        "paint_covered": 0.894
+      },
+      "120": {
+        "lines": 4,
+        "on_paint": 4,
+        "paint_covered": 0.618
+      },
+      "200": {
+        "lines": 2,
+        "on_paint": 2,
+        "paint_covered": 0.586
+      }
+    },
     "heldout": {
       "day": {
         "frames": 57,

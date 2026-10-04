@@ -87,6 +87,12 @@ def _trapezoid(img):
 
 def page_frames(s: Scene):
     _lossless(s.bgr, "highway")
+    # lesson 1's cells read the painted pixels of two markings: the dash and the solid line
+    marks = highway.markings(s.lane)
+    for name, P in (("dash-mask", marks[1]), ("line-mask", marks[0])):
+        m = np.zeros(s.lane.shape, np.uint8)
+        m[P[:, 1].astype(int), P[:, 0].astype(int)] = 255
+        _lossless(cv2.cvtColor(m, cv2.COLOR_GRAY2BGR), name)
 
 
 # --- hub ------------------------------------------------------------------------------
