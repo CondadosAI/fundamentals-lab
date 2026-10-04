@@ -1,0 +1,755 @@
+{
+  "scene": {
+    "frame": "pcb1/Data/Images/Normal/0000.JPG",
+    "source_size": [
+      1404,
+      1070
+    ],
+    "working_size": [
+      900,
+      686
+    ],
+    "width": 900,
+    "edge_pixels": 23628,
+    "normal_frames": 1004,
+    "opencv": "5.0.0"
+  },
+  "fitting": {
+    "left_edge": {
+      "box": [
+        110,
+        260,
+        128,
+        450
+      ],
+      "points": 380,
+      "x_range": [
+        119,
+        126
+      ],
+      "y_range": [
+        260,
+        449
+      ],
+      "ls": {
+        "m": 6.8322,
+        "b": -480.9892,
+        "angle_deg": 81.673,
+        "cond": 6379.6144,
+        "vertical_rss": 1045588.142
+      },
+      "tls": {
+        "angle_deg": 89.2832,
+        "perpendicular_rms": 2.243,
+        "centroid": [
+          122.29,
+          354.5
+        ]
+      },
+      "fitline_angle_deg": 89.2832,
+      "ls_minus_tls_deg": -7.61,
+      "ls_perpendicular_rss": 21929.7,
+      "tls_perpendicular_rss": 1911.1
+    },
+    "top_edge": {
+      "box": [
+        290,
+        198,
+        540,
+        212
+      ],
+      "points": 520,
+      "x_range": [
+        290,
+        539
+      ],
+      "y_range": [
+        198,
+        208
+      ],
+      "ls": {
+        "m": -0.0046,
+        "b": 206.2643,
+        "angle_deg": -0.2647,
+        "cond": 2499.3303,
+        "vertical_rss": 3778.66
+      },
+      "tls": {
+        "angle_deg": 179.735,
+        "perpendicular_rms": 2.696,
+        "centroid": [
+          416.08,
+          204.34
+        ]
+      },
+      "fitline_angle_deg": 179.735,
+      "ls_minus_tls_deg": 0.0,
+      "ls_perpendicular_rss": 3778.6,
+      "tls_perpendicular_rss": 3778.6
+    },
+    "worked_example": {
+      "points": [
+        [
+          119,
+          280
+        ],
+        [
+          124,
+          280
+        ],
+        [
+          119,
+          320
+        ],
+        [
+          124,
+          320
+        ],
+        [
+          120,
+          360
+        ],
+        [
+          125,
+          360
+        ],
+        [
+          121,
+          400
+        ],
+        [
+          125,
+          400
+        ]
+      ],
+      "n": 8,
+      "sum_x": 977.0,
+      "sum_y": 2720.0,
+      "sum_xx": 119365.0,
+      "sum_xy": 332400.0,
+      "ls_m": 4.5013,
+      "ls_b": -209.72,
+      "ls_angle_deg": 77.475,
+      "denominator": 391.0,
+      "tls_angle_deg": 89.21
+    },
+    "one_outlier": {
+      "ls_angle_deg": 75.526,
+      "tls_angle_deg": 89.282,
+      "offset_px": 40
+    },
+    "heldout_left_edge": {
+      "frames": 101,
+      "not_found": 0,
+      "ls_angle": {
+        "n": 101,
+        "median": 84.394,
+        "min": 2.614,
+        "max": 180.0,
+        "p05": 36.857,
+        "p95": 171.319
+      },
+      "tls_angle": {
+        "n": 101,
+        "median": 89.622,
+        "min": 86.034,
+        "max": 91.725,
+        "p05": 88.013,
+        "p95": 90.908
+      },
+      "ls_off_vertical_deg": {
+        "n": 101,
+        "median": 11.231,
+        "min": 0.757,
+        "max": 90.0,
+        "p05": 1.403,
+        "p95": 85.384
+      },
+      "tls_off_vertical_deg": {
+        "n": 101,
+        "median": 0.664,
+        "min": 0.0,
+        "max": 3.966,
+        "p05": 0.008,
+        "p95": 1.987
+      }
+    }
+  },
+  "hough": {
+    "edge_pixels": 23628,
+    "n_theta": 180,
+    "n_rho": 3173,
+    "cells": 571140,
+    "votes_cast": 4253040,
+    "threshold": 120,
+    "lines_over_threshold": 312,
+    "top_lines": [
+      {
+        "votes": 322,
+        "rho": 207,
+        "theta_deg": 90
+      },
+      {
+        "votes": 277,
+        "rho": 202,
+        "theta_deg": 90
+      },
+      {
+        "votes": 255,
+        "rho": 473,
+        "theta_deg": 90
+      },
+      {
+        "votes": 206,
+        "rho": 211,
+        "theta_deg": 89
+      },
+      {
+        "votes": 193,
+        "rho": 470,
+        "theta_deg": 90
+      },
+      {
+        "votes": 184,
+        "rho": -114,
+        "theta_deg": 179
+      },
+      {
+        "votes": 175,
+        "rho": 425,
+        "theta_deg": 89
+      },
+      {
+        "votes": 168,
+        "rho": 342,
+        "theta_deg": 95
+      }
+    ],
+    "opencv_lines": 312,
+    "same_set_as_opencv": true,
+    "same_votes_as_opencv": true,
+    "float64_lines_differing": 3,
+    "worked_example": {
+      "row": 203,
+      "pixels": [
+        {
+          "x": 290,
+          "y": 203,
+          "rho": {
+            "0": 290.0,
+            "45": 348.6,
+            "89": 208.0,
+            "90": 203.0,
+            "91": 197.9,
+            "135": -61.5
+          }
+        },
+        {
+          "x": 319,
+          "y": 203,
+          "rho": {
+            "0": 319.0,
+            "45": 369.1,
+            "89": 208.5,
+            "90": 203.0,
+            "91": 197.4,
+            "135": -82.0
+          }
+        },
+        {
+          "x": 454,
+          "y": 203,
+          "rho": {
+            "0": 454.0,
+            "45": 464.6,
+            "89": 210.9,
+            "90": 203.0,
+            "91": 195.0,
+            "135": -177.5
+          }
+        }
+      ],
+      "thetas": [
+        0,
+        45,
+        89,
+        90,
+        91,
+        135
+      ]
+    },
+    "bin_size": {
+      "0.5": {
+        "cells": 1142280,
+        "top_votes": 322,
+        "lines_over_threshold": 564
+      },
+      "1.0": {
+        "cells": 571140,
+        "top_votes": 322,
+        "lines_over_threshold": 312
+      },
+      "2.0": {
+        "cells": 285570,
+        "top_votes": 322,
+        "lines_over_threshold": 163
+      }
+    },
+    "top_peak_neighbourhood": {
+      "centre": [
+        207,
+        90
+      ],
+      "votes": [
+        [
+          11,
+          7,
+          3,
+          30,
+          22
+        ],
+        [
+          14,
+          64,
+          3,
+          68,
+          26
+        ],
+        [
+          15,
+          87,
+          176,
+          33,
+          28
+        ],
+        [
+          39,
+          32,
+          322,
+          28,
+          33
+        ],
+        [
+          37,
+          82,
+          112,
+          31,
+          61
+        ],
+        [
+          50,
+          76,
+          5,
+          25,
+          49
+        ],
+        [
+          54,
+          93,
+          5,
+          25,
+          55
+        ]
+      ]
+    },
+    "transducers": [
+      [
+        252.5,
+        345.5,
+        115.0
+      ],
+      [
+        605.5,
+        338.5,
+        109.6
+      ]
+    ],
+    "holes_param2": {
+      "10": {
+        "detections": 29,
+        "holes_found": 4,
+        "not_holes": 25
+      },
+      "15": {
+        "detections": 13,
+        "holes_found": 4,
+        "not_holes": 9
+      },
+      "20": {
+        "detections": 4,
+        "holes_found": 3,
+        "not_holes": 1
+      },
+      "25": {
+        "detections": 2,
+        "holes_found": 1,
+        "not_holes": 1
+      }
+    },
+    "heldout": {
+      "frames": 101,
+      "top_votes": {
+        "n": 101,
+        "median": 279.0,
+        "min": 189.0,
+        "max": 610.0,
+        "p05": 202.0,
+        "p95": 556.0
+      },
+      "lines_over_threshold": {
+        "n": 101,
+        "median": 296.0,
+        "min": 121.0,
+        "max": 525.0,
+        "p05": 162.0,
+        "p95": 391.0
+      },
+      "transducer_left_r": {
+        "n": 101,
+        "median": 111.8,
+        "min": 91.9,
+        "max": 118.4,
+        "p05": 104.9,
+        "p95": 114.0
+      },
+      "transducer_right_r": {
+        "n": 101,
+        "median": 111.8,
+        "min": 99.6,
+        "max": 120.6,
+        "p05": 107.4,
+        "p95": 114.0
+      },
+      "transducer_frames": 101
+    }
+  },
+  "probabilistic": {
+    "full_votes_cast": 4253040,
+    "restricted": {
+      "2": {
+        "votes_cast": 118140,
+        "fraction_of_full": 0.0278,
+        "lines_over_threshold": 2,
+        "top10_shared_with_full": 2,
+        "top_votes": 250
+      },
+      "5": {
+        "votes_cast": 259908,
+        "fraction_of_full": 0.0611,
+        "lines_over_threshold": 8,
+        "top10_shared_with_full": 5,
+        "top_votes": 305
+      },
+      "10": {
+        "votes_cast": 496188,
+        "fraction_of_full": 0.1167,
+        "lines_over_threshold": 12,
+        "top10_shared_with_full": 6,
+        "top_votes": 316
+      }
+    },
+    "pph": {
+      "threshold": 90,
+      "min_length": 80,
+      "max_gap": 5,
+      "segments": 21,
+      "deterministic": true,
+      "longest_px": 254.0,
+      "median_length_px": 105.2,
+      "first": [
+        [
+          289,
+          207,
+          543,
+          207
+        ],
+        [
+          385,
+          202,
+          515,
+          202
+        ],
+        [
+          405,
+          473,
+          492,
+          473
+        ],
+        [
+          119,
+          274,
+          121,
+          442
+        ],
+        [
+          305,
+          470,
+          426,
+          470
+        ]
+      ]
+    },
+    "pph_sweep_minlen_gap": {
+      "40/2": 21,
+      "40/5": 102,
+      "40/20": 158,
+      "80/2": 6,
+      "80/5": 21,
+      "80/20": 143,
+      "160/2": 1,
+      "160/5": 2,
+      "160/20": 42
+    }
+  },
+  "ght": {
+    "left_transducer": [
+      252.5,
+      345.5,
+      115.0
+    ],
+    "right_transducer": [
+      605.5,
+      338.5,
+      109.6
+    ],
+    "full_crop": {
+      "template_size": [
+        242,
+        242
+      ],
+      "reference": [
+        121,
+        121
+      ],
+      "r_table_bins": 361,
+      "r_table_rows": 7750,
+      "ours": [
+        [
+          8703,
+          252,
+          344
+        ],
+        [
+          230,
+          608,
+          344
+        ],
+        [
+          43,
+          228,
+          232
+        ],
+        [
+          42,
+          448,
+          264
+        ]
+      ],
+      "opencv": [
+        [
+          8703,
+          252,
+          344
+        ],
+        [
+          230,
+          608,
+          344
+        ],
+        [
+          45,
+          516,
+          304
+        ],
+        [
+          43,
+          228,
+          232
+        ]
+      ],
+      "same_as_opencv": true
+    },
+    "ring_only": {
+      "template_size": [
+        242,
+        242
+      ],
+      "reference": [
+        121,
+        121
+      ],
+      "r_table_bins": 360,
+      "r_table_rows": 4012,
+      "ours": [
+        [
+          4097,
+          252,
+          344
+        ],
+        [
+          168,
+          604,
+          344
+        ],
+        [
+          36,
+          480,
+          284
+        ],
+        [
+          30,
+          712,
+          304
+        ]
+      ],
+      "opencv": [
+        [
+          4097,
+          252,
+          344
+        ],
+        [
+          168,
+          604,
+          344
+        ]
+      ],
+      "same_as_opencv": true,
+      "half_pixel_reference": [
+        [
+          3778,
+          252,
+          344
+        ],
+        [
+          94,
+          608,
+          342
+        ]
+      ],
+      "rows_sample": {
+        "0": [
+          [
+            102,
+            121
+          ],
+          [
+            84,
+            121
+          ],
+          [
+            -104,
+            121
+          ]
+        ],
+        "90": [
+          [
+            -120,
+            119
+          ],
+          [
+            -120,
+            118
+          ],
+          [
+            2,
+            115
+          ]
+        ],
+        "180": [
+          [
+            120,
+            121
+          ],
+          [
+            66,
+            121
+          ],
+          [
+            -107,
+            121
+          ]
+        ],
+        "270": [
+          [
+            76,
+            116
+          ],
+          [
+            75,
+            116
+          ],
+          [
+            -120,
+            110
+          ]
+        ]
+      }
+    },
+    "scale": {
+      "0.90": [
+        [
+          153,
+          244,
+          336
+        ],
+        [
+          97,
+          608,
+          332
+        ]
+      ],
+      "0.95": [
+        [
+          330,
+          248,
+          340
+        ],
+        [
+          119,
+          604,
+          336
+        ]
+      ],
+      "1.00": [
+        [
+          4097,
+          252,
+          344
+        ],
+        [
+          168,
+          604,
+          344
+        ]
+      ],
+      "1.05": [
+        [
+          371,
+          256,
+          348
+        ],
+        [
+          137,
+          600,
+          348
+        ]
+      ]
+    },
+    "radius_ratio_right_over_left": 0.953,
+    "heldout_second_over_first": {
+      "n": 101,
+      "median": 0.676,
+      "min": 0.041,
+      "max": 0.996,
+      "p05": 0.409,
+      "p95": 0.968
+    }
+  },
+  "environment": {
+    "python": "3.12.9",
+    "opencv": "5.0.0",
+    "numpy": "2.5.2",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  }
+}
