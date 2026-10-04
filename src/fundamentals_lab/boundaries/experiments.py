@@ -476,10 +476,29 @@ def circles_lesson(s: Scene) -> dict:
         img, cv2.HOUGH_GRADIENT_ALT, POOL_GRADIENT_ALT["dp"], POOL_GRADIENT_ALT["param1"], 0.8
     )
     near = min(cv, key=lambda c: np.hypot(c[0] - bx, c[1] - by)) if cv else None
+    # The same votes in coarser cells: what HoughCircles' dp sets.
+    cells = {}
+    for cell in (1, 2, 4):
+        h, w = acc.shape
+        a = (
+            acc[: h // cell * cell, : w // cell * cell]
+            .reshape(h // cell, cell, w // cell, cell)
+            .sum(axis=(1, 3))
+        )
+        y0c, x0c = (by - 120) // cell, (bx - 120) // cell
+        sub = a[y0c : y0c + 240 // cell, x0c : x0c + 240 // cell]
+        yy, xx = np.unravel_index(int(sub.argmax()), sub.shape)
+        cx, cy = (x0c + xx) * cell + cell / 2, (y0c + yy) * cell + cell / 2
+        cells[str(cell)] = {
+            "peak_votes": int(sub.max()),
+            "centre": [cx, cy],
+            "to_label_px": _r(np.hypot(cx - bx, cy - by), 1),
+        }
     textbook = {
         "label": [bx, by, br],
         "peak": [int(px), int(py)],
         "peak_votes": int(acc[py, px]),
+        "cell_sizes": cells,
         "peak_to_label_px": _r(np.hypot(px - bx, py - by), 2),
         "opencv_alt": [_r(v, 1) for v in near] if near else None,
         "opencv_to_label_px": _r(np.hypot(near[0] - bx, near[1] - by), 2) if near else None,

@@ -2148,6 +2148,32 @@
         506
       ],
       "peak_votes": 14,
+      "cell_sizes": {
+        "1": {
+          "peak_votes": 14,
+          "centre": [
+            183.5,
+            506.5
+          ],
+          "to_label_px": 5.1
+        },
+        "2": {
+          "peak_votes": 36,
+          "centre": [
+            183.0,
+            507.0
+          ],
+          "to_label_px": 5.0
+        },
+        "4": {
+          "peak_votes": 67,
+          "centre": [
+            182.0,
+            506.0
+          ],
+          "to_label_px": 3.6
+        }
+      },
       "peak_to_label_px": 4.47,
       "opencv_alt": [
         181.5,
