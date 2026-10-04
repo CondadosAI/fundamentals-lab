@@ -11,6 +11,7 @@ dependencies = [
     "click>=8.1",
     "loguru>=0.7",
     "matplotlib>=3.8",
+    "remotezip>=0.12.6",
 ]
 
 [project.optional-dependencies]
@@ -56,6 +57,11 @@ align-download = "fundamentals_lab.cli.align_download:align_download"
 align-notebook = "fundamentals_lab.cli.align_notebook:align_notebook"
 align-media = "fundamentals_lab.cli.align_media:align_media"
 openings-media = "fundamentals_lab.cli.openings_media:openings_media"
+boundary-download = "fundamentals_lab.cli.boundary_download:boundary_download"
+boundary-experiments = "fundamentals_lab.cli.boundary_experiments:boundary_experiments"
+boundary-media = "fundamentals_lab.cli.boundary_media:boundary_media"
+boundary-figures = "fundamentals_lab.cli.boundary_figures:boundary_figures"
+boundary-notebook = "fundamentals_lab.cli.boundary_notebook:boundary_notebook"
 practice-m1 = "fundamentals_lab.cli.practice_m1:practice_m1"
 practice-m2 = "fundamentals_lab.cli.practice_m2:practice_m2"
 practice-notebook = "fundamentals_lab.cli.practice_notebook:practice_notebook"

@@ -324,3 +324,57 @@ ALIGN_SEED = 20260926
 # The bird's-eye view: 1 px = 2 cm, with a 1.5 m margin around the court.
 TOPVIEW_PX_PER_M = 50
 TOPVIEW_MARGIN_M = 1.5
+
+# =============================================================================
+# Unit 3.2 — Boundary detection
+# =============================================================================
+BOUNDARY_NUMBERS_JSON = OUTPUT_DIR / "boundary_numbers.json"
+
+# --- Lines: highway lane markings (lessons 1-3) ----------------------------------
+# comma10k (comma.ai, MIT): 9,888 dashcam PNGs, 1164x874, each with a hand-painted
+# mask whose class 2 (#ff0000) is "lane markings" (no arrows, no crosswalks). The unit
+# measures on one frame and checks every number on a sample of the others.
+COMMA10K_RAW = "https://raw.githubusercontent.com/commaai/comma10k/master"
+COMMA10K_DIR = DATA_DIR / "comma10k"
+HIGHWAY_FRAME = "0825_e61068239ce72500_2018-11-13--21-06-53_13_903.png"
+COMMA10K_SAMPLE_EVERY = 33  # every 33rd file of the listing: 300 frames
+LANE_BGR = (0, 0, 255)  # the mask's #ff0000, as OpenCV reads it
+# The part of the frame a lane detector looks at: a trapezoid over the road ahead, as
+# fractions of (width, height), the same for every frame and never taken from the mask.
+# Fixed rows across the whole width were tried first: they take in the horizon (tree lines,
+# guard rails, distant cars) and some hoods, and on 299 sample frames only a median 16% of
+# the lines they gave lay on paint.
+ROAD_TRAPEZOID = ((0.02, 0.78), (0.42, 0.50), (0.58, 0.50), (0.98, 0.78))
+# Faded paint, and yellow that turns the grey of asphalt in greyscale: unit 3.1's
+# (50, 150) leaves almost no strong seeds here.
+HIGHWAY_SIGMA = 1.4
+HIGHWAY_CANNY = (25, 75)
+# Lesson 3's prior about lanes: a lane line seen from the car is never within 20 degrees of
+# horizontal, so lines with theta in [70, 110] (normal close to vertical) are dropped.
+FLAT_THETA = (70, 110)
+DAY_MIN_BRIGHTNESS = 95  # mean grey level; below it a sample frame counts as night
+SCORE_TOL_PX = 3  # a pixel is "on a lane marking" within 3 px of the painted mask
+HOUGH_RHO = 1.0
+HOUGH_THETA_DEG = 1.0
+HOUGH_THRESHOLD = 60
+RESTRICT_DEGREES = (2, 5, 10)
+PPH = {"threshold": 40, "min_length": 40, "max_gap": 20}
+# comma2k19 (comma.ai, MIT; arXiv 1812.05752): one minute of daytime freeway on CA-280,
+# read from the compression-challenge archive on Hugging Face. The opening animation.
+COMMA2K19_ZIP = (
+    "https://huggingface.co/datasets/commaai/comma2k19/resolve/main/compression_challenge/test_videos.zip"
+)
+COMMA2K19_SEGMENT = "b0c9d2329ad1606b|2018-08-03--10-35-16/13/video.hevc"
+COMMA2K19_DIR = DATA_DIR / "comma2k19"
+
+# --- Circles: pool balls (lesson 4) -------------------------------------------------
+# OpenCV in Practice M2's three CC0 photos at 960 px, as the site serves them, and its
+# hand labels: 41 balls on the cloth as (x, y, r). M2's colour pipeline found 29.
+POOL_SITE = "https://condados.ai/practice/m2"
+POOL_DIR = DATA_DIR / "pool-m2"
+POOL_PHOTOS = ("pool", "pool-close", "pool-wide")
+POOL_MEDIAN = 5
+POOL_RADII = (8, 60)
+POOL_MIN_DIST = 12
+POOL_GRADIENT = {"dp": 1.0, "param1": 100, "param2": (20, 25, 30, 35, 40)}
+POOL_GRADIENT_ALT = {"dp": 1.5, "param1": 300, "param2": (0.7, 0.8, 0.85, 0.9)}

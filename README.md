@@ -107,6 +107,14 @@ uv run align-experiments    # every number → output/alignment_numbers.json
 uv run align-figures        # overlays, top views and cover backgrounds
 uv run align-notebook       # rebuild notebooks/image_alignment.ipynb, outputs cleared
 uv run align-media          # the animations the posts open with (needs ffmpeg with libwebp)
+
+uv run boundary-download    # unit 3.2: 300 comma10k frames + masks, one comma2k19 minute (read
+                            # out of the zip, not downloaded whole), M2's pool photos and labels
+                            # from condados.ai, two CC0 photos; --visa-dir <VisA> for the candles
+uv run boundary-experiments # every number → output/boundary_numbers.json
+uv run boundary-figures     # figures, the lossless frames and masks, the labs' data, covers
+uv run boundary-media       # the freeway and radius-sweep animations the posts open with
+uv run boundary-notebook    # rebuild notebooks/boundary_detection.ipynb, outputs cleared
 ```
 
 `edge-experiments` **fails loudly** if the corner eigenvalues stop matching the
@@ -275,6 +283,40 @@ top-hat, 21 px), which took the far baseline error from 81.3 cm to 38.4.
 dotted band as wide as the search strip, and a line fitted to a uniform band returns the
 strip's centre. The net region is excluded by a hand-drawn polygon (`config.NET_POLYGON`).
 
+## Unit 3.2 — Boundary detection
+
+Two scenes. Lines run on one comma10k dashcam frame
+(`0825_e61068239ce72500_2018-11-13--21-06-53_13_903`, 1164×874) and its hand-painted lane mask,
+with every 33rd frame of the dataset (299 others) held out. Circles run on the three pool-table
+photos of OpenCV in Practice M2 and its 41 hand-labelled balls. Keys are in
+`output/boundary_numbers.json`; every count is deterministic, so nothing is timed.
+
+| Claim | Where |
+|---|---|
+| On the lane dash, y on x gives 28.42°, x on y 33.52°, total least squares 29.67° (= `cv2.fitLine`) | `fitting.markings` |
+| Over 473 held-out markings the two least-squares fits differ by more than 1° on 33% | `fitting.heldout` |
+| 1,749 edge pixels cast 314,820 votes; the 15 lines over 60 are OpenCV's, vote for vote, all on paint, on 2 markings | `hough.same_set_as_opencv`, `hough.lines_by_marking` |
+| Over 299 frames the full vote is a median 50% on paint; a lane prior and ±5° voting take it to 100%, with 108 frames left with no line | `probabilistic.heldout_lines` |
+| `HoughLinesP` returns 10 segments, all on paint, identical on two runs | `probabilistic.pph` |
+| `HOUGH_GRADIENT_ALT` finds 27 of 41 balls with 1 false alarm; tuned on one photo, 17 of 26 on the other two | `circles.gradient_alt`, `circles.chosen_on_pool` |
+| At r = 52 the one-radius accumulator peaks 5.1 px from the big ball's label (14 votes); 4 px cells give 67 votes, 3.6 px | `circles.textbook_accumulator` |
+
+Three things here cost time and are worth not rediscovering:
+
+**Parity with OpenCV is in the arithmetic.** `cv2.HoughLines` computes ρ in float32 from an
+angle table built by adding the step to a float32 angle 180 times. The first draft of this unit
+(on a circuit board) changed cell for 3 of 312 lines in float64; this frame happens to change
+none, so do not take the float64 agreement here as proof.
+
+**Score a dashcam frame inside the road.** With a full-width region the lines on the horizon,
+the hood and the car ahead dominate and the median share on paint was 16%; the trapezoid in
+`config.ROAD_TRAPEZOID` is what the 50% is measured in. Canny at 50/150 finds almost nothing on
+dim lane paint; 25/75 is used.
+
+**The ball match rule is generous.** A circle counts as a ball when its centre lies within the
+ball's radius, M2's rule. One of the 27 is a number disc printed on a ball, radius 10.5 against
+30. Requiring the radius to agree as well would make it a miss and a false alarm.
+
 ## Licence
 
 The code in this repository is Apache-2.0 (see `LICENSE`).
@@ -336,6 +378,24 @@ does not redistribute it, and Apache-2.0 says nothing about it:
   [CondadosAI/sportcv](https://github.com/CondadosAI/sportcv), which runs the RTMO pose model
   through rtmlib (Apache-2.0) on the same CC BY 3.0 match. The minimap animation maps them
   through this repository's homography, not sportcv's.
+- **comma10k** (comma.ai), **MIT**, "Copyright (c) 2020, Comma.ai, Inc.". Unit 3.2 downloads
+  300 frames and their segmentation masks from `commaai/comma10k` (every 33rd file plus the
+  lessons' frame) and does not commit them; the MIT notice applies to the frame and lane mask
+  condados.ai serves for the in-page cells.
+- **comma2k19** (Schäfer, Santana, Haden & Biasini, arXiv:1812.05752), **MIT**, "Copyright (c)
+  2018 comma.ai" (the Hugging Face copy `commaai/comma2k19` declares the same). One minute,
+  segment `b0c9d2329ad1606b|2018-08-03--10-35-16/13`, is read out of the dataset's zip with
+  `remotezip` for the opening video. Not committed.
+- **Three photographs of a pool table** by MarkBuckawicki on Wikimedia Commons, **CC0**, at the
+  960 px size OpenCV in Practice M2 serves, with M2's hand labels; fetched from condados.ai.
+- **VisA, the Visual Anomaly dataset** (Zou, Jeong, Pemula, Zhang & Dabeer, ECCV 2022),
+  Amazon.com, Inc. or its affiliates, **CC BY 4.0** (`LICENSE-DATASET` in
+  `amazon-science/spot-diff`; the utility code there is Apache-2.0). Unit 3.2 copies 100 normal
+  `candle` frames from a VisA folder you already have (`--visa-dir`) and does not redistribute
+  them; attribution is required wherever a frame or a figure made from one is shown.
+- **Two CC0 photographs for unit 3.2's in-the-wild checks**, fetched from Wikimedia Commons by
+  `boundary-download`: "The Cloister Mandapam, in One point perspective" by Sindugab and
+  "Stationery on a bench (Unsplash)" by Brigitte Tohm.
 - **USA Pickleball Official Rulebook (2026), Rule 3.A.** Only the court dimensions are
   used, as numbers in `config.py`.
 
