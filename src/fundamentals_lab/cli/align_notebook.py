@@ -51,7 +51,16 @@ import urllib.request
 from pathlib import Path
 
 import cv2
+import matplotlib.pyplot as plt
 import numpy as np
+
+# The posts' cells call show(image, title); in a notebook that is a matplotlib figure.
+def show(img, title=''):
+    plt.figure(figsize=(6, 6))
+    plt.imshow(img[..., ::-1] if img.ndim == 3 else img, cmap='gray')
+    plt.title(title)
+    plt.axis('off')
+    plt.show()
 
 print('OpenCV', cv2.__version__, '| NumPy', np.__version__)
 """)
@@ -77,6 +86,7 @@ def fetch(url, dst):
     return dst
 
 cv2.imwrite('frame_045000.png', cv2.imread(fetch(f'{BASE}/frames/frame_045000.webp', 'data/frame_045000.webp')))
+Path('frame_045000.webp').write_bytes(Path('data/frame_045000.webp').read_bytes())  # the posts' cells read this name
 plate = cv2.imread(fetch(f'{BASE}/frames/plate_median31.webp', 'data/plate_median31.webp'))
 FRAMES = range(44100, 45901, 60)
 small = [cv2.imread(fetch(f'{BASE}/frames/960/frame_{i:06d}.webp', f'data/frames960/frame_{i:06d}.webp'))
@@ -173,6 +183,75 @@ print(M.round(2), np.linalg.det(M).round(0), s.round(1))
 print(np.linalg.norm(c0 @ M.T - i0, axis=1).round(1))  # [60.4 60.4 60.4 60.4]
 """)
 
+md("### Lesson 1: how close is this to OpenCV?")
+
+code(r"""
+import numpy as np
+import cv2
+
+# the near-half corners: metres and pixels
+court = np.array([[0.0254, 0.0254], [0.0254, 6.0746],
+                  [4.6004, 0.0254], [4.6004, 6.0746]])
+image = np.array([[-18.52, 587.39], [987.25, 959.91],
+                  [669.68, 500.09], [1555.24, 663.22]])
+
+# the best 2x2, with both sets centred
+c0 = court - court.mean(0)
+i0 = image - image.mean(0)
+M = np.linalg.lstsq(c0, i0, rcond=None)[0].T
+
+det = M[0, 0] * M[1, 1] - M[0, 1] * M[1, 0]
+sigma = np.linalg.svd(M, compute_uv=False)
+print(M.round(2))
+print("det:", round(det), " sigma:", sigma.round(1))
+""")
+
+code(r"""
+# OpenCV moves the points and takes the matrix apart
+pts = c0[None].astype(np.float32)
+moved = cv2.transform(pts, M.astype(np.float32))[0]
+print("max diff, cv2.transform:",
+      round(float(np.abs(moved - c0 @ M.T).max()), 4))
+print("cv2.determinant:", round(cv2.determinant(M)))
+w, u, vt = cv2.SVDecomp(M)
+print("cv2.SVDecomp:", w.ravel().round(1))
+
+miss = np.linalg.norm(c0 @ M.T - i0, axis=1)
+print("miss at each corner (px):", miss.round(1))
+""")
+
+md("### Lesson 1: exercises")
+
+code(r"""
+def area_scale(M):
+    return 0.0  # pixels per square metre
+
+print(area_scale(M))
+""")
+
+code(r"""
+# checks your answer
+print("correct" if (abs(area_scale(M) - 12639) < 1) else "not yet")
+""")
+
+code(r"""
+# Exercises 2 and 3: the numbers under "What you should see"
+d = np.array([1.0, 0.0])  # along both sidelines
+a = M @ d
+print("both sidelines, through M:",
+      np.degrees(np.arctan2(a[1], a[0])).round(2))
+for p, q in ((image[0], image[2]), (image[1], image[3])):
+    v = q - p
+    print("a sideline in the photo:",
+          np.degrees(np.arctan2(v[1], v[0])).round(2))
+
+t = np.radians(30)
+R = np.array([[np.cos(t), -np.sin(t)],
+              [np.sin(t), np.cos(t)]])
+print("det, 30 degree rotation:", round(np.linalg.det(R), 4))
+print("det, 2M:", round(np.linalg.det(2 * M)))
+""")
+
 md("## Lesson 2: affine and projective")
 
 code("""
@@ -187,6 +266,88 @@ H_img2court = cv2.getPerspectiveTransform(image, court)         # 3x3, eight num
 nbc = np.float32([[[332.06, 717.24]]])
 print(cv2.transform(nbc, A_img2court))                          # [[[0.0252 2.1339]]]
 print(cv2.perspectiveTransform(nbc, H_img2court))               # [[[0.0254 3.0547]]]
+""")
+
+md("### Lesson 2: how close is this to OpenCV?")
+
+code(r"""
+import numpy as np
+import cv2
+
+court = np.array([[0.0254, 0.0254], [0.0254, 6.0746],
+                  [4.6004, 0.0254], [4.6004, 6.0746]])
+image = np.array([[-18.52, 587.39], [987.25, 959.91],
+                  [669.68, 500.09], [1555.24, 663.22]])
+nbc = np.array([332.06, 717.24, 1.0])
+
+# affine: six unknowns, three pairs, six equations
+A, b = np.zeros((6, 6)), np.zeros(6)
+for k in range(3):
+    (x, y), (u, v) = image[k], court[k]
+    A[2*k] = [x, y, 1, 0, 0, 0]
+    A[2*k + 1] = [0, 0, 0, x, y, 1]
+    b[2*k], b[2*k + 1] = u, v
+aff = np.linalg.solve(A, b).reshape(2, 3)
+
+# homography: eight unknowns (the ninth is 1),
+# four pairs, eight equations
+A, b = np.zeros((8, 8)), np.zeros(8)
+for k in range(4):
+    (x, y), (u, v) = image[k], court[k]
+    A[2*k] = [x, y, 1, 0, 0, 0, -u*x, -u*y]
+    A[2*k + 1] = [0, 0, 0, x, y, 1, -v*x, -v*y]
+    b[2*k], b[2*k + 1] = u, v
+H = np.append(np.linalg.solve(A, b), 1).reshape(3, 3)
+
+q = H @ nbc
+print("NBC, affine:", (aff @ nbc).round(4))
+print("NBC, homography:", (q[:2] / q[2]).round(4))
+""")
+
+code(r"""
+ref_a = cv2.getAffineTransform(
+    image[:3].astype(np.float32),
+    court[:3].astype(np.float32))
+ref_h = cv2.getPerspectiveTransform(
+    image.astype(np.float32), court.astype(np.float32))
+print("max diff, affine:", np.abs(aff - ref_a).max())
+print("max diff, homography:", np.abs(H - ref_h).max())
+
+# the corner the affine map never saw
+nkr = aff @ np.append(image[3], 1)
+off = np.linalg.norm(nkr - court[3]) * 100
+print("fourth corner, affine:", nkr.round(2),
+      "off by", round(float(off), 1), "cm")
+""")
+
+md("### Lesson 2: exercises")
+
+code(r"""
+def to_court(H, x, y):
+    return (0.0, 0.0)  # metres on the court
+
+print(to_court(H, 332.06, 717.24))
+""")
+
+code(r"""
+# checks your answer
+print("correct" if (np.allclose(to_court(H, 332.06, 717.24), (0.0254, 3.0547), atol=1e-3)) else "not yet")
+""")
+
+code(r"""
+# Exercises 2 and 3: the numbers under "What you should see"
+flat = H.copy()
+flat[2] = [0, 0, 1]  # drop the bottom row
+print("NBC with the bottom row 0, 0, 1:",
+      (flat @ nbc)[:2].round(3))
+
+nkc = np.array([1034.46, 567.28, 1.0])
+nkc_m = np.array([4.6004, 3.05])
+q = H @ nkc
+for name, p in (("affine", aff @ nkc),
+                ("homography", q[:2] / q[2])):
+    e = np.linalg.norm(p - nkc_m) * 100
+    print(name, "NKC off by", round(float(e), 1), "cm")
 """)
 
 md("## Lesson 3: the DLT")
@@ -233,6 +394,108 @@ print('raw', s_raw.round(3), '-> sigma1/sigma8 =', round(s_raw[0] / s_raw[7], 1)
 print('normalised sigma1/sigma8 =', round(s_n[0] / s_n[7], 2))                         # 6.4
 """)
 
+md("### Lesson 3: how close is this to OpenCV?")
+
+code(r"""
+import numpy as np
+import cv2
+
+image = np.array([[-18.52, 587.39], [987.25, 959.91],
+                  [669.68, 500.09], [1555.24, 663.22]])
+court = np.array([[0.0254, 0.0254], [0.0254, 6.0746],
+                  [4.6004, 0.0254], [4.6004, 6.0746]])
+
+def pair_rows(x, y, u, v):
+    # the two equations one pair gives
+    return [[-x, -y, -1, 0, 0, 0, u*x, u*y, u],
+            [0, 0, 0, -x, -y, -1, v*x, v*y, v]]
+
+def dlt(src, dst):
+    A = np.array([r for (x, y), (u, v) in zip(src, dst)
+                  for r in pair_rows(x, y, u, v)])
+    _, s, vt = np.linalg.svd(A)
+    H = vt[-1].reshape(3, 3)  # what A shrinks most
+    return H / H[2, 2], s[0] / s[7]  # sigma1/sigma8
+
+def normaliser(p):
+    # centroid to 0, mean distance sqrt(2)
+    c = p.mean(0)
+    k = np.sqrt(2) / np.linalg.norm(p - c, axis=1).mean()
+    return np.array([[k, 0, -k*c[0]],
+                     [0, k, -k*c[1]], [0, 0, 1]])
+
+def move(T, p):
+    q = np.c_[p, np.ones(len(p))] @ T.T
+    return q[:, :2] / q[:, 2:]
+
+def dlt_norm(src, dst):
+    Ts, Td = normaliser(src), normaliser(dst)
+    Hn, cond = dlt(move(Ts, src), move(Td, dst))
+    H = np.linalg.inv(Td) @ Hn @ Ts
+    return H / H[2, 2], cond
+
+H, cond_raw = dlt(image, court)
+Hn, cond_norm = dlt_norm(image, court)
+print("sigma1/sigma8, raw:", f"{cond_raw:,.0f}")
+print("sigma1/sigma8, normalised:", round(cond_norm, 1))
+print("the two answers differ by", np.abs(H - Hn).max())
+""")
+
+code(r"""
+ref = cv2.getPerspectiveTransform(
+    image.astype(np.float32), court.astype(np.float32))
+print("max diff, getPerspectiveTransform:",
+      np.abs(H - ref).max())
+ref2, _ = cv2.findHomography(image, court, 0)
+print("max diff, findHomography:", np.abs(H - ref2).max())
+
+def to_court(H, x, y):
+    u, v, w = H @ np.array([x, y, 1.0])
+    return np.array([u / w, v / w])
+
+gap = np.linalg.norm(to_court(H, 332.06, 717.24)
+                     - to_court(ref, 332.06, 717.24))
+print("NBC, ours against OpenCV (mm):", gap * 1000)
+""")
+
+md("### Lesson 3: exercises")
+
+code(r"""
+def two_rows(x, y, u, v):
+    return [[0] * 9, [0] * 9]  # the two rows of A
+
+print(np.round(two_rows(-18.52, 587.39, 0.0254, 0.0254), 3))
+""")
+
+code(r"""
+# checks your answer
+print("correct" if (np.allclose(two_rows(-18.52, 587.39, 0.0254, 0.0254), pair_rows(-18.52, 587.39, 0.0254, 0.0254))) else "not yet")
+""")
+
+code(r"""
+# Exercises 2 and 3: the numbers under "What you should see"
+img6 = np.vstack([image, [[332.06, 717.24],
+                          [1034.46, 567.28]]])
+crt6 = np.vstack([court, [[0.0254, 3.05],
+                          [4.6004, 3.05]]])
+print("six pairs, sigma1/sigma8:",
+      f"{dlt(img6, crt6)[1]:,.0f}",
+      "raw,", round(dlt_norm(img6, crt6)[1], 2),
+      "normalised")
+
+bad = img6.copy()
+bad[5] = image[3]  # NKR's pixel, NKC's position
+for name, (a, b) in (("six good", (img6, crt6)),
+                     ("one wrong", (bad, crt6))):
+    for how, fit in (("normalised", dlt_norm),
+                     ("raw", dlt)):
+        M = fit(a, b)[0]
+        e = np.linalg.norm(to_court(M, 332.06, 717.24)
+                           - [0.0254, 3.05]) * 100
+        print(f"{name:9} {how:10} NBC off by "
+              f"{e:.2f} cm")
+""")
+
 md("## Lesson 5: warping and blending")
 
 code("""
@@ -273,6 +536,102 @@ single = small[len(small) // 2]
 print('share of the 960 px frame differing from the median by > 40 in some channel:',
       round((np.abs(single.astype(int) - med.astype(int)).max(axis=2) > 40).mean(), 3))
 cv2.imwrite('median960.png', med)
+""")
+
+
+md("### Lesson 5: how close is this to OpenCV?")
+
+code(r"""
+import numpy as np
+import cv2
+
+frame = cv2.imread("frame_045000.webp")
+H_court2img = np.array(
+    [[214.196342, 90.15869, -26.259561],
+     [28.479672, -12.463675, 587.254072],
+     [0.095124, -0.077166, 1.0]])
+s, m = 50, 1.5  # 50 px per metre, 1.5 m margin
+H_court2top = np.array([[0, s, m * s],
+                        [-s, 0, (13.41 + m) * s],
+                        [0, 0, 1.0]])
+H_img2top = H_court2top @ np.linalg.inv(H_court2img)
+
+# pull: every top-view pixel back into the photo
+w, h = 455, 820
+xs, ys = np.meshgrid(np.arange(w), np.arange(h))
+p = np.stack([xs.ravel(), ys.ravel(), np.ones(w * h)])
+q = np.linalg.inv(H_img2top) @ p
+u, v = q[0] / q[2], q[1] / q[2]
+
+def bilinear(img, u, v):
+    x0 = np.floor(u).astype(int)
+    y0 = np.floor(v).astype(int)
+    fx, fy = (u - x0)[:, None], (v - y0)[:, None]
+    ok = ((x0 >= 0) & (y0 >= 0)
+          & (x0 < img.shape[1] - 1)
+          & (y0 < img.shape[0] - 1))
+    x0 = np.clip(x0, 0, img.shape[1] - 2)
+    y0 = np.clip(y0, 0, img.shape[0] - 2)
+    a = img[y0, x0] * (1 - fx) + img[y0, x0 + 1] * fx
+    b = (img[y0 + 1, x0] * (1 - fx)
+         + img[y0 + 1, x0 + 1] * fx)
+    out = a * (1 - fy) + b * fy
+    out[~ok] = 0
+    return out
+
+ours = bilinear(frame.astype(np.float32), u, v)
+ours = ours.reshape(h, w, 3)
+show(ours.clip(0, 255).astype(np.uint8), "pulled back")
+print("top view:", ours.shape)
+""")
+
+code(r"""
+ref = cv2.warpPerspective(frame, H_img2top, (w, h),
+                          flags=cv2.INTER_LINEAR)
+inside = ours.sum(2) > 0
+d = np.abs(np.rint(ours) - ref)[inside]
+print("pixels compared:", int(inside.sum()))
+print("mean diff:", round(float(d.mean()), 3),
+      " max:", d.max())
+""")
+
+md("### Lesson 5: exercises")
+
+code(r"""
+grey = frame.astype(np.float64).mean(axis=2)
+
+def sample(img, u, v):
+    return 0.0  # the bilinear value at (u, v)
+
+print(sample(grey, 485.259, 687.625))
+""")
+
+code(r"""
+# checks your answer
+print("correct" if (abs(sample(grey, 485.259, 687.625) - 140.5) < 0.1) else "not yet")
+""")
+
+code(r"""
+# Exercises 2 and 3: the numbers under "What you should see"
+grey = frame.astype(np.float64).mean(axis=2)
+print("nearest:", round(grey[688, 485], 1))
+
+# push every photo pixel into the top view instead
+yy, xx = np.mgrid[0:frame.shape[0], 0:frame.shape[1]]
+P = np.stack([xx.ravel(), yy.ravel(),
+              np.ones(xx.size)])
+Q = H_img2top @ P
+tx = np.rint(Q[0] / Q[2]).astype(int)
+ty = np.rint(Q[1] / Q[2]).astype(int)
+k = (tx >= 0) & (ty >= 0) & (tx < w) & (ty < h)
+hit = np.zeros((h, w), bool)
+hit[ty[k], tx[k]] = True
+court = np.zeros((h, w), bool)
+court[75:746, 75:380] = True   # the court, 50 px/m
+far = court & inside
+far[h // 2:] = False           # the far half
+print("far half never written:",
+      round(float((~hit[far]).mean()), 3))
 """)
 
 
