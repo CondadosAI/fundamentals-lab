@@ -102,9 +102,79 @@ def radius_sweep(width: int = 720):
     return frames, 10
 
 
+def circle_results(width: int = 720, height: int = 540):
+    """The unit's finished circle finder on every photo it was measured on: each photo plain,
+    then its HoughCircles circles appearing one by one, then the score. Green circles found a
+    labelled ball, amber ones did not. Ends on one VisA candle photo."""
+    from fundamentals_lab.boundaries import wild
+    from fundamentals_lab.config import POOL_GRADIENT_ALT
+
+    def fit(img):
+        h, w = img.shape[:2]
+        k = min(width / w, height / h)
+        small = cv2.resize(img, (int(w * k), int(h * k)), interpolation=cv2.INTER_AREA)
+        canvas = np.full((height, width, 3), BG, np.uint8)
+        y0, x0 = (height - small.shape[0]) // 2, (width - small.shape[1]) // 2
+        canvas[y0 : y0 + small.shape[0], x0 : x0 + small.shape[1]] = small
+        return canvas, k, x0, y0
+
+    scenes = []
+    L = pool.labels()
+    for name in ("pool", "pool-close", "pool-wide"):
+        img = pool.load(name)
+        c = pool.detect(
+            img, cv2.HOUGH_GRADIENT_ALT, POOL_GRADIENT_ALT["dp"], POOL_GRADIENT_ALT["param1"], 0.8
+        )
+        m = pool.match(c, L[name])
+        false = {tuple(round(v, 1) for v in f) for f in m["false_at"]}
+        circles = [(x, y, r, tuple(round(v, 1) for v in (x, y, r)) not in false) for x, y, r in c]
+        text = f"{m['found']} of {m['balls']} balls found, {m['false']} false"
+        scenes.append((img, circles, text))
+    f = sorted(wild.CANDLES.glob("*.JPG"))[0]
+    img = wild._load(f)
+    g = cv2.medianBlur(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY), 5)
+    c = cv2.HoughCircles(
+        g, cv2.HOUGH_GRADIENT_ALT, 1.5, 40, param1=300, param2=0.8, minRadius=40, maxRadius=200
+    )
+    scenes.append(
+        (
+            img,
+            [(x, y, r, True) for x, y, r in c[0]],
+            f"{len(c[0])} circles; 4 on each of the 100 photos",
+        )
+    )
+
+    frames = []
+    for img, circles, text in scenes:
+        base, k, x0, y0 = fit(img)
+        frames += [base.copy() for _ in range(4)]
+        circles = sorted(circles, key=lambda c: c[0])
+        v = base.copy()
+        for x, y, r, ok in circles:
+            colour = GREEN if ok else (40, 180, 250)
+            cv2.circle(
+                v, (int(x0 + x * k), int(y0 + y * k)), max(3, int(r * k)), colour, 3, cv2.LINE_AA
+            )
+            frames.append(v.copy())
+        label(v, text, (14, 32), 0.7)
+        frames += [v.copy() for _ in range(14)]
+    return frames, 10
+
+
+def unit_results(width: int = 720):
+    """The hub's opening: the lane finder on a minute of freeway, then the circle finder."""
+    lanes, _ = highway_lanes(width)
+    circles, fps = circle_results(width, lanes[0].shape[0])
+    return lanes[:40] + circles, fps
+
+
 def render_all() -> dict:
     frames, fps = highway_lanes()
     out = {"highway-lanes": encode(frames, fps, MEDIA_DIR / "highway-lanes.webp")}
     frames, fps = radius_sweep()
     out["radius-sweep"] = encode(frames, fps, MEDIA_DIR / "radius-sweep.webp")
+    frames, fps = circle_results()
+    out["circle-results"] = encode(frames, fps, MEDIA_DIR / "circle-results.webp", quality=40)
+    frames, fps = unit_results()
+    out["unit-results"] = encode(frames, fps, MEDIA_DIR / "unit-results.webp", quality=40)
     return out

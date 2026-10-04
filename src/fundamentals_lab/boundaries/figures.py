@@ -158,7 +158,26 @@ def lesson1(s: Scene):
             3,
             cv2.LINE_AA,
         )
-    return _save(crop, "l1-dash-three-fits")
+    _save(crop, "l1-dash-three-fits")
+
+    # The lesson's result: a total-least-squares line through each painted marking, drawn
+    # across the road the lessons search in.
+    v = _dim(s.bgr, 0.8)
+    road = highway.road_mask(s.lane.shape) > 0
+    paint = np.zeros_like(v)
+    paint[highway.lane_in_road(s.lane)] = MAGENTA
+    v = np.where(paint.any(axis=2, keepdims=True), cv2.addWeighted(v, 0.4, paint, 0.6, 0), v)
+    lines = np.zeros_like(v)
+    for M in highway.markings(s.lane):
+        t = np.radians(three_fits(M)["tls"])
+        c = M.mean(axis=0)
+        d = np.array([np.cos(t), np.sin(t)]) * 3000
+        p, q = (c - d).astype(int), (c + d).astype(int)
+        cv2.line(lines, tuple(map(int, p)), tuple(map(int, q)), GREEN, 5, cv2.LINE_AA)
+    on = lines.any(axis=2) & road
+    v[on] = lines[on]
+    cv2.polylines(v, [highway.road_polygon(s.lane.shape)], True, WHITE, 1, cv2.LINE_AA)
+    return _save(v, "l1-lanes-fitted")
 
 
 # --- lesson 2 ----------------------------------------------------------------------
@@ -364,15 +383,25 @@ def covers():
         return canvas
 
     rd = lambda n: cv2.imread(str(FIG_DIR / f"{n}.png"))  # noqa: E731
-    _save(
-        place(rd("hub-lines-and-circles")[:, : rd("hub-lines-and-circles").shape[1] // 2]),
-        "boundary-detection",
-        COVER_DIR,
-    )
-    _save(place(rd("l1-dash-three-fits")), "line-fitting-least-squares", COVER_DIR)
-    _save(place(rd("l2-lines")), "hough-transform", COVER_DIR)
+
+    def band(img, top, bottom, width=1000):
+        """A horizontal band of a figure, rows top..bottom as fractions, at a given width."""
+        h, w = img.shape[:2]
+        crop = img[int(top * h) : int(bottom * h)]
+        return cv2.resize(
+            crop, (width, int(crop.shape[0] * width / w)), interpolation=cv2.INTER_AREA
+        )
+
+    # Every cover shows the most complete result of its post; the hub shows both of the
+    # unit's finished systems, lane segments above and circles below.
+    road = band(rd("l3-segments"), 0.33, 0.80)
+    balls = band(rd("l4-pool"), 0.03, 0.72)
+    gap = np.full((900 - road.shape[0] - balls.shape[0], 1000, 3), BG, np.uint8)
+    _save(place(np.vstack([road, gap, balls])), "boundary-detection", COVER_DIR)
+    _save(place(rd("l1-lanes-fitted")), "line-fitting-least-squares", COVER_DIR)
+    _save(place(rd("wild-cloister-vanishing")), "hough-transform", COVER_DIR)
     _save(place(rd("l3-segments")), "probabilistic-hough-transform", COVER_DIR)
-    _save(place(rd("l4-pool-close")), "hough-circle-transform", COVER_DIR)
+    _save(place(rd("l4-pool")), "hough-circle-transform", COVER_DIR)
 
 
 def render_all():
