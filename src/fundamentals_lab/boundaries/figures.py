@@ -298,7 +298,13 @@ def lab_data(s: Scene):
     img[..., 2] = s.edges
     img[..., 1] = np.clip(np.floor(a360 / 2), 0, 179).astype(np.uint8)
     img[..., 0] = np.clip(np.rint(a180) % 180, 0, 179).astype(np.uint8)
-    return _save(img, "lab-board")
+    img[s.edges == 0] = 0  # the labs only read directions at edge pixels
+    FIG_DIR.mkdir(parents=True, exist_ok=True)
+    p = FIG_DIR / "lab-board.webp"
+    cv2.imwrite(str(p), img, [cv2.IMWRITE_WEBP_QUALITY, 101])
+    assert np.array_equal(cv2.imread(str(p)), img), "lossless WebP must round-trip"
+    logger.info(f"wrote {p}")
+    return p
 
 
 def render_all():
