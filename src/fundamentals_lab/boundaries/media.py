@@ -72,6 +72,48 @@ def side_line(segs: np.ndarray, side: str, cx: float):
     return np.array([a, x0 - a * y0])
 
 
+def draw_lane(f: np.ndarray, segs: np.ndarray, L, R) -> np.ndarray:
+    """The ADAS-style overlay: the segments as thin white strokes, each side's fitted line in
+    green from the bottom of the road up to just short of where the two meet, the lane filled."""
+    h = f.shape[0]
+    v = (f * 0.7 + np.array(BG) * 0.3).astype(np.uint8)
+    for x1, y1, x2, y2 in segs:
+        cv2.line(v, (int(x1), int(y1)), (int(x2), int(y2)), (235, 235, 235), 1, cv2.LINE_AA)
+    y_bot = int(0.78 * h)
+    if L is not None and R is not None:
+        # up the road to just short of where the two boundaries meet
+        y_meet = (R[1] - L[1]) / (L[0] - R[0]) if L[0] != R[0] else 0.45 * h
+        y_top = int(max(0.45 * h, y_meet + 0.02 * h))
+        xs = lambda ln, y: int(ln[0] * y + ln[1])  # noqa: E731
+        poly = np.array(
+            [
+                (xs(L, y_bot), y_bot),
+                (xs(L, y_top), y_top),
+                (xs(R, y_top), y_top),
+                (xs(R, y_bot), y_bot),
+            ],
+            np.int32,
+        )
+        fill = v.copy()
+        cv2.fillPoly(fill, [poly], (120, 200, 60))
+        v = cv2.addWeighted(fill, 0.35, v, 0.65, 0)
+        for ln in (L, R):
+            cv2.line(v, (xs(ln, y_bot), y_bot), (xs(ln, y_top), y_top), GREEN, 6, cv2.LINE_AA)
+    else:
+        for ln in (L, R):
+            if ln is not None:
+                y_top = int(0.5 * h)
+                cv2.line(
+                    v,
+                    (int(ln[0] * y_bot + ln[1]), y_bot),
+                    (int(ln[0] * y_top + ln[1]), y_top),
+                    GREEN,
+                    6,
+                    cv2.LINE_AA,
+                )
+    return v
+
+
 def highway_lanes(width: int = 720, smooth: float = 0.35, hold: int = 10):
     """ADAS-style overlay: the two boundaries of the car's lane, each one line fitted to that
     side's HoughLinesP segments, averaged over recent frames, extended up the road and the lane
@@ -103,44 +145,7 @@ def highway_lanes(width: int = 720, smooth: float = 0.35, hold: int = 10):
                 state[side] = line if prev is None else (1 - smooth) * prev + smooth * line
         # 20 fps source; the first 0.6 s (under a bridge) only warms up the averaging
         if i % 2 == 0 and i >= 12:
-            v = (f * 0.7 + np.array(BG) * 0.3).astype(np.uint8)
-            for x1, y1, x2, y2 in segs:
-                cv2.line(v, (int(x1), int(y1)), (int(x2), int(y2)), (235, 235, 235), 1, cv2.LINE_AA)
-            L, R = state["left"], state["right"]
-            y_bot = int(0.78 * h)
-            if L is not None and R is not None:
-                # up the road to just short of where the two boundaries meet
-                y_meet = (R[1] - L[1]) / (L[0] - R[0]) if L[0] != R[0] else 0.45 * h
-                y_top = int(max(0.45 * h, y_meet + 0.02 * h))
-                xs = lambda ln, y: int(ln[0] * y + ln[1])  # noqa: E731
-                poly = np.array(
-                    [
-                        (xs(L, y_bot), y_bot),
-                        (xs(L, y_top), y_top),
-                        (xs(R, y_top), y_top),
-                        (xs(R, y_bot), y_bot),
-                    ],
-                    np.int32,
-                )
-                fill = v.copy()
-                cv2.fillPoly(fill, [poly], (120, 200, 60))
-                v = cv2.addWeighted(fill, 0.35, v, 0.65, 0)
-                for ln in (L, R):
-                    cv2.line(
-                        v, (xs(ln, y_bot), y_bot), (xs(ln, y_top), y_top), GREEN, 6, cv2.LINE_AA
-                    )
-            else:
-                for ln in (L, R):
-                    if ln is not None:
-                        y_top = int(0.5 * h)
-                        cv2.line(
-                            v,
-                            (int(ln[0] * y_bot + ln[1]), y_bot),
-                            (int(ln[0] * y_top + ln[1]), y_top),
-                            GREEN,
-                            6,
-                            cv2.LINE_AA,
-                        )
+            v = draw_lane(f, segs, state["left"], state["right"])
             v = cv2.resize(v, (width, int(width * h / w)), interpolation=cv2.INTER_AREA)
             frames.append(v)
         i += 1

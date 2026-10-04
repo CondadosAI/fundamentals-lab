@@ -99,9 +99,10 @@ def page_frames(s: Scene):
 
 
 def hub(s: Scene):
-    """The highway with its HoughLinesP segments, and a pool photo with its circles."""
-    a = _dim(s.bgr)
-    _trapezoid(a)
+    """The highway with its lane found (segments, one line per side, lane filled), and a pool
+    photo with its circles."""
+    from fundamentals_lab.boundaries import media
+
     seg = cv2.HoughLinesP(
         s.edges,
         1,
@@ -109,9 +110,12 @@ def hub(s: Scene):
         PPH["threshold"],
         minLineLength=PPH["min_length"],
         maxLineGap=PPH["max_gap"],
+    ).reshape(-1, 4)
+    # the opening video's ADAS-style overlay, on the frame the lessons measure on
+    w = s.bgr.shape[1]
+    a = media.draw_lane(
+        s.bgr, seg, media.side_line(seg, "left", w / 2), media.side_line(seg, "right", w / 2)
     )
-    for x1, y1, x2, y2 in seg.reshape(-1, 4):
-        cv2.line(a, (x1, y1), (x2, y2), GREEN, 4, cv2.LINE_AA)
     img = pool.load("pool")
     b = _dim(img, 0.75)
     for x, y, r in pool.detect(
@@ -371,6 +375,10 @@ def lab_data(s: Scene):
 # --- covers ------------------------------------------------------------------------
 
 
+#: the highway half of hub-lines-and-circles is the 1164 px comma10k frame
+HUB_HIGHWAY_W = 1164
+
+
 def covers():
     def place(content):
         canvas = np.full((900, 1600, 3), BG, np.uint8)
@@ -394,7 +402,8 @@ def covers():
 
     # Every cover shows the most complete result of its post; the hub shows both of the
     # unit's finished systems, lane segments above and circles below.
-    road = band(rd("l3-segments"), 0.33, 0.80)
+    hub_img = rd("hub-lines-and-circles")
+    road = band(hub_img[:, :HUB_HIGHWAY_W], 0.33, 0.80)
     balls = band(rd("l4-pool"), 0.03, 0.72)
     gap = np.full((900 - road.shape[0] - balls.shape[0], 1000, 3), BG, np.uint8)
     _save(place(np.vstack([road, gap, balls])), "boundary-detection", COVER_DIR)
