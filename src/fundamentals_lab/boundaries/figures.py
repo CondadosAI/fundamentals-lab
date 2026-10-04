@@ -23,6 +23,7 @@ from fundamentals_lab.config import (  # noqa: E402
     HOUGH_THRESHOLD,
     OUTPUT_DIR,
     POOL_GRADIENT_ALT,
+    POOL_RADII,
     PPH,
 )
 
@@ -125,6 +126,110 @@ def hub(s: Scene):
     b = cv2.resize(b, (int(b.shape[1] * a.shape[0] / b.shape[0]), a.shape[0]))
     return _save(
         np.hstack([a, np.full((a.shape[0], 10, 3), BG, np.uint8), b]), "hub-lines-and-circles"
+    )
+
+
+def _panel_grid(panels, titles, name: str):
+    """Six panels in three rows of two, each titled with its pipeline step. Two columns keep
+    each panel readable at phone width."""
+    fig, axes = plt.subplots(3, 2, figsize=(8, 10.3), dpi=110, facecolor=BG_HEX)
+    for ax, (img, extent), title in zip(axes.ravel(), panels, titles, strict=True):
+        ax.set_facecolor(BG_HEX)
+        if img.ndim == 2:
+            ax.imshow(img, cmap="gray", vmin=0, vmax=255, extent=extent, aspect="auto")
+        else:
+            ax.imshow(img[..., ::-1], extent=extent, aspect="auto")
+        ax.set_title(title, color="#e2e8f0", fontsize=19, loc="left", pad=6)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        for sp in ax.spines.values():
+            sp.set_color("#334155")
+    fig.tight_layout(pad=0.6, h_pad=1.2, w_pad=0.8)
+    FIG_DIR.mkdir(parents=True, exist_ok=True)
+    p = FIG_DIR / f"{name}.png"
+    fig.savefig(p, facecolor=BG_HEX)
+    plt.close(fig)
+    logger.info(f"wrote {p}")
+    return p
+
+
+def _thick(edges):
+    """One-pixel edges, thickened so they survive being shown at a third of the page width."""
+    return cv2.dilate(edges, np.ones((3, 3), np.uint8))
+
+
+def hub_pipeline(s: Scene):
+    """The unit's one pipeline, run on both scenes: image, grey, edges (0 or 255), the vote,
+    the strongest cells, and the shapes drawn back on the image."""
+    # lines: the highway frame and its (rho, theta) accumulator
+    grey = highway.blurred(s.bgr)
+    edges = s.edges
+    acc = np.log1p(s.acc.astype(float))
+    heat = cv2.applyColorMap((255 * acc / acc.max()).astype(np.uint8), cv2.COLORMAP_MAGMA)
+    half = (s.acc.shape[0] - 1) // 2
+    # rows are rho from -half to +half; keep the band the road's lines use
+    top, bot = half - 600, half + 1100
+    W, H = 480, 360
+    heat = cv2.resize(heat[top:bot], (W, H), interpolation=cv2.INTER_AREA)
+    best = heat.copy()
+    for _, ri, ti in s.lines:
+        c = (int(ti * W / 180), int((ri - top) * H / (bot - top)))
+        cv2.circle(best, c, 9, (120, 252, 154), 2, cv2.LINE_AA)
+    drawn = _dim(s.bgr, 0.8)
+    for rr, tt in s.line_list():
+        _line_through(drawn, rr, tt, GREEN, 2)
+    ext = [0, 180, 1100, -600]
+    _panel_grid(
+        [
+            (s.bgr, None),
+            (grey, None),
+            (_thick(edges), None),
+            (heat, ext),
+            (best, ext),
+            (drawn, None),
+        ],
+        [
+            "1  Image",
+            "2  Grey",
+            "3  Edges: 0 or 255",
+            "4  Votes for (ρ, θ)",
+            f"5  The {len(s.lines)} strongest cells",
+            "6  Lines drawn back",
+        ],
+        "hub-pipeline-lines",
+    )
+
+    # circles: the close pool photo, every radius's centre votes summed into one map
+    img = pool.load("pool-close")
+    g = pool.grey(img)
+    e = cv2.Canny(g, 50, 150)
+    votes = sum(
+        pool.fixed_radius_accumulator(g, r).astype(np.float32)
+        for r in range(POOL_RADII[0], POOL_RADII[1] + 1)
+    )
+    votes = cv2.boxFilter(votes, -1, (5, 5), normalize=False)
+    v8 = np.clip(255 * votes / np.percentile(votes, 99.95), 0, 255).astype(np.uint8)
+    cheat = cv2.applyColorMap(v8, cv2.COLORMAP_MAGMA)
+    circles = pool.detect(
+        img, cv2.HOUGH_GRADIENT_ALT, POOL_GRADIENT_ALT["dp"], POOL_GRADIENT_ALT["param1"], 0.8
+    )
+    cbest = cheat.copy()
+    for x, y, _ in circles:
+        cv2.circle(cbest, (int(x), int(y)), 14, (120, 252, 154), 3, cv2.LINE_AA)
+    cdrawn = _dim(img, 0.8)
+    for x, y, r in circles:
+        cv2.circle(cdrawn, (int(x), int(y)), int(r), GREEN, 3, cv2.LINE_AA)
+    return _panel_grid(
+        [(img, None), (g, None), (_thick(e), None), (cheat, None), (cbest, None), (cdrawn, None)],
+        [
+            "1  Image",
+            "2  Grey",
+            "3  Edges: 0 or 255",
+            "4  Votes for centres",
+            f"5  The {len(circles)} strongest centres",
+            "6  Circles drawn back",
+        ],
+        "hub-pipeline-circles",
     )
 
 
@@ -417,6 +522,7 @@ def render_all():
     s = Scene()
     page_frames(s)
     hub(s)
+    hub_pipeline(s)
     lesson1(s)
     lesson2(s)
     lesson3(s)

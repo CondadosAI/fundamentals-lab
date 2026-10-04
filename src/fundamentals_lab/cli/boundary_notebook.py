@@ -26,8 +26,8 @@ md("""
 # Boundary detection, measured
 
 Companion notebook for the CondadosAI Fundamentals unit **Boundary detection** (F3 / unit 3.2):
-fitting a line to edge pixels, the Hough transform, the probabilistic Hough transform and the
-Hough circle transform. Every Python block printed in those posts has a cell here, and each
+the Hough transform, the probabilistic Hough transform, fitting one line to what the vote finds,
+and the Hough circle transform. Every Python block printed in those posts has a cell here, and each
 lesson's exercises have a cell that computes the answers the post gives.
 
 | Used for | Source | Licence |
@@ -68,77 +68,7 @@ print('OpenCV', cv2.__version__, '| NumPy', np.__version__, '|', cv2.imread('hig
 """)
 
 md("""
-## 1. Fitting a line to edge pixels
-
-The cells of [the lesson](https://condados.ai/blog/line-fitting-least-squares), in order.
-""")
-
-code(r"""
-import numpy as np
-import cv2
-
-# the dash's pixels, painted by comma10k's labellers
-mask = cv2.imread("dash-mask.webp", cv2.IMREAD_GRAYSCALE)
-ys, xs = np.nonzero(mask)
-P = np.c_[xs, ys].astype(float)
-
-# least squares, y on x and x on y
-m = np.polyfit(P[:, 0], P[:, 1], 1)[0]
-m2 = np.polyfit(P[:, 1], P[:, 0], 1)[0]
-y_on_x = np.degrees(np.arctan(m)) % 180
-x_on_y = np.degrees(np.arctan2(1, m2)) % 180
-
-# total least squares: first principal direction
-d = np.linalg.svd(P - P.mean(axis=0))[2][0]
-tls = np.degrees(np.arctan2(d[1], d[0])) % 180
-
-print(len(P), "pixels")
-print(f"y on x: {y_on_x:.2f}   x on y: {x_on_y:.2f}")
-print(f"total least squares: {tls:.2f}")
-""")
-
-code(r"""
-v = cv2.fitLine(P.astype(np.float32), cv2.DIST_L2,
-                0, 0.01, 0.01).ravel()
-fit = np.degrees(np.arctan2(v[1], v[0])) % 180
-print(f"cv2.fitLine:        {fit:.2f}")
-print(f"difference to ours: {abs(fit - tls):.4f}")
-""")
-
-md("""
-### Exercise 1
-
-Fill it in; the last line checks your answer.
-""")
-
-code(r"""
-def tls_angle(P):
-    # centred sums, then the formula
-    return 0.0
-
-print(tls_angle(P), fit)
-
-# checks your answer
-print("correct" if (abs(tls_angle(P) - fit) < 0.01) else "not yet")
-""")
-
-code(r"""
-# Exercises 2 and 3: the numbers under "What you should see"
-def three(Q):
-    m = np.polyfit(Q[:, 0], Q[:, 1], 1)[0]
-    m2 = np.polyfit(Q[:, 1], Q[:, 0], 1)[0]
-    d = np.linalg.svd(Q - Q.mean(axis=0))[2][0]
-    return (np.degrees(np.arctan(m)) % 180, np.degrees(np.arctan2(1, m2)) % 180,
-            np.degrees(np.arctan2(d[1], d[0])) % 180)
-
-R = cv2.getRotationMatrix2D(tuple(P.mean(axis=0)), -60, 1)
-print("dash turned 60 deg: y on x %.2f  x on y %.2f  TLS %.2f" % three(P @ R[:, :2].T + R[:, 2]))
-ly, lx = np.nonzero(cv2.imread("line-mask.webp", cv2.IMREAD_GRAYSCALE))
-print("solid line, %d px: y on x %.2f  x on y %.2f  TLS %.2f" % (len(lx), *three(np.c_[lx, ly].astype(float))))
-""")
-
-md("""
-## 2. The Hough transform
+## 1. The Hough transform
 
 The cells of [the lesson](https://condados.ai/blog/hough-transform), in order.
 """)
@@ -262,7 +192,7 @@ print("strongest cell of the dash (theta 115-130):", int(acc[:, 115:131].max()))
 """)
 
 md("""
-## 3. The probabilistic Hough transform
+## 2. The probabilistic Hough transform
 
 The cells of [the lesson](https://condados.ai/blog/probabilistic-hough-transform), in order.
 """)
@@ -288,7 +218,7 @@ ys, xs = np.nonzero(edges)
 grad = np.degrees(np.arctan2(gy, gx)) % 180
 centre = np.rint(grad[ys, xs]).astype(int)
 
-# lesson 2's angle table, built the way OpenCV builds it
+# lesson 1's angle table, built the way OpenCV builds it
 cos_t = np.zeros(180, np.float32)
 sin_t = np.zeros(180, np.float32)
 ang = np.float32(0)
@@ -381,6 +311,76 @@ for gap in (5, 20, 60):
     for x1, y1, x2, y2 in seg:
         cv2.line(cover, (int(x1), int(y1)), (int(x2), int(y2)), 1, 7)
     print(f"maxLineGap {gap:2}: {len(seg)} segments, paint covered {(cover.astype(bool) & paint).sum() / paint.sum():.1%}")
+""")
+
+md("""
+## 3. From segments to one line: fitting
+
+The cells of [the lesson](https://condados.ai/blog/line-fitting-least-squares), in order.
+""")
+
+code(r"""
+import numpy as np
+import cv2
+
+# the dash's pixels, painted by comma10k's labellers
+mask = cv2.imread("dash-mask.webp", cv2.IMREAD_GRAYSCALE)
+ys, xs = np.nonzero(mask)
+P = np.c_[xs, ys].astype(float)
+
+# least squares, y on x and x on y
+m = np.polyfit(P[:, 0], P[:, 1], 1)[0]
+m2 = np.polyfit(P[:, 1], P[:, 0], 1)[0]
+y_on_x = np.degrees(np.arctan(m)) % 180
+x_on_y = np.degrees(np.arctan2(1, m2)) % 180
+
+# total least squares: first principal direction
+d = np.linalg.svd(P - P.mean(axis=0))[2][0]
+tls = np.degrees(np.arctan2(d[1], d[0])) % 180
+
+print(len(P), "pixels")
+print(f"y on x: {y_on_x:.2f}   x on y: {x_on_y:.2f}")
+print(f"total least squares: {tls:.2f}")
+""")
+
+code(r"""
+v = cv2.fitLine(P.astype(np.float32), cv2.DIST_L2,
+                0, 0.01, 0.01).ravel()
+fit = np.degrees(np.arctan2(v[1], v[0])) % 180
+print(f"cv2.fitLine:        {fit:.2f}")
+print(f"difference to ours: {abs(fit - tls):.4f}")
+""")
+
+md("""
+### Exercise 1
+
+Fill it in; the last line checks your answer.
+""")
+
+code(r"""
+def tls_angle(P):
+    # centred sums, then the formula
+    return 0.0
+
+print(tls_angle(P), fit)
+
+# checks your answer
+print("correct" if (abs(tls_angle(P) - fit) < 0.01) else "not yet")
+""")
+
+code(r"""
+# Exercises 2 and 3: the numbers under "What you should see"
+def three(Q):
+    m = np.polyfit(Q[:, 0], Q[:, 1], 1)[0]
+    m2 = np.polyfit(Q[:, 1], Q[:, 0], 1)[0]
+    d = np.linalg.svd(Q - Q.mean(axis=0))[2][0]
+    return (np.degrees(np.arctan(m)) % 180, np.degrees(np.arctan2(1, m2)) % 180,
+            np.degrees(np.arctan2(d[1], d[0])) % 180)
+
+R = cv2.getRotationMatrix2D(tuple(P.mean(axis=0)), -60, 1)
+print("dash turned 60 deg: y on x %.2f  x on y %.2f  TLS %.2f" % three(P @ R[:, :2].T + R[:, 2]))
+ly, lx = np.nonzero(cv2.imread("line-mask.webp", cv2.IMREAD_GRAYSCALE))
+print("solid line, %d px: y on x %.2f  x on y %.2f  TLS %.2f" % (len(lx), *three(np.c_[lx, ly].astype(float))))
 """)
 
 md("""
