@@ -183,8 +183,93 @@ def cover_panel(img: np.ndarray, right_fraction: float = 0.62, size=(1600, 900))
     return canvas
 
 
+def _pipeline_grid(panels, name: str):
+    """Six panels in three rows of two, each titled with its pipeline step, so it reads at
+    phone width. Same layout as the unit 3.1 and 3.2 hubs."""
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    bg = "#0e1218"
+    fig, axes = plt.subplots(3, 2, figsize=(8, 10.3), dpi=110, facecolor=bg)
+    for ax, (img, title) in zip(axes.ravel(), panels, strict=True):
+        ax.set_facecolor(bg)
+        ax.imshow(img[..., ::-1], aspect="auto")
+        ax.set_title(title, color="#e2e8f0", fontsize=19, loc="left", pad=6)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        for sp in ax.spines.values():
+            sp.set_color("#334155")
+    fig.tight_layout(pad=0.6, h_pad=1.2, w_pad=0.8)
+    FIG_DIR.mkdir(parents=True, exist_ok=True)
+    path = FIG_DIR / f"{name}.png"
+    fig.savefig(path, facecolor=bg)
+    plt.close(fig)
+    logger.info(f"wrote {path}")
+    return path
+
+
+def hub_pipeline(s: Scene):
+    """The hub's pipeline on frame 45000: the photo, its paint, the corners (one of them off
+    the frame), the rulebook positions, the court drawn back through the solved 3x3, and the
+    court seen from above. Panel titles carry the hub's step numbers."""
+    h, w = s.frame.shape[:2]
+    dim = (s.frame * 0.55).astype(np.uint8)
+
+    paint = dim.copy()
+    # only the paint on and around the near half; the crowd and the roof have white ridges too
+    on = transforms.apply(s.H_img2court, s.pixels)
+    keep = (on[:, 0] > -0.6) & (on[:, 0] < 7.0) & (on[:, 1] > -0.6) & (on[:, 1] < 6.7)
+    xs, ys = s.pixels[keep, 0].astype(int), s.pixels[keep, 1].astype(int)
+    for f in s.fit.lines.values():
+        _line_across(paint, f.line, GREEN, 2)
+    m = np.zeros((h, w), np.uint8)
+    m[ys, xs] = 255
+    paint[cv2.dilate(m, np.ones((3, 3), np.uint8)) > 0] = (255, 80, 255)
+
+    pad = 80  # room for the near-left corner, 18.5 px left of the frame
+    corners = np.full((h, w + pad, 3), 36, np.uint8)
+    corners[:, pad:] = dim
+    for f in s.fit.lines.values():
+        _line_across(corners, f.line, GREEN, 2, (pad, 0))
+    for n in court.FIT_LANDMARKS:
+        x, y = s.fit.landmarks_img[n] + (pad, 0)
+        cv2.circle(corners, (round(x), round(y)), 22, AMBER, 6, cv2.LINE_AA)
+    cv2.rectangle(corners, (pad, 0), (pad + w - 1, h - 1), WHITE, 2)
+
+    H_c2t, size = warp.court2top()
+    plan = np.full((size[1], size[0], 3), 36, np.uint8)
+    _draw_court(plan, H_c2t, WHITE, 3)
+    for n in court.FIT_LANDMARKS:
+        x, y = transforms.apply(H_c2t, court.court_point(n)[None])[0]
+        cv2.circle(plan, (round(x), round(y)), 16, AMBER, 6, cv2.LINE_AA)
+    plan = cv2.rotate(plan, cv2.ROTATE_90_CLOCKWISE)
+
+    solved = dim.copy()
+    _draw_court(solved, s.H_court2img, GREEN, 4)
+
+    # the median plate: the court with nobody on it, so nothing smears off the plane
+    H_i2t, size = warp.img2top(s.H_img2court)
+    top = cv2.warpPerspective(s.plate, H_i2t, size, flags=cv2.INTER_LINEAR)
+    top = cv2.rotate(top, cv2.ROTATE_90_CLOCKWISE)
+
+    return _pipeline_grid(
+        [
+            (s.frame, "1  Photo"),
+            (paint, "2  Lines: the paint"),
+            (corners, "3  Corners"),
+            (plan, "4  Rulebook positions"),
+            (solved, "6  Solve: court drawn back"),
+            (top, "8  Use: seen from above"),
+        ],
+        "hub-pipeline",
+    )
+
+
 def render_all() -> None:
     s = Scene()
+    hub_pipeline(s)
     ext = extended_canvas(s)
     lin = best_linear_overlay(s)
     aff = affine_vs_homography(s)
