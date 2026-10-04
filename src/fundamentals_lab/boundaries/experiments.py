@@ -260,6 +260,29 @@ def hough_lesson(s: Scene) -> dict:
     v, ri, ti = lines[0]
     nb = acc[ri - 3 : ri + 4, ti - 2 : ti + 3]
 
+    # Where the votes of the one tilted line among the top eight come from.
+    ys, xs = np.nonzero(s.edges)
+    tilted = next(
+        (v, hough.rho_of(r, acc), t) for v, r, t in lines[:8] if t not in (0, 1, 89, 90, 91, 179)
+    )
+    on = (
+        np.rint(xs * np.cos(np.radians(tilted[2])) + ys * np.sin(np.radians(tilted[2])))
+        == tilted[1]
+    )
+    inside = np.zeros_like(on)
+    mesh = np.zeros_like(on)
+    for cx, cy, R in s.transducers:
+        d = np.hypot(xs - cx, ys - cy)
+        inside |= d <= R
+        mesh |= d < 0.75 * R
+    texture_line = {
+        "rho": tilted[1],
+        "theta_deg": tilted[2],
+        "votes": int(on.sum()),
+        "from_inside_transducers": int((on & inside).sum()),
+        "from_mesh": int((on & mesh).sum()),
+    }
+
     holes = {str(p2): circles.holes(s.blur, p2) for p2 in HOLE_PARAM2_SWEEP}
     for d in holes.values():
         d.pop("circles")
@@ -299,6 +322,7 @@ def hough_lesson(s: Scene) -> dict:
         "worked_example": {"row": top_row, "pixels": table, "thetas": thetas},
         "bin_size": bins,
         "top_peak_neighbourhood": {"centre": [hough.rho_of(ri, acc), ti], "votes": nb.tolist()},
+        "texture_line": texture_line,
         "transducers": [[_r(v, 1) for v in c] for c in s.transducers.tolist()],
         "holes_param2": holes,
         "heldout": {

@@ -391,6 +391,13 @@
         ]
       ]
     },
+    "texture_line": {
+      "rho": 342,
+      "theta_deg": 95,
+      "votes": 168,
+      "from_inside_transducers": 123,
+      "from_mesh": 95
+    },
     "transducers": [
       [
         252.5,
