@@ -188,6 +188,14 @@ def fitting_lesson(s: Scene) -> dict:
         **{k2: _r(v, 2) for k2, v in three_fits(W).items()},
     }
 
+    # The dash turned about its centre, toward vertical: which regression goes wrong where.
+    c0 = P.mean(axis=0)
+    turned = {}
+    for deg in (0, 30, 60, 90):
+        t = np.radians(deg)
+        R = np.array([[np.cos(t), -np.sin(t)], [np.sin(t), np.cos(t)]])
+        turned[str(deg)] = {k2: _r(v, 2) for k2, v in three_fits((P - c0) @ R.T + c0).items()}
+
     # One outlier: a pixel 40 px to the side of the marking's centre, as a car's edge would be.
     c = P.mean(axis=0)
     outlier = {k2: _r(v, 2) for k2, v in three_fits(np.vstack([P, [c[0] + 40, c[1]]])).items()}
@@ -207,6 +215,7 @@ def fitting_lesson(s: Scene) -> dict:
     return {
         "markings": per,
         "worked_marking": k,
+        "dash_turned": turned,
         "worked_example": worked,
         "one_outlier": outlier,
         "heldout": {
