@@ -382,5 +382,76 @@
         "crossing_px_ratio": 1.019
       }
     ]
+  },
+  "hub_cloister": {
+    "asset": "cloister.jpg (Wikimedia Commons, CC0)",
+    "crop": {
+      "width": 960,
+      "top": 260,
+      "height": 720
+    },
+    "edge_pixels": 21181,
+    "threshold_dilemma": {
+      "gaussian_sigma": 1.4,
+      "operator": "sobel",
+      "note": "fragment count FALLS as the threshold rises \u2014 the folk claim that a high threshold breaks edges up is not what the aggregate shows. The real cost is coverage.",
+      "by_threshold": [
+        {
+          "threshold_0_255": 10,
+          "magnitude_px": 501495,
+          "thinned_px": 93155,
+          "ridge_thickness_px": 5.38,
+          "coverage_vs_lowest": 1.0,
+          "fragments": 14420
+        },
+        {
+          "threshold_0_255": 20,
+          "magnitude_px": 348515,
+          "thinned_px": 71174,
+          "ridge_thickness_px": 4.9,
+          "coverage_vs_lowest": 0.764,
+          "fragments": 9727
+        },
+        {
+          "threshold_0_255": 40,
+          "magnitude_px": 199832,
+          "thinned_px": 45253,
+          "ridge_thickness_px": 4.42,
+          "coverage_vs_lowest": 0.486,
+          "fragments": 4906
+        },
+        {
+          "threshold_0_255": 80,
+          "magnitude_px": 100649,
+          "thinned_px": 27124,
+          "ridge_thickness_px": 3.71,
+          "coverage_vs_lowest": 0.291,
+          "fragments": 1868
+        },
+        {
+          "threshold_0_255": 160,
+          "magnitude_px": 39732,
+          "thinned_px": 14269,
+          "ridge_thickness_px": 2.78,
+          "coverage_vs_lowest": 0.153,
+          "fragments": 689
+        }
+      ]
+    },
+    "hysteresis_vs_single_threshold": {
+      "low": 50,
+      "high": 150,
+      "edge_pixels": 21181,
+      "hysteresis": {
+        "components": 627,
+        "mean_component_px": 33.78
+      },
+      "single_threshold": {
+        "cutoff_0_255": 108.3,
+        "edge_pixels": 21181,
+        "components": 1205,
+        "mean_component_px": 17.58
+      }
+    }
   }
 }
