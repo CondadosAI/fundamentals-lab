@@ -168,6 +168,73 @@ vp = np.cross(left, right)         # the point on two lines
 print(left, right, vp[:2] / vp[2]) # ... [2251.8  299.4]
 """)
 
+md("### Homogeneous coordinates: how close is this to OpenCV?")
+
+code(r"""
+import numpy as np
+
+# four near-court corners, as (x, y, 1)
+nbl = np.array([-18.52, 587.39, 1.0])
+nkl = np.array([669.68, 500.09, 1.0])
+nbr = np.array([987.25, 959.91, 1.0])
+nkr = np.array([1555.24, 663.22, 1.0])
+
+left = np.cross(nbl, nkl)    # the line through two points
+right = np.cross(nbr, nkr)
+vp = np.cross(left, right)   # the point on two lines
+print("left sideline:", left.round(2))
+print("they meet at", (vp[:2] / vp[2]).round(1))
+""")
+
+code(r"""
+import cv2
+
+# the school way: two equations a x + b y = -c
+A = np.array([left[:2], right[:2]])
+b = -np.array([left[2], right[2]])
+print("np.linalg.solve:", np.linalg.solve(A, b).round(1))
+
+# OpenCV's division by the last coordinate
+p = cv2.convertPointsFromHomogeneous(vp[None, None])
+print("cv2.convertPointsFromHomogeneous:", p.ravel().round(1))
+
+# the same two sidelines on the court, in metres
+g1, g2 = np.array([0, 1, -0.0254]), np.array([0, 1, -6.0746])
+print("on the ground they meet at", np.cross(g1, g2).round(4))
+# the school way needs this determinant to be nonzero
+d = np.linalg.det(np.array([g1[:2], g2[:2]]))
+print("school way on the ground: determinant", d)
+""")
+
+md("### Homogeneous coordinates: exercises")
+
+code(r"""
+def meet(l1, l2):
+    return (0.0, 0.0)  # pixel, or None if they meet at infinity
+
+print(meet(left, right))
+""")
+
+code(r"""
+# checks your answer
+print("correct" if (np.allclose(meet(left, right), (2251.7, 299.4), atol=0.1) and meet(np.array([0, 1, -0.0254]), np.array([0, 1, -6.0746])) is None) else "not yet")
+""")
+
+code(r"""
+# Exercises 2 and 3: the numbers under "What you should see"
+nbc = np.array([332.06, 717.24, 1.0])
+nkc = np.array([1034.46, 567.28, 1.0])
+centre = np.cross(nbc, nkc)
+v2 = np.cross(left, centre)
+print("centre line meets the left sideline at",
+      (v2[:2] / v2[2]).round(1))
+base = np.cross(nbl, nbr)
+kitchen = np.cross(nkl, nkr)
+v3 = np.cross(base, kitchen)
+print("baseline meets kitchen line at",
+      (v3[:2] / v3[2]).round(1))
+""")
+
 md("## Lesson 1: what a 2×2 does")
 
 code("""

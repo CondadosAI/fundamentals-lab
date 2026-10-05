@@ -1,0 +1,202 @@
+{
+  "environment": {
+    "opencv": "5.0.0",
+    "numpy": "2.5.2",
+    "seed": 20261004
+  },
+  "board_units_note": "one unit = one chessboard square; the square's size is unpublished",
+  "camera_matrix": {
+    "K": [
+      [
+        536.0735,
+        0.0,
+        342.3705
+      ],
+      [
+        0.0,
+        536.0164,
+        235.5369
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "dist": [
+      -0.26509,
+      -0.04674,
+      0.00183,
+      -0.00031,
+      0.25231
+    ],
+    "view": "left01.jpg",
+    "R": [
+      [
+        0.9622,
+        0.0098,
+        0.2721
+      ],
+      [
+        0.0363,
+        0.9858,
+        -0.1638
+      ],
+      [
+        -0.2698,
+        0.1675,
+        0.9482
+      ]
+    ],
+    "t": [
+      -3.0112,
+      -4.3576,
+      15.9929
+    ],
+    "P": [
+      [
+        423.434,
+        62.585,
+        470.509,
+        3861.269
+      ],
+      [
+        -44.117,
+        567.863,
+        135.559,
+        1431.184
+      ],
+      [
+        -0.27,
+        0.167,
+        0.948,
+        15.993
+      ]
+    ],
+    "corner_board": [
+      8.0,
+      0.0,
+      0.0
+    ],
+    "corner_camera": [
+      4.6866,
+      -4.0674,
+      13.8341
+    ],
+    "corner_homogeneous": [
+      7248.742,
+      1078.246,
+      13.834
+    ],
+    "corner_pinhole_px": [
+      523.98,
+      77.94
+    ],
+    "corner_with_lens_px": [
+      514.05,
+      86.72
+    ],
+    "corner_detected_px": [
+      513.77,
+      86.53
+    ],
+    "camera_centre_board_units": [
+      7.371,
+      1.647,
+      -15.059
+    ],
+    "camera_distance_board_units": 16.847,
+    "hfov_deg": 61.67
+  },
+  "calibration": {
+    "worked_residuals_px": [
+      [
+        -0.06,
+        0.131
+      ],
+      [
+        -0.283,
+        -0.193
+      ],
+      [
+        0.129,
+        -0.029
+      ],
+      [
+        -0.045,
+        -0.019
+      ]
+    ],
+    "worked_rms_px": 0.199,
+    "worst_view": {
+      "name": "left02.jpg",
+      "rms_px": 1.22
+    },
+    "views": 13,
+    "corners_per_view": 54,
+    "rms_px": 0.4087,
+    "fx": 536.07,
+    "fy": 536.02,
+    "cx": 342.37,
+    "cy": 235.54,
+    "in_sample_view_rms_px": {
+      "median": 0.194,
+      "max": 1.22
+    },
+    "held_out_view_rms_px": {
+      "median": 0.204,
+      "max": 1.243
+    },
+    "three_view_fx": {
+      "subsets": 286,
+      "median": 535.3,
+      "p05": 530.2,
+      "p95": 544.3,
+      "min": 519.6,
+      "max": 567.9
+    },
+    "no_distortion": {
+      "rms_px": 1.555,
+      "fx": 557.45
+    }
+  },
+  "pnp": {
+    "view": "left01.jpg",
+    "all_54": {
+      "rotation_vs_calibration_deg": 2e-05,
+      "centre_vs_calibration_units": 1e-05,
+      "rms_px": 0.1934,
+      "centre_board_units": [
+        7.371,
+        1.647,
+        -15.059
+      ]
+    },
+    "four_corners": {
+      "rms_all_54_px": 0.269,
+      "centre_shift_units": 0.073,
+      "rotation_shift_deg": 0.259
+    },
+    "noise_1px_200": {
+      "centre_shift_median_units": 0.1449,
+      "centre_shift_p95_units": 0.3058,
+      "camera_distance_units": 16.847
+    },
+    "outliers": {
+      "wrong_corners": 5,
+      "plain_centre_shift_units": 2.517,
+      "plain_rms_on_good_px": 2.987,
+      "ransac_inliers": 49,
+      "ransac_centre_shift_units": 0.0079,
+      "ransac_rms_on_good_px": 0.198
+    },
+    "camera_distance_all_views_units": {
+      "min": 11.9,
+      "max": 16.85
+    },
+    "all_views_vs_calibration": {
+      "max_rotation_deg": 2e-05,
+      "max_centre_units": 1e-05
+    }
+  }
+}
