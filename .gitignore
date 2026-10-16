@@ -27,3 +27,4 @@ output/*.log
 !output/formation_numbers.json
 !output/sensing_numbers.json
 !output/practice_m1_numbers.json
+.gstack/
