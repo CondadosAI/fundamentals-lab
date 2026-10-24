@@ -765,6 +765,7 @@
         }
       }
     },
+    "saturated_share_at_gain_1.8": 0.351,
     "clip": {
       "threshold": 0.2,
       "descriptors_with_a_clipped_entry": 1.0,

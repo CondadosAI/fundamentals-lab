@@ -194,8 +194,8 @@ def hub_pipeline():
     keep = r < RATIO
     p6 = _matches_canvas(a_bgr, b_bgr, pa[keep], pb[keep], ok[keep])
     titles = [
-        "1. blur at many sizes",
-        "2. subtract, keep 3-D extrema",
+        "1. blur at many sizes, subtract",
+        "2. keep points beating 26 neighbours",
         "3. refine, drop weak and edge-like",
         "4. give each point a direction",
         "5. 128 numbers around it",

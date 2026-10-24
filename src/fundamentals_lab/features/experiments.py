@@ -546,6 +546,7 @@ def descriptor_lesson(_=None, img=None) -> dict:
             res[name] = _scored(kA, kB, _ratio_matches(dA, dB), np.eye(3))
         ab[tname] = res
     out["photometric"] = ab
+    out["saturated_share_at_gain_1.8"] = _r((a.astype(np.float64) * 1.8 > 255).mean())
     clipped = []
     for e in run.kept[:2000]:
         raw = S.descriptor(
