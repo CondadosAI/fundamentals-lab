@@ -361,8 +361,8 @@ code(r"""
 def edge_ok(dxx, dyy, dxy, r=10):
     return True  # replace with the test
 
-print(edge_ok(5.26, 19.01, 5.23))    # the container stack
-print(edge_ok(1.06, 5.05, -1.66))    # the roof edge
+print(edge_ok(5.2592, 19.0113, 5.2267))   # the compact spot
+print(edge_ok(1.0634, 5.0496, -1.6645))   # the straight edge
 print(edge_ok(3.0, -2.0, 0.0))       # a saddle
 """)
 
@@ -372,7 +372,7 @@ def edge_ok(dxx, dyy, dxy, r=10):
     tr, det = dxx + dyy, dxx * dyy - dxy**2
     return bool(det > 0 and tr * tr / det < (r + 1) ** 2 / r)
 
-print(edge_ok(5.26, 19.01, 5.23), edge_ok(1.06, 5.05, -1.66), edge_ok(3.0, -2.0, 0.0))
+print(edge_ok(5.2592, 19.0113, 5.2267), edge_ok(1.0634, 5.0496, -1.6645), edge_ok(3.0, -2.0, 0.0))
 """)
 
 md(r"""
@@ -386,7 +386,7 @@ code(
 )
 
 code(
-    '# Photo A against a copy of itself turned by 45 degrees.\ndef turned(gray, deg):\n    h, w = gray.shape\n    M = cv2.getRotationMatrix2D((w / 2, h / 2), deg, 1.0)\n    c, s = abs(M[0, 0]), abs(M[0, 1])\n    W, H = int(h * s + w * c), int(h * c + w * s)\n    M[0, 2] += W / 2 - w / 2\n    M[1, 2] += H / 2 - h / 2\n    return cv2.warpAffine(gray, M, (W, H)), M\n\ndef points(gray, n=500):\n    """The n strongest keypoints, one per place (no orientation copies)."""\n    seen, out = set(), []\n    for k in sorted(sift.detect(gray, None), key=lambda k: -k.response):\n        key = (round(k.pt[0], 1), round(k.pt[1], 1))\n        if key not in seen:\n            seen.add(key)\n            out.append(k)\n    return out[:n]\n\ndef correct_matches(deg, upright):\n    img2, M = turned(img, deg)\n    ka, kb = points(img), points(img2)\n    if upright:                      # throw the direction away\n        for k in ka + kb:\n            k.angle = 0.0\n    ka, da = sift.compute(img, ka)\n    kb, db = sift.compute(img2, kb)\n    good = [m for m, n in cv2.BFMatcher().knnMatch(da, db, k=2)\n            if m.distance < 0.75 * n.distance]\n    p = np.array([ka[m.queryIdx].pt for m in good]).reshape(-1, 2)\n    q = np.array([kb[m.trainIdx].pt for m in good]).reshape(-1, 2)\n    where = p @ M[:, :2].T + M[:, 2]   # where each point really went\n    ok = np.linalg.norm(where - q, axis=1) <= 3\n    return int(ok.sum()), len(good)\n\nfor deg in (45,):\n    print(f"{deg}°  oriented: %d of %d correct" % correct_matches(deg, False))\n    print(f"{deg}°  upright:  %d of %d correct" % correct_matches(deg, True))'
+    '# Photo A against a copy of itself turned by 45 degrees.\ndef turned(gray, deg):\n    h, w = gray.shape\n    M = cv2.getRotationMatrix2D((w / 2, h / 2), deg, 1.0)\n    c, s = abs(M[0, 0]), abs(M[0, 1])\n    W, H = int(h * s + w * c), int(h * c + w * s)\n    M[0, 2] += W / 2 - w / 2\n    M[1, 2] += H / 2 - h / 2\n    return cv2.warpAffine(gray, M, (W, H)), M\n\ndef points(gray, n=500):\n    """The n strongest keypoints, one per place (no orientation copies)."""\n    seen, out = set(), []\n    for k in sorted(sift.detect(gray, None), key=lambda k: -k.response):\n        key = (round(k.pt[0], 1), round(k.pt[1], 1))\n        if key not in seen:\n            seen.add(key)\n            out.append(k)\n    return out[:n]\n\ndef correct_matches(deg, upright):\n    img2, M = turned(img, deg)\n    ka, kb = points(img), points(img2)\n    if upright:                      # throw the direction away\n        for k in ka + kb:\n            k.angle = 0.0\n    ka, da = sift.compute(img, ka)\n    kb, db = sift.compute(img2, kb)\n    good = [m for m, n in cv2.BFMatcher().knnMatch(da, db, k=2)\n            if m.distance < 0.75 * n.distance]\n    p = np.array([ka[m.queryIdx].pt for m in good]).reshape(-1, 2)\n    q = np.array([kb[m.trainIdx].pt for m in good]).reshape(-1, 2)\n    where = p @ M[:, :2].T + M[:, 2]   # where each point went\n    ok = np.linalg.norm(where - q, axis=1) <= 3\n    return int(ok.sum()), len(good)\n\nfor deg in (45,):\n    print(f"{deg}°  oriented: %d of %d correct" % correct_matches(deg, False))\n    print(f"{deg}°  upright:  %d of %d correct" % correct_matches(deg, True))'
 )
 
 md(r"""

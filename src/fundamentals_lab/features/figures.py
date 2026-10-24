@@ -395,7 +395,7 @@ def lesson2():
             t = cv2.resize(
                 t, (320, 241), interpolation=cv2.INTER_NEAREST if o >= 2 else cv2.INTER_AREA
             )
-            label(t, f"octave {o}, level {i} ({d.shape[1]}x{d.shape[0]})", (8, 22), 0.45)
+            label(t, f"octave {o - 1}, level {i} ({d.shape[1]}x{d.shape[0]})", (8, 22), 0.45)
             row.append(t)
         tiles.append(
             np.hstack(

@@ -395,9 +395,9 @@ def _edge_example(run: S.Run, kind: str):
     f, H, tr, det, score = best
     return {
         "pt": [_r(v, 1) for v in f.pt],
-        "dxx": _r(H[0, 0], 6),
-        "dyy": _r(H[1, 1], 6),
-        "dxy": _r(H[0, 1], 6),
+        "dxx": _r(H[0, 0], 7),
+        "dyy": _r(H[1, 1], 7),
+        "dxy": _r(H[0, 1], 7),
         "trace": _r(tr, 6),
         "det": _r(det, 9),
         "tr2_over_det": _r(score, 2),
@@ -654,6 +654,14 @@ def matching_lesson(_=None) -> dict:
         "correct_anywhere": int(ok.sum()),
         "best_distance_median": _r(np.median(d1), 1),
         "sweep": sweep,
+        "ratio_of_right": {
+            **_spread(r[over & ok]),
+            "share_below_0.5": _r((r[over & ok] < 0.5).mean()),
+        },
+        "ratio_of_wrong": {
+            **_spread(r[over & ~ok]),
+            "share_above_0.9": _r((r[over & ~ok] > 0.9).mean()),
+        },
         "absolute_same_count": absolute,
         "cross_check": cross,
         "cross_check_and_ratio": both,
