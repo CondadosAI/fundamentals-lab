@@ -378,3 +378,46 @@ POOL_RADII = (8, 60)
 POOL_MIN_DIST = 12
 POOL_GRADIENT = {"dp": 1.0, "param1": 100, "param2": (20, 25, 30, 35, 40)}
 POOL_GRADIENT_ALT = {"dp": 1.5, "param1": 300, "param2": (0.7, 0.8, 0.85, 0.9)}
+
+# =============================================================================
+# Unit 3.3 — SIFT (hub `sift-what-makes-a-point-matchable`, five lessons)
+# =============================================================================
+SIFT_NUMBERS_JSON = OUTPUT_DIR / "sift_numbers.json"
+# The Barcelona harbour pair (public domain, unit 3.5's panorama, fetched by
+# `align-download`), at the width the posts and the page's cells use.
+SIFT_PAIR = ("BarcelonaHarbour1.jpg", "BarcelonaHarbour2.jpg")
+SIFT_WIDTH = 960
+SIFT_SEED = 20261024
+# The reference for "is this match correct" on the real pair: a homography fitted by ORB
+# (a different detector and a binary descriptor), so SIFT is never scored against itself.
+REFERENCE_ORB_FEATURES = 5000
+REFERENCE_ORB_RATIO = 0.8
+REFERENCE_RANSAC_PX = 2.0
+MATCH_TOL_PX = 3.0  # a match is correct within 3 px of where the reference sends it
+RATIOS = (0.6, 0.7, 0.75, 0.8, 0.9, 1.0)
+RATIO = 0.75  # the threshold the track uses everywhere (unit 3.5, SfM)
+# Lesson 1: repeatability (Schmid, Mohr & Bauckhage 2000): one-to-one correspondences
+# within a tolerance, over min(nA, nB), counted where both images see the scene, on the
+# N strongest distinct points of each detector so neither wins by finding more.
+REPEAT_TOP_N = 1000
+REPEAT_TOL_PX = 1.5
+REPEAT_BORDER_PX = 8
+REPEAT_SIZE_OCTAVES = 0.25  # size-consistent: the two sizes agree within a quarter octave
+REPEAT_TOLS = (1.0, 1.5, 2.0, 3.0)
+REPEAT_COUNTS = (500, 1000, 2000)
+HARRIS = {"k": 0.04, "blockSize": 5, "minDistance": 3, "qualityLevel": 1e-4}
+HARRIS_DESCRIBE_SIZE = 8.0  # the one size a Harris point can be described at
+WARP_ROTATIONS = (15, 45, 90)
+WARP_SCALES = (0.71, 0.5, 0.35)
+WARP_BLUR = 2.0
+WARP_NOISE = 8.0
+DARK_FACTORS = (1.0, 0.7, 0.4, 0.2)
+UPRIGHT_ROTATIONS = (0, 10, 20, 45)
+# The hub's naive representation: a raw pixel patch around each keypoint, compared by
+# zero-mean normalized cross-correlation.
+PATCH_SIDE = 11
+# templeRing (Middlebury) for "in the wild": photo 1 against photos 2-13 on the ring,
+# 7.66 degrees apart, scored by a fundamental-matrix RANSAC (the temple is 3-D).
+TEMPLE_VIEWS = tuple(range(1, 14))
+TEMPLE_STEP_DEG = 360 / 47
+TEMPLE_F_PX = 1.0
