@@ -18,6 +18,23 @@
       "orb_inliers": 345,
       "orb_inlier_residual_px_median": 0.814
     },
+    "reference_H": [
+      [
+        1.3250175931,
+        0.1048722371,
+        -894.9344636717
+      ],
+      [
+        0.0561057051,
+        1.2295885038,
+        98.816160579
+      ],
+      [
+        0.0003597243,
+        -6.4232e-05,
+        1.0
+      ]
+    ],
     "real_pair": {
       "matches": 440,
       "correct": 420,
@@ -61,7 +78,19 @@
         }
       }
     },
-    "patch_side": 11
+    "patch_side": 11,
+    "challenge": {
+      "mirror": {
+        "matches": 77,
+        "correct": 35,
+        "precision": 0.455
+      },
+      "rotate 180°": {
+        "matches": 2280,
+        "correct": 2272,
+        "precision": 0.996
+      }
+    }
   },
   "keypoints": {
     "top_n": 1000,
@@ -539,8 +568,8 @@
       "max": 8.869
     },
     "seconds": {
-      "scratch": 0.65,
-      "opencv": 0.036
+      "scratch": 0.77,
+      "opencv": 0.039
     },
     "edge_test": {
       "kept": {

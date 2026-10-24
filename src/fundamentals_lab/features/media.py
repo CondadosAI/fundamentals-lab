@@ -124,5 +124,5 @@ def render_all() -> dict:
     out = {}
     for name, fn in (("sift-matches", matches), ("sift-follow", follow)):
         frames, fps = fn()
-        out[name] = encode(frames, fps, MEDIA_DIR / f"{name}.webp")
+        out[name] = encode(frames, fps, MEDIA_DIR / f"{name}.webp", quality=35)
     return out

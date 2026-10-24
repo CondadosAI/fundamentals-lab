@@ -614,6 +614,14 @@ def lab_data():
     a_bgr, b_bgr = scene.pair_bgr()
     for name, img in (("barcelona-a", a_bgr), ("barcelona-b", b_bgr)):
         cv2.imwrite(str(LAB_DIR / f"{name}.webp"), img, [cv2.IMWRITE_WEBP_QUALITY, 82])
+    # The reference homography, for the page's cells (a RANSAC run inside a cell would give a
+    # slightly different answer key on OpenCV 4.11 and 5.0).
+    H, info = scene.reference_homography()
+    (LAB_DIR / "reference-homography.json").write_text(
+        json.dumps(
+            {"H_a_to_b": [[round(float(v), 10) for v in row] for row in H], **info}, indent=1
+        )
+    )
     # RatioTestLab: every query that lands in the overlap, with its two distances.
     pa, pb, r, ok, over, _ka, _kb = _real_matches()
     d = json.loads((OUTPUT_DIR / "sift_numbers.json").read_text())["matching"]["lab_matches"]
@@ -642,7 +650,7 @@ def lab_data():
             [
                 round(f.pt[0], 1),
                 round(f.pt[1], 1),
-                round(abs(f.response) * S.LAYERS, 5),
+                round(abs(f.response) * S.LAYERS, 8),
                 round(min(score, 999.0), 2),
             ]
         )
@@ -712,9 +720,10 @@ def covers():
     pair = rd("hub-matches")
     h = pair.shape[0]
     _save(place(pair[:, : pair.shape[1]]), HUB, COVER_DIR)
-    _save(place(rd("l1-sizes")), SLUGS[1], COVER_DIR)
+    # covers carry no text: crop off the figures' labels
+    _save(place(rd("l1-sizes")[70:]), SLUGS[1], COVER_DIR)
     _save(place(rd("l2-keypoints-at-scale")), SLUGS[2], COVER_DIR)
-    _save(place(rd("l3-stages")), SLUGS[3], COVER_DIR)
+    _save(place(rd("l3-stages")[130:]), SLUGS[3], COVER_DIR)
     _save(place(rd("l4-descriptor-grid")), SLUGS[4], COVER_DIR)
     _save(place(rd("l5-kept-rejected")[:h]), SLUGS[5], COVER_DIR)
 

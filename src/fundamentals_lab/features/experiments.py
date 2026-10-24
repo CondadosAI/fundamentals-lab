@@ -168,14 +168,25 @@ def hub(_=None) -> dict:
             "patch": _scored(ka, kbw, _ratio_matches(pa_, pb_), HM),
             "sift": _scored(ka, kbw, _ratio_matches(da, dbw), HM),
         }
+    # The hub's closing challenge: a mirror image and a half turn.
+    w = a.shape[1]
+    challenge = {}
+    for name, (img, Hc) in {
+        "mirror": (cv2.flip(a, 1), np.array([[-1.0, 0, w - 1], [0, 1, 0], [0, 0, 1]])),
+        "rotate 180°": scene.rotate_scale(a, 180),
+    }.items():
+        kc, dc = sift.compute(img, scene.dedupe(sift.detect(img, None)))
+        challenge[name] = _scored(ka, kc, _ratio_matches(da, dc), Hc)
     return {
         "image_px": [a.shape[1], a.shape[0]],
         "keypoints": [len(raw_a), len(ka)],
         "keypoints_b": len(kb),
         "reference": ref,
+        "reference_H": [[round(float(v), 10) for v in row] for row in H],
         "real_pair": real,
         "patch_vs_sift": rows,
         "patch_side": PATCH_SIDE,
+        "challenge": challenge,
     }
 
 
