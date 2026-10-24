@@ -568,8 +568,8 @@
       "max": 8.869
     },
     "seconds": {
-      "scratch": 0.77,
-      "opencv": 0.039
+      "scratch": 0.61,
+      "opencv": 0.036
     },
     "edge_test": {
       "kept": {
@@ -577,11 +577,11 @@
           359.5,
           581.5
         ],
-        "dxx": 0.0053,
-        "dyy": 0.019,
-        "dxy": 0.0052,
-        "trace": 0.0243,
-        "det": 7.3e-05,
+        "dxx": 0.005259,
+        "dyy": 0.019011,
+        "dxy": 0.005227,
+        "trace": 0.02427,
+        "det": 7.2665e-05,
         "tr2_over_det": 8.11,
         "limit": 12.1,
         "kept": true
@@ -591,11 +591,11 @@
           576.0,
           685.2
         ],
-        "dxx": 0.0011,
-        "dyy": 0.005,
-        "dxy": -0.0017,
-        "trace": 0.0061,
-        "det": 3e-06,
+        "dxx": 0.001063,
+        "dyy": 0.00505,
+        "dxy": -0.001665,
+        "trace": 0.006113,
+        "det": 2.599e-06,
         "tr2_over_det": 14.38,
         "limit": 12.1,
         "kept": false
@@ -10843,6 +10843,18 @@
       }
     },
     "octaves": 9,
+    "distinct_points": 683,
+    "points_from_doubled_base": 391,
+    "scale_tracking_x0.5": {
+      "correct_matches": 217,
+      "size_ratio": {
+        "n": 217,
+        "median": 0.499,
+        "p05": 0.448,
+        "p95": 0.53,
+        "max": 0.576
+      }
+    },
     "detector": {
       "extrema": 2517,
       "dropped": {

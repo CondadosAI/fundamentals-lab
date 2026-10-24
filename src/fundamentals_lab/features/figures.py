@@ -490,7 +490,7 @@ def lesson3():
     ax.set_facecolor(BG_HEX)
     hst = np.array(st["histogram"])
     cols = ["#a3e635" if i == int(np.argmax(hst)) else "#60a5fa" for i in range(36)]
-    ax.bar(np.arange(36) * 10, hst, width=9, color=cols, align="edge")
+    ax.bar(np.arange(36) * 10, hst, width=9, color=cols, align="center")
     ax.axhline(hst.max() * S.ORI_PEAK, color="#fbbf24", lw=1, ls="--")
     ax.set_xlim(0, 360)
     ax.set_xticks(range(0, 361, 90))

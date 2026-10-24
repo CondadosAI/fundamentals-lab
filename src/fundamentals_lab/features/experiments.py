@@ -395,11 +395,11 @@ def _edge_example(run: S.Run, kind: str):
     f, H, tr, det, score = best
     return {
         "pt": [_r(v, 1) for v in f.pt],
-        "dxx": _r(H[0, 0], 4),
-        "dyy": _r(H[1, 1], 4),
-        "dxy": _r(H[0, 1], 4),
-        "trace": _r(tr, 4),
-        "det": _r(det, 6),
+        "dxx": _r(H[0, 0], 6),
+        "dyy": _r(H[1, 1], 6),
+        "dxy": _r(H[0, 1], 6),
+        "trace": _r(tr, 6),
+        "det": _r(det, 9),
         "tr2_over_det": _r(score, 2),
         "limit": _r((S.EDGE + 1) ** 2 / S.EDGE, 2),
         "kept": bool(score < (S.EDGE + 1) ** 2 / S.EDGE),
@@ -729,10 +729,23 @@ def wild(_=None) -> dict:
                 "inliers": inl,
             }
         )
+    pts = scene.sift_points(t)
+    octs = np.array([((kp.octave & 255) ^ 128) - 128 for kp in pts])
+    small, Hs = scene.rotate_scale(t, 0, 0.5)
+    kA, dA = sift.compute(t, scene.sift_points(t))
+    kB, dB = sift.compute(small, scene.sift_points(small))
+    ms = _ratio_matches(dA, dB)
+    p = np.array([kA[x.queryIdx].pt for x in ms])
+    q = np.array([kB[x.trainIdx].pt for x in ms])
+    ok = np.linalg.norm(scene.apply(Hs, p) - q, axis=1) <= MATCH_TOL_PX * 0.5
+    ratio = np.array([kB[x.trainIdx].size / kA[x.queryIdx].size for x in ms])[ok]
     return {
         "image_px": [t.shape[1], t.shape[0]],
         "repeatability_top500": rep,
         "octaves": pyr_oct,
+        "distinct_points": len(pts),
+        "points_from_doubled_base": int((octs == -1).sum()),
+        "scale_tracking_x0.5": {"correct_matches": int(ok.sum()), "size_ratio": _spread(ratio)},
         "detector": {
             k: det[k]
             for k in (
