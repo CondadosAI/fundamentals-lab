@@ -28,3 +28,4 @@ output/*.log
 !output/sensing_numbers.json
 !output/practice_m1_numbers.json
 .gstack/
+output/figures/**/*.json

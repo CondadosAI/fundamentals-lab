@@ -93,7 +93,12 @@ def kernel_gallery(width: int = 600):
 
 
 def sift_matches(height: int = 300):
-    """SIFT keypoints on two harbour photos, then the matches that survive the ratio test."""
+    """SIFT keypoints on two harbour photos, then the matches that survive the ratio test.
+
+    Superseded on the site (24 Oct 2026) by `sift-media` (features/media.py), which draws the
+    same pair at the unit's 960 px and colours the kept matches by the ORB reference. Kept so
+    the old opening can be rebuilt; do not copy its output over the hub's media/.
+    """
     a = cv2.imread(str(PANORAMA / "BarcelonaHarbour1.jpg"))
     b = cv2.imread(str(PANORAMA / "BarcelonaHarbour2.jpg"))
     s = height / a.shape[0]
